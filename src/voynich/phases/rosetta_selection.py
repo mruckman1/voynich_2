@@ -448,7 +448,10 @@ def test_encoding_models(
 # Orchestrator
 # ---------------------------------------------------------------------------
 
-def run_rosetta_selection(constrained_data: Optional[Dict] = None) -> Dict:
+def run_rosetta_selection(
+    constrained_data: Optional[Dict] = None,
+    use_tfidf: bool = False,
+) -> Dict:
     """
     Run Phase 6 D+E: Rosetta Folio Selection + Encoding Model Test.
 
@@ -498,6 +501,7 @@ def run_rosetta_selection(constrained_data: Optional[Dict] = None) -> Dict:
     medieval_names = load_medieval_names()
     folio_sets = build_folio_identification_sets(
         concordance, medieval_names, corpus,
+        use_tfidf=use_tfidf,
     )
 
     # Select Rosetta folios

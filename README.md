@@ -43,6 +43,9 @@ voynich anchor            # Phase 6 A+B: anchor-and-propagate
 voynich compete           # Phase 6 C: competitive ID resolution
 voynich phase6-validate   # Phase 6 validation battery
 voynich phase6            # Run all Phase 6 analyses
+voynich anchor-diagnosis  # Phase 6.1B: anchor inconsistency diagnosis
+voynich encoding-diagnosis # Phase 6.1C: encoding model diagnosis
+voynich phase6-1          # Run full Phase 6.1 pipeline (TF-IDF + diagnosis)
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -87,7 +90,9 @@ voynich_2/
 │       ├── rosetta_selection.py # Phase 6 D+E: Rosetta folio selection
 │       ├── anchor_propagate.py  # Phase 6 A+B: anchor-and-propagate decoding
 │       ├── competitive_id.py    # Phase 6 C: competitive ID resolution
-│       └── illustration_validate.py # Phase 6: validation battery
+│       ├── illustration_validate.py # Phase 6: validation battery
+│       ├── anchor_diagnosis.py  # Phase 6.1B: anchor inconsistency diagnosis
+│       └── encoding_diagnosis.py # Phase 6.1C: encoding model diagnosis
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
@@ -392,6 +397,42 @@ Full validation battery with null tests, leave-one-out, train/test split, and bo
 | V.5: Stop conditions | Hard stop (<0.20 or all nulls fail), soft stop (0.20–0.50), green light (>0.50 + all nulls >1.5×) | `phases/illustration_validate.py` |
 
 **Gate structure:** illustration_constrained (≥8 Tier 1+2 folios) → rosetta_selection (≥8 folios, score >0.5) → anchor_propagate (unanimity >0.50, z >2.0) → competitive_id (separation >0.05) → validation (stop conditions)
+
+## Phase 6.1: TF-IDF Stem Extraction and Diagnostic Investigation
+
+Phase 6 produced z-scores of 32.0 and 6.75 (real signal exists) but unanimity of only 0.40 (below 0.50 threshold). Root cause: the dominant stem heuristic selected the most frequent stem per folio, picking up corpus-wide function words ("daiin") rather than folio-specific plant names. Phase 6.1 applies three fixes.
+
+### Fix A: TF-IDF Stem Extraction
+
+Replaces frequency-based stem selection with specificity-based selection. For each stem on each folio, computes four metrics: TF-IDF, specificity ratio (tf/cf), exclusivity ratio (this_folio/other_folios), and PMI. The stem with highest TF-IDF score becomes the dominant stem.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| A.1: Corpus stem statistics | Compute corpus-wide term frequency, document frequency for all stems across herbal_a | `phases/illustration_constrained.py` |
+| A.2: Per-folio specificity | Four metrics per stem per folio: TF-IDF, specificity ratio, exclusivity, PMI | `phases/illustration_constrained.py` |
+| A.3: Diagnostic comparison | Compare old (frequency) vs new (TF-IDF) dominant stems, report changes | `phases/illustration_constrained.py` |
+
+### Fix B: Anchor-Level Inconsistency Diagnosis
+
+Diagnoses which specific anchors and character mappings cause inconsistencies.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| B.1: Per-anchor profiling | For each anchor, count consistent vs conflicting character-reuse instances | `phases/anchor_diagnosis.py` |
+| B.2: Poison detection | Leave-one-anchor-out unanimity; poison = removal improves unanimity by >0.05 | `phases/anchor_diagnosis.py` |
+| B.3: Per-character profiling | For each EVA char in 2+ anchors, classify unanimity as high/medium/low | `phases/anchor_diagnosis.py` |
+| B.4: Iterative pruning | Remove worst poison anchors until unanimity > 0.50 or 5 anchors remain | `phases/anchor_diagnosis.py` |
+
+### Fix C: Encoding Model Diagnosis
+
+Tests which encoding model best fits the anchor data per-anchor, with segmentation sensitivity.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| C.1: Per-anchor model fit | Test 4 models (syllabic, alphabetic, abbreviated, mixed) per anchor | `phases/encoding_diagnosis.py` |
+| C.2: Model consensus | Rank models by count of good-fit anchors (fit < 0.3) | `phases/encoding_diagnosis.py` |
+| C.3: Segmentation sensitivity | Test 3 segmentation strategies under winning model | `phases/encoding_diagnosis.py` |
+| C.4: Hybrid model test | Check if short/medium/long names fit different models | `phases/encoding_diagnosis.py` |
 
 ## Integration
 
@@ -986,22 +1027,75 @@ The high z-scores (32.0 and 6.75) confirm that the real folio-to-plant assignmen
 
 **Interpretation:** The cross-modal signal detected by anchor propagation (z = 32.0 vs shuffled folios) is real but insufficient. With only 12 Tier 1+2 folios and 5 unique EVA characters mapped, the constraint space is too sparse to resolve character-level ambiguities. The fundamental limitation is the plant identification concordance itself — most identifications are contested (38 of 50 folios at Tier 3), and even the best-supported IDs do not converge on a coherent mapping.
 
+### Phase 6.1: TF-IDF Stem Extraction Results
+
+Phase 6.1 replaced frequency-based dominant stem selection with TF-IDF specificity-based selection, diagnosing the root cause of Phase 6's failure.
+
+**Fix A: TF-IDF Diagnostic Comparison**
+
+| Metric | Frequency-based (Phase 6.0) | TF-IDF (Phase 6.1) |
+|--------|---------------------------|---------------------|
+| Folios changed | — | 46 of 50 (92%) |
+| "daiin" as dominant | 17 folios | **0 folios** |
+| Mean specificity ratio | 0.028 | **0.179** (6.4× improvement) |
+
+**Anchor-and-propagate with TF-IDF stems:**
+
+| Metric | Phase 6.0 | Phase 6.1 | Delta |
+|--------|-----------|-----------|-------|
+| **Unanimity ratio** | 0.40 | **0.5833** | **+0.18** |
+| Unique EVA chars mapped | 5 | **12** | +7 |
+| Unanimous chars | 2 of 5 | **7 of 12** | +5 |
+| Null z (shuffled folios) | 32.0 | **66.1** | +34.1 |
+| Null z (random plants) | 6.75 | **25.5** | +18.8 |
+| Anchor-propagate gate | FAILED | **PASSED** | — |
+
+**Encoding model diagnosis (Fix C):**
+
+| Metric | Value |
+|--------|-------|
+| Best model | morphographic-abbreviated (4/8 good fit) |
+| Clear winner | No (75% threshold not met) |
+| Best segmentation | Balanced (unanimity 0.6667, +0.08 over baseline) |
+| Hybrid evidence | Yes — short names fit abbreviated, medium/long fit syllabic |
+
+**Anchor diagnosis (Fix B):**
+
+| Metric | Value |
+|--------|-------|
+| High-unanimity chars (>0.80) | 7 |
+| Low-unanimity chars (<0.50) | 5 |
+| Poison anchors (Δ > 0.05) | 6 of 8 |
+
+**Validation battery:**
+
+| Test | Phase 6.0 | Phase 6.1 | Status |
+|------|-----------|-----------|--------|
+| Null: shuffled tokens | 0.88× | 1.22× | Improved but still < 1.5× |
+| Null: shuffled chars | 1.00× | 1.46× | Improved but still < 1.5× |
+| Null: random names | 0.98× | 1.43× | Improved but still < 1.5× |
+| LOO stability | 0.25–0.60 | 0.25–0.60 | Unchanged |
+| Train/test transfer | 0.0 | 0.0 | Unchanged |
+| Overall status | HARD STOP | **HARD STOP** | — |
+
+**Interpretation:** TF-IDF extraction substantially improved the anchor-propagate stage — unanimity rose from 0.40 to 0.58, clearing the 0.50 gate for the first time. The number of consistent character mappings more than doubled. However, the improvement was insufficient to clear the validation battery: null selectivities improved (from ~1.0× to ~1.3–1.5×) but still fall below the 1.5× threshold. The train/test transfer remains zero, indicating the mapping does not generalize. The fundamental constraint is the small anchor set (8 folios with 12 shared characters) — too few reuse instances for robust validation. The TF-IDF fix correctly identified the problem (generic stems instead of plant-specific stems) and improved the signal, but the concordance provides insufficient constraint density for confident decoding.
+
 ### Cross-Validation Summary
 
-| Finding | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 4.5 | Phase 5 | Phase 6 | Assessment |
-|---------|---------|---------|---------|---------|-----------|---------|---------|------------|
-| **Language** | — | Latin (top 5 matches), no nulls, Romance phonotactics | Latin best syllable match, PMI r=0.96 | Latin #1, Occitan #2, CIs overlap | Language A (Romance-like) vs B (notation); qo- functional | Occitan/Latin paradigms indistinguishable (JSD ratio=0.92); affix alignment consistency 1.00 | 63/69 plants mapped to medieval Latin; cross-modal signal z=32.0 vs shuffled | **Romance language family** in Language A; Language B may be non-linguistic |
-| **Encoding** | Strong positional constraints (MI=0.30) → syllabary | simple_substitution best, 5x6 grid 47% | D.1 favors syllabary, D.3 favors substitution | R=0.39 in syllabary/abugida overlap | Grid axes = affix/stem; R(affix\|stem)=0.61 natural | 486 multi-form paradigms with prefix+suffix structure; 5 clusters match inflectional system | Best model: morphographic-syllabic (consistency 0.76) | **Morphological syllabary** — grid encodes affix+stem structure |
-| **Grid validity** | 7x11 original (27% occupancy) | 5x6 refined (47%, z=-239) | 100% stable, but sections diverge (Jaccard=0.14) | Minimum 10k tokens needed; A/B split genuine | Lang A grid 50% occupancy vs B 37%; both axes significant (z>500) | Grid-cell merging reduces stems 2,328→1,693 (allographic variants) | — | **Grid is real, morphologically grounded** |
-| **Decoding** | — | — | — | — | — | Random-word selectivity 0.99× blocks stem ID; phonetic decode stopped at gate 5.3 | Unanimity 0.40 (below 0.50 threshold); train/test transfer 0.0; all null tests <1.5×; **HARD STOP** | **Selectivity ceiling persists** — cross-modal constraints insufficient with current concordance |
-| **Currier A/B** | — | — | — | H2 diff significant, grid Jaccard=0.14 | JSD z=3.82, vocab overlap 14%, distinct token inventories | — | — | **Distinct systems** (not just dialects) |
-| **Null characters** | — | No null insertion evidence | 11/20 null tests discriminate | 8/15 metrics discriminate, all critical pass | qo- removal neutral; 67% have suffixes, 30% prefixes | — | — | **No null padding**; apparent padding is morphological |
-| **Internal structure** | z = -652/-494 vs shuffled | z = -65 fingerprint, z = -69 stripped | H2 z=-1157, Zipf z=298 vs shuffled | — | H₂(stems)=2.38 > H₂(full)=2.12; affixes carry grammatical info | Paradigm selectivity z=178 (real vs shuffled); cross-consistency 1.00 on 20 IDs | 8 Rosetta folios, 88.6% EVA coverage; paradigm filtering passes all 8 anchors | **Morpheme structure confirmed at paradigm level** |
-| **Scholarly rigor** | — | — | 5/7 hypotheses pass, H1 robust to corpus size | All 4 gates evaluated with CIs | All null tests z>500; contingency chi² p<0.001 | 4 gates with dual null controls; random-word control catches selectivity ceiling | 5-stage gate pipeline with 3 null tests, LOO, train/test, bootstrap; HARD STOP issued correctly | **Gate system correctly prevents overconfident decoding** |
+| Finding | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 4.5 | Phase 5 | Phase 6 | Phase 6.1 | Assessment |
+|---------|---------|---------|---------|---------|-----------|---------|---------|-----------|------------|
+| **Language** | — | Latin (top 5 matches), no nulls, Romance phonotactics | Latin best syllable match, PMI r=0.96 | Latin #1, Occitan #2, CIs overlap | Language A (Romance-like) vs B (notation); qo- functional | Occitan/Latin paradigms indistinguishable (JSD ratio=0.92); affix alignment consistency 1.00 | 63/69 plants mapped to medieval Latin; cross-modal signal z=32.0 vs shuffled | TF-IDF stems folio-specific; "daiin" eliminated (17→0 folios) | **Romance language family** in Language A; Language B may be non-linguistic |
+| **Encoding** | Strong positional constraints (MI=0.30) → syllabary | simple_substitution best, 5x6 grid 47% | D.1 favors syllabary, D.3 favors substitution | R=0.39 in syllabary/abugida overlap | Grid axes = affix/stem; R(affix\|stem)=0.61 natural | 486 multi-form paradigms with prefix+suffix structure; 5 clusters match inflectional system | Best model: morphographic-syllabic (consistency 0.76) | morphographic-abbreviated best (4/8 good fits); hybrid evidence by word length; balanced segmentation unanimity 0.6667 | **Morphological syllabary** — grid encodes affix+stem structure |
+| **Grid validity** | 7x11 original (27% occupancy) | 5x6 refined (47%, z=-239) | 100% stable, but sections diverge (Jaccard=0.14) | Minimum 10k tokens needed; A/B split genuine | Lang A grid 50% occupancy vs B 37%; both axes significant (z>500) | Grid-cell merging reduces stems 2,328→1,693 (allographic variants) | — | — | **Grid is real, morphologically grounded** |
+| **Decoding** | — | — | — | — | — | Random-word selectivity 0.99× blocks stem ID; phonetic decode stopped at gate 5.3 | Unanimity 0.40 (below 0.50 threshold); train/test transfer 0.0; all null tests <1.5×; **HARD STOP** | Unanimity 0.40→0.5833 (passes 0.50 gate); anchor-propagate PASS; but validation still HARD STOP (selectivities 1.22-1.46×, below 1.5×) | **Selectivity ceiling persists** — TF-IDF improves unanimity but anchor set too small (8 folios, 12 chars) |
+| **Currier A/B** | — | — | — | H2 diff significant, grid Jaccard=0.14 | JSD z=3.82, vocab overlap 14%, distinct token inventories | — | — | — | **Distinct systems** (not just dialects) |
+| **Null characters** | — | No null insertion evidence | 11/20 null tests discriminate | 8/15 metrics discriminate, all critical pass | qo- removal neutral; 67% have suffixes, 30% prefixes | — | — | — | **No null padding**; apparent padding is morphological |
+| **Internal structure** | z = -652/-494 vs shuffled | z = -65 fingerprint, z = -69 stripped | H2 z=-1157, Zipf z=298 vs shuffled | — | H₂(stems)=2.38 > H₂(full)=2.12; affixes carry grammatical info | Paradigm selectivity z=178 (real vs shuffled); cross-consistency 1.00 on 20 IDs | 8 Rosetta folios, 88.6% EVA coverage; paradigm filtering passes all 8 anchors | Poison anchor pruning available; per-char consistency profiled (high/medium/low) | **Morpheme structure confirmed at paradigm level** |
+| **Scholarly rigor** | — | — | 5/7 hypotheses pass, H1 robust to corpus size | All 4 gates evaluated with CIs | All null tests z>500; contingency chi² p<0.001 | 4 gates with dual null controls; random-word control catches selectivity ceiling | 5-stage gate pipeline with 3 null tests, LOO, train/test, bootstrap; HARD STOP issued correctly | Diagnostic investigation (anchor + encoding) confirms small-anchor-set as root cause; HARD STOP maintained | **Gate system correctly prevents overconfident decoding** |
 
 ## Results Files
 
-Analysis outputs are saved as JSON to `results/` (48 files total):
+Analysis outputs are saved as JSON to `results/` (50 files total):
 
 **Phase 1 — Stroke Analysis:**
 - `stroke_positional.json` — Stroke positional distributions and MI
@@ -1074,6 +1168,10 @@ Analysis outputs are saved as JSON to `results/` (48 files total):
 - `anchor_propagate.json` — Anchor hypotheses, cross-consistency matrix, propagation results, null tests
 - `competitive_id.json` — Beam search over contested folios, best vs runner-up assignments
 - `illustration_validate.json` — 3 null tests, leave-one-out, train/test split, bootstrap, stop conditions
+
+**Phase 6.1 — TF-IDF Stem Extraction & Diagnostics:**
+- `anchor_diagnosis.json` — Per-anchor consistency, poison anchor identification, per-character unanimity, iterative pruning
+- `encoding_diagnosis.json` — Per-anchor model fits, model consensus, segmentation sensitivity, hybrid model analysis
 
 ## Background
 

@@ -37,6 +37,9 @@ Usage:
     voynich compete           # Phase 6 C: competitive ID resolution
     voynich phase6-validate   # Phase 6 validation battery
     voynich phase6            # Run all Phase 6 analyses
+    voynich anchor-diagnosis  # Phase 6.1B: anchor inconsistency diagnosis
+    voynich encoding-diagnosis # Phase 6.1C: encoding model diagnosis
+    voynich phase6-1          # Run full Phase 6.1 pipeline (TF-IDF + diagnosis)
 """
 import sys
 import time
@@ -331,6 +334,79 @@ def cmd_phase6():
     cmd_phase6_validate()
 
 
+def cmd_anchor_diagnosis():
+    """Run Phase 6.1B: anchor-level inconsistency diagnosis."""
+    from voynich.phases.anchor_diagnosis import run_anchor_diagnosis
+    t0 = time.time()
+    run_anchor_diagnosis()
+    print(f"\nAnchor diagnosis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_encoding_diagnosis():
+    """Run Phase 6.1C: encoding model diagnosis."""
+    from voynich.phases.encoding_diagnosis import run_encoding_diagnosis
+    t0 = time.time()
+    run_encoding_diagnosis()
+    print(f"\nEncoding diagnosis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase61():
+    """Run full Phase 6.1 pipeline: TF-IDF stems + encoding + anchor diagnosis."""
+    # Step 1: TF-IDF stem extraction
+    from voynich.phases.illustration_constrained import run_illustration_constrained
+    t0 = time.time()
+    run_illustration_constrained(use_tfidf=True)
+    print(f"\nTF-IDF illustration setup completed in {time.time() - t0:.1f}s")
+
+    print("\n" + "=" * 70 + "\n")
+
+    # Step 2: Rosetta selection (uses new stems)
+    from voynich.phases.rosetta_selection import run_rosetta_selection
+    t0 = time.time()
+    run_rosetta_selection(use_tfidf=True)
+    print(f"\nRosetta selection completed in {time.time() - t0:.1f}s")
+
+    print("\n" + "=" * 70 + "\n")
+
+    # Step 3: Anchor-propagate with TF-IDF stems
+    from voynich.phases.anchor_propagate import run_anchor_propagate
+    t0 = time.time()
+    run_anchor_propagate(use_tfidf=True)
+    print(f"\nAnchor-and-propagate (TF-IDF) completed in {time.time() - t0:.1f}s")
+
+    print("\n" + "=" * 70 + "\n")
+
+    # Step 4: Encoding model diagnosis
+    from voynich.phases.encoding_diagnosis import run_encoding_diagnosis
+    t0 = time.time()
+    run_encoding_diagnosis(use_tfidf=True)
+    print(f"\nEncoding diagnosis completed in {time.time() - t0:.1f}s")
+
+    print("\n" + "=" * 70 + "\n")
+
+    # Step 5: Anchor diagnosis
+    from voynich.phases.anchor_diagnosis import run_anchor_diagnosis
+    t0 = time.time()
+    run_anchor_diagnosis(use_tfidf=True)
+    print(f"\nAnchor diagnosis completed in {time.time() - t0:.1f}s")
+
+    print("\n" + "=" * 70 + "\n")
+
+    # Step 6: Competitive ID
+    from voynich.phases.competitive_id import run_competitive_id
+    t0 = time.time()
+    run_competitive_id()
+    print(f"\nCompetitive ID completed in {time.time() - t0:.1f}s")
+
+    print("\n" + "=" * 70 + "\n")
+
+    # Step 7: Validation battery
+    from voynich.phases.illustration_validate import run_illustration_validate
+    t0 = time.time()
+    run_illustration_validate()
+    print(f"\nPhase 6.1 validation completed in {time.time() - t0:.1f}s")
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -365,6 +441,9 @@ def main():
         'compete': cmd_compete,
         'phase6-validate': cmd_phase6_validate,
         'phase6': cmd_phase6,
+        'anchor-diagnosis': cmd_anchor_diagnosis,
+        'encoding-diagnosis': cmd_encoding_diagnosis,
+        'phase6-1': cmd_phase61,
     }
 
     if len(sys.argv) < 2:

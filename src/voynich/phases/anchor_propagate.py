@@ -494,6 +494,7 @@ def null_test_random_plants(
 def run_anchor_propagate(
     rosetta_data: Optional[Dict] = None,
     constrained_data: Optional[Dict] = None,
+    use_tfidf: bool = False,
 ) -> Dict:
     """
     Run Phase 6 A+B: Anchor-and-Propagate with Paradigm Filtering.
@@ -506,9 +507,13 @@ def run_anchor_propagate(
     6. Run null tests
     7. Gate: unanimity > 0.50 AND z > 2.0 vs both nulls
     8. Save results/anchor_propagate.json
+
+    If use_tfidf=True, builds folio identification sets with TF-IDF
+    specificity-based dominant stems (Phase 6.1 Fix A).
     """
     print("=" * 70)
-    print("Phase 6 A+B: Anchor-and-Propagate with Paradigm Filtering")
+    label = " (TF-IDF stems)" if use_tfidf else ""
+    print(f"Phase 6 A+B: Anchor-and-Propagate with Paradigm Filtering{label}")
     print("=" * 70)
 
     # Load prior results
@@ -546,6 +551,8 @@ def run_anchor_propagate(
 
     print(f"\n  Rosetta folios: {len(selected_folios)}")
     print(f"  Encoding model: {encoding_model}")
+    if use_tfidf:
+        print(f"  Stem selection: TF-IDF specificity-based")
 
     # Rebuild folio identification sets
     print("\n  Loading corpus and building identification sets...")
@@ -554,6 +561,7 @@ def run_anchor_propagate(
     medieval_names = load_medieval_names()
     folio_sets = build_folio_identification_sets(
         concordance, medieval_names, corpus,
+        use_tfidf=use_tfidf,
     )
 
     # Build index for quick lookup
