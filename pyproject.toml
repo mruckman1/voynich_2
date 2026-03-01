@@ -1,7 +1,11 @@
 [project]
 name = "voynich-2"
 version = "0.1.0"
-description = "Add your description here"
+description = "Voynich manuscript stroke-level syllabary and information-theoretic fingerprinting"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "beautifulsoup4>=4.14.3",
+    "numpy>=1.26",
+    "requests>=2.32.5",
+]
