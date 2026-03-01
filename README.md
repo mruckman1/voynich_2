@@ -24,6 +24,11 @@ voynich grid-validate     # Phase 3E: validate syllabary grid
 voynich syllable-match    # Phase 3F: syllable-level language matching
 voynich validate-all      # Phase 3G: scholarly validation framework
 voynich phase3            # Run all Phase 3 workstreams
+voynich audit             # Phase 4.1: discriminant audit of Phase 3 results
+voynich section-diagnosis # Phase 4.2: section consistency diagnosis
+voynich abugida           # Phase 4.3: abugida hypothesis test
+voynich multi-language    # Phase 4.4: multi-language comparison
+voynich phase4            # Run all Phase 4 analyses
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -47,17 +52,22 @@ voynich_2/
 │   ├── analysis/                # Main analysis approaches
 │   │   ├── strokes.py           # Approach 1: stroke decomposition, Ventris grid
 │   │   └── fingerprint.py       # Approach 2: entropy profiling, profile matching
-│   └── phases/                  # Phase 2 and Phase 3 workstreams
+│   └── phases/                  # Phase 2–4 workstreams
 │       ├── nulls.py             # Phase 2A: null character identification
 │       ├── grid_refine.py       # Phase 2B: syllabary grid refinement
 │       ├── degeneracy.py        # Phase 3D: substitution vs syllabary tests
 │       ├── grid_validate.py     # Phase 3E: grid gap analysis, stability
 │       ├── syllable_match.py    # Phase 3F: CV labeling, language matching
-│       └── scholarly.py         # Phase 3G: pre-registration, null testing
+│       ├── scholarly.py         # Phase 3G: pre-registration, null testing
+│       ├── discriminant_audit.py # Phase 4.1: audit Phase 3 findings vs null tests
+│       ├── section_diagnosis.py # Phase 4.2: section consistency, Currier A/B
+│       ├── abugida_test.py      # Phase 4.3: script type classification
+│       └── multi_language.py    # Phase 4.4: multi-language comparison with CIs
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
-│       └── latin/               # Circa Instans, De Viribus Herbarum
+│       ├── latin/               # Circa Instans, De Viribus Herbarum
+│       └── occitan/             # Régime du Corps
 ├── results/                     # JSON output from analysis runs
 └── archive/                     # Previous codebase (consonant-skeleton approach — deprecated)
 ```
@@ -158,15 +168,63 @@ A validation layer wrapping all Phase 3 experiments for reproducibility and stat
 | G.4 | **Reproducibility Manifest** — Python/NumPy/SciPy versions, random seeds, SHA256 hashes of all data and result files. | `phases/scholarly.py` |
 | G.5 | **Sensitivity Analysis** — Vary grid cluster count and corpus size, track metric stability. | `phases/scholarly.py` |
 
+## Phase 4: Discriminant Audit, Section Diagnosis, Abugida Test, Multi-Language Comparison
+
+Phase 4 audits whether Phase 3 findings are publishable, diagnoses cross-section inconsistencies, classifies the script type, and expands language comparison beyond Latin. Each step has a decision gate that determines whether subsequent steps are worth pursuing.
+
+### Step 1: Discriminant Audit
+
+Cross-references all Phase 3 null test results with core metrics to determine which findings genuinely discriminate the Voynich signal from null baselines.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| Null test summary | Load `null_test_results.json` and classify each metric as discriminating, partial, or non-discriminating across 4 null types | `phases/discriminant_audit.py` |
+| Hypothesis linkage | Cross-reference with pre-registered hypotheses (D1–F4) for pass/fail status | `phases/discriminant_audit.py` |
+| Critical findings | Flag F.4 (PMI), F.3 (bigram ranking), D.1 (length), E.3 (stability) as gate metrics | `phases/discriminant_audit.py` |
+
+### Step 2: Section Consistency Diagnosis
+
+Diagnoses why E.4 cross-section grid consistency is only 0.14 Jaccard — is it a Currier A/B signal, a small-sample artifact, or grid instability?
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| 2A: Per-section grids | Build a grid for each of the 7 manuscript sections, compute H1, H2, occupancy | `phases/section_diagnosis.py` |
+| 2B: Sample-size calibration | Subsample at 200–10,000 tokens, build grids, measure Jaccard vs full grid to find the minimum reliable sample size | `phases/section_diagnosis.py` |
+| 2C: Currier A/B test | Aggregate Currier A (herbal_a) vs Currier B (all others except herbal_b's 181 tokens), compare entropy profiles, grid Jaccard, bigram JSD, bootstrap CI on H2 difference | `phases/section_diagnosis.py` |
+
+### Step 3: Abugida Hypothesis Test
+
+Tests whether the script is an abugida (consonant base + vowel modifier) rather than a pure syllabary or alphabet.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| 3A: Onset/nucleus decomposition | Decompose each glyph into (first stroke, last stroke) pairs; compute positional entropy at each glyph position | `phases/abugida_test.py` |
+| 3B: Conditional entropy | Compute H(onset), H(nucleus), H(nucleus\|onset), MI(onset; nucleus). Key diagnostic: R = 1 - H(nucleus\|onset)/H(nucleus) | `phases/abugida_test.py` |
+| 3C: Script type classification | Compare R and H-ratio against reference profiles for alphabet (<0.15), syllabary (0.15–0.55), abugida (0.20–0.70), abjad | `phases/abugida_test.py` |
+
+### Step 4: Multi-Language Comparison
+
+Ranks 7 languages across three independent metrics with bootstrap confidence intervals.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| Fingerprint ranking | Cosine similarity of Voynich entropy profile vs reference profiles for each language (100 bootstrap samples) | `phases/multi_language.py` |
+| Bigram JSD ranking | Character bigram matrix JSD between Voynich and reference text (100 bootstrap samples) | `phases/multi_language.py` |
+| PMI correlation ranking | Syllable-level PMI distribution correlation (100 bootstrap samples) | `phases/multi_language.py` |
+| Combined ranking | Mean rank across 3 metrics, CI overlap test between #1 and #2 | `phases/multi_language.py` |
+
+Available languages: Latin and Occitan (real corpora), Italian, German, Spanish, Hebrew, Arabic (synthetic text from word lists in `core/ciphers.py`).
+
 ## Integration
 
 The approaches cross-validate across all phases:
 
-| Approach 1 finds | Approach 2 finds | Phase 3 finds | Interpretation |
-|---|---|---|---|
-| CV syllabary grid with good fit | Closest match = Latin-substitution | D.1 favors syllabary, D.3 favors substitution, PMI r=0.96 | **The degeneracy is genuine** — both models fit the data |
-| Strong positional constraints (MI=0.30) | Latin dominates top 5 | Grid 100% stable, sections diverge (Jaccard=0.14) | **Latin substrate likely**, but grid varies by section |
-| 5x6 grid, 47% occupancy | No null insertion evidence | Gap pattern random, closest to Cypriot (8% diff) | **Grid structure is real but sparse** |
+| Approach 1 finds | Approach 2 finds | Phase 3 finds | Phase 4 finds | Interpretation |
+|---|---|---|---|---|
+| CV syllabary grid with good fit | Closest match = Latin-substitution | D.1 favors syllabary, D.3 favors substitution, PMI r=0.96 | 8/15 metrics discriminate; PMI, bigram, length, stability all pass | **Core findings survive null testing** |
+| Strong positional constraints (MI=0.30) | Latin dominates top 5 | Grid 100% stable, sections diverge (Jaccard=0.14) | Currier A/B distinct (H2 diff significant, grid Jaccard=0.14); min sample ~10k tokens | **Section divergence = genuine A/B split + sample-size artifact** |
+| 5x6 grid, 47% occupancy | No null insertion evidence | Gap pattern random, closest to Cypriot (8% diff) | R=0.39 (syllabary/abugida overlap); nucleus predicts onset more than reverse | **Script type inconclusive** — between syllabary and abugida |
+| — | Latin best across encodings | Latin best syllable match | Latin #1, Occitan #2, but CIs overlap on all metrics | **Romance language family**, not specifically Latin |
 
 ## Data
 
@@ -183,9 +241,14 @@ The corpus provides filtered access by:
 
 Real historical texts for fingerprint comparison live in `data/reference/<language>/`. These are not tracked in git — acquire and place them locally. The loader (`core/reference.py`) auto-discovers `.txt` files by language directory and handles RTF-to-text conversion automatically.
 
-**Currently available (Latin):**
+**Currently available:**
+
+*Latin (2 texts, ~73,528 tokens):*
 - **Circa Instans** — Salernitan herbal/pharmaceutical text (~12th century, ~25,850 tokens)
 - **De Viribus Herbarum** (Macer Floridus) — Herbal poem, medical botany (~47,678 tokens)
+
+*Occitan (1 text, ~47,913 tokens):*
+- **Régime du Corps** — Aldebrandin of Siena's health regimen (~13th century)
 
 **To add a new corpus:** place a `.txt` file (plain text or RTF) in `data/reference/<language>/`. It will be automatically discovered, cleaned, and used by `analysis/fingerprint.py` on the next run. Languages without real corpora fall back to synthetic text from `core/ciphers.py`.
 
@@ -397,20 +460,111 @@ H2 (bigram entropy) and word-level entropy are the strongest discriminants — t
 - Grid occupancy is **not robust** to nucleus cluster count (sensitivity = 0.20, varies 37-47% across 4-8 clusters)
 - H1 entropy is **robust** to corpus size (sensitivity = 0.008, stable from 1,000 to 36,238 tokens)
 
+### Discriminant Audit (Phase 4.1)
+
+Cross-referencing all Phase 3 metrics against null test results:
+
+| Metric | Real Value | Best \|z\| | Verdict | Hypothesis |
+|--------|-----------|-----------|---------|------------|
+| F.4 PMI correlation | 0.960 | — | **Discriminating** | F4: PASS |
+| F.3 Bigram lang ranking | 2.087 | — | **Discriminating** | F3: PASS |
+| D.1 Length (syllabary) | 0.013 | — | **Discriminating** | D1: PASS |
+| E.3 Grid stability | 1.000 | — | **Discriminating** | E3: PASS |
+| H2 (bigram entropy) | 2.364 | 1156.6 | **Discriminating** | — |
+| Stroke discriminant | 2.848 | 254.3 | **Discriminating** | — |
+| Stripped discriminant | 0.015 | 69.8 | **Discriminating** | — |
+| D.3 Positional entropy | 17.389 | — | Non-discriminating | D3: FAIL |
+| E.1 Grid gaps | 0.073 | — | Non-discriminating | E1: FAIL |
+
+**Summary:** 8 discriminating, 3 partial, 4 non-discriminating out of 15 metrics. All critical findings (F.4 PMI, F.3 bigram ranking, D.1 length correlation, E.3 grid stability) survive null testing. Gate 1 passes.
+
+### Section Consistency Diagnosis (Phase 4.2)
+
+**Per-section token counts and grid reliability:**
+
+| Section | Tokens | Currier | Grid | Reliable |
+|---------|--------|---------|------|----------|
+| recipes | 10,092 | B | 5x6 | Yes |
+| herbal_a | 9,449 | A | 5x6 | Yes |
+| biological | 6,476 | B | 5x6 | Yes |
+| pharmaceutical | 3,542 | B | 5x6 | Yes |
+| astronomical | 2,860 | B | 5x6 | Yes |
+| cosmological | 2,220 | B | 5x6 | Yes |
+| herbal_b | 181 | B | 5x11 | No |
+
+**Sample-size calibration:** Minimum ~10,000 tokens needed for reliable grid construction (Jaccard > 0.80 vs full-corpus grid). Only recipes (10,092) exceeds this threshold. All other sections produce grids that diverge from the full-corpus grid primarily due to insufficient data.
+
+**Currier A/B split test:**
+
+| Metric | Language A (herbal_a) | Language B (5 sections) | Difference |
+|--------|----------------------|------------------------|------------|
+| H1 | 3.844 | 3.851 | -0.006 |
+| H2 | 2.382 | 2.292 | +0.090 |
+| Grid Jaccard | — | — | 0.143 |
+| Bigram JSD | — | — | 0.182 |
+| H2 diff 95% CI | — | — | [0.065, 0.110] |
+
+**Diagnosis: DISTINCT DIALECTS.** The H2 difference is statistically significant (CI excludes zero), and grid Jaccard between A and B is only 0.14. Currier A and B use measurably different linguistic profiles. The low cross-section consistency in E.4 reflects both a genuine A/B split and small-sample effects.
+
+### Abugida Hypothesis Test (Phase 4.3)
+
+**Onset/nucleus entropy decomposition:**
+
+| Metric | Value |
+|--------|-------|
+| H(onset) | 1.955 bits |
+| H(nucleus) | 3.001 bits |
+| H(onset, nucleus) | 3.773 bits |
+| H(nucleus \| onset) | 1.818 bits |
+| H(onset \| nucleus) | 0.771 bits |
+| MI(onset; nucleus) | 1.183 bits |
+| Reduction R | 0.394 |
+| Reverse R | 0.605 |
+
+**Script type comparison:**
+
+| Script Type | R in Range | Distance | Match |
+|-------------|-----------|----------|-------|
+| Alphabet (0.00–0.15) | No | 0.244 | Mismatch |
+| Syllabary (0.15–0.55) | Yes | 0.000 | Match |
+| Abugida (0.20–0.70) | Yes | 0.000 | Match |
+| Abjad (0.00–0.30) | No | 0.094 | Partial |
+
+**Verdict: INCONCLUSIVE.** R = 0.39 falls in the overlap zone between syllabary and abugida. The unusual finding is the asymmetry: nucleus predicts onset (reverse R = 0.61) more strongly than onset predicts nucleus (R = 0.39). In a classic abugida, the opposite is expected — consonant bases constrain vowel modifiers. This reversed asymmetry may reflect the Voynich script's unique structure where the final stroke (nucleus) is more diagnostic of glyph identity than the initial stroke (onset).
+
+### Multi-Language Comparison (Phase 4.4)
+
+Seven languages ranked across three metrics with 100 bootstrap samples each:
+
+**Combined ranking:**
+
+| Rank | Language | Corpus Type | Fingerprint | Bigram JSD | PMI Corr | Mean Rank |
+|------|----------|-------------|-------------|------------|----------|-----------|
+| 1 | Latin | real | 0.989 | 0.657 | 0.976 | 1.33 |
+| 2 | Occitan | real | 0.986 | 0.694 | 0.964 | 2.67 |
+| 3 | Spanish | synthetic | 0.825 | 0.662 | 0.932 | 3.33 |
+| 4 | Italian | synthetic | 0.830 | 0.719 | 0.931 | 4.33 |
+| 5 | Hebrew | synthetic | 0.819 | 0.580 | 0.819 | 4.67 |
+| 6 | German | synthetic | 0.821 | 0.696 | 0.778 | 5.67 |
+| 7 | Arabic | synthetic | 0.820 | 0.724 | 0.850 | 6.00 |
+
+**Separation test:** Latin and Occitan CIs overlap on all three metrics (fingerprint, bigram, PMI). The finding is **"Romance language family"** rather than "Latin specifically." The gap from Romance languages (#1–2) to others (#3+) is substantial, with real corpora scoring well above synthetic-vocabulary languages on fingerprint and PMI metrics.
+
 ### Cross-Validation Summary
 
-| Finding | Phase 1 | Phase 2 | Phase 3 | Assessment |
-|---------|---------|---------|---------|------------|
-| **Language** | — | Latin (top 5 matches), no nulls, Romance phonotactics | Latin best syllable match, PMI r=0.96 | **Latin or close relative** |
-| **Encoding** | Strong positional constraints (MI=0.30) → syllabary | simple_substitution best, 5x6 grid 47% | D.1 favors syllabary, D.3 favors substitution | **Genuinely degenerate** — both models partially fit |
-| **Grid validity** | 7x11 original (27% occupancy) | 5x6 refined (47%, z=-239) | 100% stable, but sections diverge (Jaccard=0.14) | **Grid is real but section-dependent** |
-| **Null characters** | — | No null insertion evidence | 11/20 null tests discriminate | **No evidence of null padding** |
-| **Internal structure** | z = -652/-494 vs shuffled | z = -65 fingerprint, z = -69 stripped | H2 z=-1157, Zipf z=298 vs shuffled | **Highly structured, not random** |
-| **Scholarly rigor** | — | — | 5/7 hypotheses pass, H1 robust to corpus size | **Most findings replicate** |
+| Finding | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Assessment |
+|---------|---------|---------|---------|---------|------------|
+| **Language** | — | Latin (top 5 matches), no nulls, Romance phonotactics | Latin best syllable match, PMI r=0.96 | Latin #1, Occitan #2, CIs overlap | **Romance language family** (cannot separate Latin from Occitan) |
+| **Encoding** | Strong positional constraints (MI=0.30) → syllabary | simple_substitution best, 5x6 grid 47% | D.1 favors syllabary, D.3 favors substitution | R=0.39 in syllabary/abugida overlap | **Genuinely degenerate** — script type inconclusive |
+| **Grid validity** | 7x11 original (27% occupancy) | 5x6 refined (47%, z=-239) | 100% stable, but sections diverge (Jaccard=0.14) | Minimum 10k tokens needed; A/B split genuine | **Grid is real but needs per-dialect analysis** |
+| **Currier A/B** | — | — | — | H2 diff significant, grid Jaccard=0.14 | **Distinct dialects confirmed** |
+| **Null characters** | — | No null insertion evidence | 11/20 null tests discriminate | 8/15 metrics discriminate, all critical pass | **No evidence of null padding** |
+| **Internal structure** | z = -652/-494 vs shuffled | z = -65 fingerprint, z = -69 stripped | H2 z=-1157, Zipf z=298 vs shuffled | — | **Highly structured, not random** |
+| **Scholarly rigor** | — | — | 5/7 hypotheses pass, H1 robust to corpus size | All 4 gates evaluated with CIs | **Most findings replicate and survive audit** |
 
 ## Results Files
 
-Analysis outputs are saved as JSON to `results/` (33 files total):
+Analysis outputs are saved as JSON to `results/` (37 files total):
 
 **Phase 1 — Stroke Analysis:**
 - `stroke_positional.json` — Stroke positional distributions and MI
@@ -460,6 +614,12 @@ Analysis outputs are saved as JSON to `results/` (33 files total):
 - `effect_sizes.json` — Cohen's d, bootstrap CIs for key metrics
 - `reproducibility_manifest.json` — Versions, seeds, SHA256 hashes
 - `sensitivity.json` — Grid cluster count and corpus size sensitivity
+
+**Phase 4 — Discriminant Audit, Section Diagnosis, Abugida, Multi-Language:**
+- `discriminant_audit.json` — 15-metric audit table with pass/fail, critical findings
+- `section_diagnosis.json` — Per-section grids, sample-size calibration curve, Currier A/B verdict
+- `abugida_test.json` — Onset/nucleus entropy decomposition, script type classification
+- `multi_language.json` — 7-language rankings with bootstrap CIs, combined ranking
 
 ## Background
 

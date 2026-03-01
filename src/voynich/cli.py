@@ -18,6 +18,11 @@ Usage:
     voynich syllable-match    # Phase 3F: syllable-level language matching
     voynich validate-all      # Phase 3G: scholarly validation framework
     voynich phase3            # Run all Phase 3 workstreams
+    voynich audit             # Phase 4.1: discriminant audit of Phase 3 results
+    voynich section-diagnosis # Phase 4.2: section consistency diagnosis
+    voynich abugida           # Phase 4.3: abugida hypothesis test
+    voynich multi-language    # Phase 4.4: multi-language comparison
+    voynich phase4            # Run all Phase 4 analyses
 """
 import sys
 import time
@@ -150,6 +155,49 @@ def cmd_phase3():
     cmd_validate_all()
 
 
+def cmd_audit():
+    """Run Phase 4.1: discriminant audit of Phase 3 results."""
+    from voynich.phases.discriminant_audit import run_discriminant_audit
+    t0 = time.time()
+    run_discriminant_audit()
+    print(f"\nDiscriminant audit completed in {time.time() - t0:.1f}s")
+
+
+def cmd_section_diagnosis():
+    """Run Phase 4.2: section consistency diagnosis."""
+    from voynich.phases.section_diagnosis import run_section_diagnosis
+    t0 = time.time()
+    run_section_diagnosis()
+    print(f"\nSection diagnosis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_abugida():
+    """Run Phase 4.3: abugida hypothesis test."""
+    from voynich.phases.abugida_test import run_abugida_test
+    t0 = time.time()
+    run_abugida_test()
+    print(f"\nAbugida test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_multi_language():
+    """Run Phase 4.4: multi-language comparison."""
+    from voynich.phases.multi_language import run_multi_language
+    t0 = time.time()
+    run_multi_language()
+    print(f"\nMulti-language comparison completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase4():
+    """Run all Phase 4 analyses sequentially."""
+    cmd_audit()
+    print("\n" + "=" * 70 + "\n")
+    cmd_section_diagnosis()
+    print("\n" + "=" * 70 + "\n")
+    cmd_abugida()
+    print("\n" + "=" * 70 + "\n")
+    cmd_multi_language()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -165,6 +213,11 @@ def main():
         'syllable-match': cmd_syllable_match,
         'validate-all': cmd_validate_all,
         'phase3': cmd_phase3,
+        'audit': cmd_audit,
+        'section-diagnosis': cmd_section_diagnosis,
+        'abugida': cmd_abugida,
+        'multi-language': cmd_multi_language,
+        'phase4': cmd_phase4,
     }
 
     if len(sys.argv) < 2:
