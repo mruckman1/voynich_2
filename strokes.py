@@ -766,7 +766,8 @@ def run_stroke_analysis():
 
     # Grid display
     print(f"\n  Grid contents:")
-    print(f"  {'Onset\\Nucleus':<14s}", end='')
+    header = 'Onset\\Nucleus'
+    print(f"  {header:<14s}", end='')
     for col in grid.col_labels:
         print(f" {col:<12s}", end='')
     print()

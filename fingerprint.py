@@ -35,6 +35,7 @@ from ciphers import (
     ENCODING_SCHEMES, REFERENCE_LANGUAGES,
     generate_reference_text, apply_encoding,
 )
+from reference import load_reference_corpus, get_reference_text, ReferenceCorpus
 
 
 # ---------------------------------------------------------------------------
@@ -234,10 +235,12 @@ class ReferenceLibrary:
     Builds and stores reference profiles for all language x encoding combos.
     """
 
-    def __init__(self, n_samples: int = 50, n_words: int = 500, verbose: bool = True):
+    def __init__(self, n_samples: int = 50, n_words: int = 500, verbose: bool = True,
+                 reference_corpus: Optional[ReferenceCorpus] = None):
         self.n_samples = n_samples
         self.n_words = n_words
         self.verbose = verbose
+        self.reference_corpus = reference_corpus
         self.entries: Dict[Tuple[str, str], ReferenceEntry] = {}
 
     def build(self,
@@ -263,7 +266,10 @@ class ReferenceLibrary:
 
                 for i in range(self.n_samples):
                     seed = i * 7 + hash(lang) % 10000 + hash(enc) % 10000
-                    plaintext = generate_reference_text(lang, n_words=self.n_words, seed=seed)
+                    plaintext = get_reference_text(
+                        lang, n_words=self.n_words, seed=seed,
+                        corpus=self.reference_corpus,
+                    )
 
                     encoded = apply_encoding(plaintext, enc, seed=seed)
                     if not encoded or len(encoded.split()) < 10:
@@ -532,7 +538,24 @@ def run_fingerprint_analysis():
 
     # --- Phase 2.2: Reference Library ---
     print("\n--- Phase 2.2: Building Reference Library ---")
-    library = ReferenceLibrary(n_samples=30, n_words=500, verbose=True)
+
+    # Load real reference corpus if available
+    try:
+        ref_corpus = load_reference_corpus(verbose=True)
+        real_langs = ref_corpus.languages
+        print(f"\n  Real corpus loaded for: {', '.join(real_langs)}")
+        for lang in real_langs:
+            total = sum(t.token_count for t in ref_corpus.get_texts(lang))
+            print(f"    {lang}: {total:,} tokens")
+    except FileNotFoundError:
+        ref_corpus = None
+        print("  No real reference corpus found; using synthetic text only.")
+
+    print()
+    library = ReferenceLibrary(
+        n_samples=30, n_words=500, verbose=True,
+        reference_corpus=ref_corpus,
+    )
     library.build()
 
     # --- Phase 2.3: Profile Matching ---
