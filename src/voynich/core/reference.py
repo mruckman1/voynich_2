@@ -15,9 +15,10 @@ import os
 import random
 import re
 import unicodedata
+from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from voynich.core._paths import data_dir as _data_dir
 
@@ -503,3 +504,144 @@ def get_reference_syllable_stats(
         'n_syllable_types': n_syls,
         'n_words': len(tokens),
     }
+
+
+# ---------------------------------------------------------------------------
+# Morphological Reference Profiles (Phase 5)
+# ---------------------------------------------------------------------------
+
+# Latin declension/conjugation suffix inventories (medical Latin approximation)
+LATIN_DECLENSION_SUFFIXES: Dict[str, List[str]] = {
+    'noun_1st':      ['a', 'ae', 'am', 'arum', 'is', 'as'],
+    'noun_2nd':      ['us', 'i', 'o', 'um', 'orum', 'os'],
+    'noun_3rd':      ['is', 'em', 'e', 'ium', 'ibus', 'es'],
+    'noun_4th':      ['us', 'ui', 'um', 'uum', 'ibus'],
+    'adj_1st2nd':    ['us', 'a', 'um', 'i', 'ae', 'o', 'os', 'as'],
+    'adj_3rd':       ['is', 'e', 'ium', 'ibus', 'es'],
+    'verb_1st':      ['o', 'as', 'at', 'amus', 'atis', 'ant',
+                      'a', 'ate', 'are'],
+    'verb_2nd':      ['eo', 'es', 'et', 'emus', 'etis', 'ent',
+                      'e', 'ete', 'ere'],
+    'verb_3rd':      ['o', 'is', 'it', 'imus', 'itis', 'unt',
+                      'e', 'ite', 'ere'],
+    'verb_imperative': ['a', 'e', 'i', 'ate', 'ete', 'ite'],
+}
+
+LATIN_PARADIGM_PROFILES: Dict[str, Dict] = {
+    'noun_declension':  {'mean_forms': 6, 'std_forms': 1.5, 'n_suffix_types': 6},
+    'adj_declension':   {'mean_forms': 8, 'std_forms': 2.0, 'n_suffix_types': 8},
+    'verb_conjugation': {'mean_forms': 10, 'std_forms': 3.0, 'n_suffix_types': 10},
+    'invariable':       {'mean_forms': 1, 'std_forms': 0.5, 'n_suffix_types': 0},
+}
+
+# Occitan (Old Occitan) approximate suffix inventory
+OCCITAN_DECLENSION_SUFFIXES: Dict[str, List[str]] = {
+    'noun_fem':  ['a', 'as', 'e', 'es'],
+    'noun_masc': ['', 's', 'on', 'ons'],
+    'adj':       ['', 'a', 's', 'as', 'e', 'es'],
+    'verb_ar':   ['i', 'as', 'a', 'am', 'atz', 'an', 'ar', 'at'],
+    'verb_er':   ['i', 'es', 'e', 'em', 'etz', 'en', 'er', 'ut'],
+    'verb_ir':   ['isc', 'is', 'is', 'im', 'itz', 'isson', 'ir', 'it'],
+}
+
+OCCITAN_PARADIGM_PROFILES: Dict[str, Dict] = {
+    'noun_declension':  {'mean_forms': 4, 'std_forms': 1.0, 'n_suffix_types': 4},
+    'adj_declension':   {'mean_forms': 6, 'std_forms': 1.5, 'n_suffix_types': 6},
+    'verb_conjugation': {'mean_forms': 8, 'std_forms': 2.5, 'n_suffix_types': 8},
+    'invariable':       {'mean_forms': 1, 'std_forms': 0.5, 'n_suffix_types': 0},
+}
+
+# Top-20 expected medical Latin stems (from Circa Instans / De Viribus Herbarum)
+LATIN_MEDICAL_VOCABULARY: List[Tuple[str, str, str]] = [
+    ('herba', 'noun', 'herb/plant'),
+    ('aqua', 'noun', 'water'),
+    ('oleum', 'noun', 'oil'),
+    ('radix', 'noun', 'root'),
+    ('folium', 'noun', 'leaf'),
+    ('flos', 'noun', 'flower'),
+    ('semen', 'noun', 'seed'),
+    ('morbus', 'noun', 'disease'),
+    ('febris', 'noun', 'fever'),
+    ('dolor', 'noun', 'pain'),
+    ('sanguis', 'noun', 'blood'),
+    ('remedium', 'noun', 'remedy'),
+    ('recipe', 'verb', 'take/receive'),
+    ('accipe', 'verb', 'accept'),
+    ('misce', 'verb', 'mix'),
+    ('contere', 'verb', 'grind'),
+    ('calida', 'adj', 'hot'),
+    ('frigida', 'adj', 'cold'),
+    ('sicca', 'adj', 'dry'),
+    ('humida', 'adj', 'moist'),
+]
+
+
+def compute_suffix_inventory(
+    language: str,
+    corpus: Optional[ReferenceCorpus] = None,
+    n_words: int = 5000,
+) -> Dict:
+    """
+    Compute suffix inventory and paradigm shape profile for a language.
+
+    Combines embedded declension tables with empirical suffix frequencies
+    from the reference corpus.
+
+    Returns dict with: suffix_types, suffix_distribution,
+    mean_paradigm_size, paradigm_size_distribution, paradigm_profiles.
+    """
+    import numpy as np
+
+    if language == 'latin':
+        suffix_table = LATIN_DECLENSION_SUFFIXES
+        profiles = LATIN_PARADIGM_PROFILES
+    elif language == 'occitan':
+        suffix_table = OCCITAN_DECLENSION_SUFFIXES
+        profiles = OCCITAN_PARADIGM_PROFILES
+    else:
+        return {
+            'suffix_types': [], 'suffix_distribution': {},
+            'mean_paradigm_size': 0,
+            'paradigm_size_distribution': {},
+            'paradigm_profiles': {},
+        }
+
+    all_suffixes: set = set()
+    for paradigm_suffixes in suffix_table.values():
+        all_suffixes.update(paradigm_suffixes)
+    all_suffixes.discard('')  # Remove empty string
+
+    # Empirical suffix distribution from real corpus
+    text = get_reference_text(language, n_words=n_words, corpus=corpus)
+    tokens = text.split()
+    ending_counts: Counter = Counter()
+    for token in tokens:
+        for end_len in range(1, min(5, len(token))):
+            ending = token[-end_len:]
+            if ending in all_suffixes:
+                ending_counts[ending] += 1
+
+    paradigm_sizes = [p['mean_forms'] for p in profiles.values()]
+
+    return {
+        'suffix_types': sorted(all_suffixes),
+        'suffix_distribution': dict(ending_counts.most_common()),
+        'mean_paradigm_size': float(np.mean(paradigm_sizes)),
+        'paradigm_size_distribution': {
+            k: v['mean_forms'] for k, v in profiles.items()
+        },
+        'paradigm_profiles': profiles,
+    }
+
+
+def get_paradigm_shape_profile(language: str) -> Dict[str, Dict]:
+    """
+    Return the expected paradigm shape profile for a language.
+
+    Returns dict mapping paradigm_type -> {mean_forms, std_forms, n_suffix_types}.
+    """
+    if language == 'latin':
+        return LATIN_PARADIGM_PROFILES
+    elif language == 'occitan':
+        return OCCITAN_PARADIGM_PROFILES
+    return {}

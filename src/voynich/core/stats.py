@@ -874,3 +874,76 @@ def pearson_correlation(x: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
 
     p = count_extreme / n_boot
     return r, p
+
+
+# ---------------------------------------------------------------------------
+# Paradigm-Specific Metrics (Phase 5)
+# ---------------------------------------------------------------------------
+
+def chi_squared_goodness(
+    observed: np.ndarray, expected: np.ndarray,
+) -> Tuple[float, float]:
+    """
+    Chi-squared goodness-of-fit test.
+
+    Returns (chi2_statistic, p_value).
+    """
+    from scipy.stats import chi2 as chi2_dist
+    observed = np.asarray(observed, dtype=float)
+    expected = np.asarray(expected, dtype=float)
+    # Pseudocount to avoid division by zero
+    expected = expected + 1e-10
+    chi2_stat = float(np.sum((observed - expected) ** 2 / expected))
+    df = max(1, len(observed) - 1)
+    p_val = 1.0 - float(chi2_dist.cdf(chi2_stat, df))
+    return chi2_stat, p_val
+
+
+def rank_correlation(
+    x: np.ndarray, y: np.ndarray,
+) -> Tuple[float, float]:
+    """Spearman rank correlation between two arrays."""
+    from scipy.stats import spearmanr
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    n = min(len(x), len(y))
+    if n < 3:
+        return 0.0, 1.0
+    rho, p = spearmanr(x[:n], y[:n])
+    return float(rho), float(p)
+
+
+def selectivity_ratio(real_value: float, null_values: np.ndarray) -> float:
+    """
+    Compute selectivity ratio: real / mean(null).
+
+    A ratio > 1.5 indicates the real signal exceeds the null meaningfully.
+    Returns inf if null_mean is near zero and real_value > 0.
+    """
+    null_values = np.asarray(null_values, dtype=float)
+    null_mean = float(np.mean(null_values))
+    if abs(null_mean) < 1e-10:
+        return float('inf') if real_value > 0 else 0.0
+    return real_value / null_mean
+
+
+def paradigm_shape_vector(
+    n_forms: int, suffix_set: set, prefix_set: set,
+) -> np.ndarray:
+    """
+    Encode a paradigm shape as a 7-dim feature vector for clustering.
+
+    Features: [n_forms, n_suffixes, n_prefixes, has_prefix,
+               max_suffix_len, min_suffix_len, suffix_diversity_ratio]
+    """
+    suffixes = list(suffix_set)
+    prefixes = list(prefix_set)
+    n_suf = len(suffixes)
+    n_pre = len(prefixes)
+    max_suf_len = max((len(s) for s in suffixes), default=0)
+    min_suf_len = min((len(s) for s in suffixes), default=0)
+    suf_diversity = n_suf / max(n_forms, 1)
+    return np.array([
+        n_forms, n_suf, n_pre, float(n_pre > 0),
+        max_suf_len, min_suf_len, suf_diversity,
+    ], dtype=float)

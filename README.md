@@ -32,6 +32,11 @@ voynich phase4            # Run all Phase 4 analyses
 voynich lang-a            # Phase 4.5A+C: language A isolation + qo-removal
 voynich morpheme-grid     # Phase 4.5B: morpheme grid reinterpretation
 voynich phase4-5          # Run all Phase 4.5 analyses
+voynich paradigms         # Phase 5.1: paradigm discovery
+voynich paradigm-match    # Phase 5.2: paradigm-to-language matching
+voynich stem-id           # Phase 5.3: frequency-based stem identification
+voynich phonetic          # Phase 5.4+5.5: phonetic decode and validation
+voynich phase5            # Run all Phase 5 analyses
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -55,7 +60,7 @@ voynich_2/
 │   ├── analysis/                # Main analysis approaches
 │   │   ├── strokes.py           # Approach 1: stroke decomposition, Ventris grid
 │   │   └── fingerprint.py       # Approach 2: entropy profiling, profile matching
-│   └── phases/                  # Phase 2–4 workstreams
+│   └── phases/                  # Phase 2–5 workstreams
 │       ├── nulls.py             # Phase 2A: null character identification
 │       ├── grid_refine.py       # Phase 2B: syllabary grid refinement
 │       ├── degeneracy.py        # Phase 3D: substitution vs syllabary tests
@@ -67,7 +72,11 @@ voynich_2/
 │       ├── abugida_test.py      # Phase 4.3: script type classification
 │       ├── multi_language.py    # Phase 4.4: multi-language comparison with CIs
 │       ├── language_a_isolation.py # Phase 4.5A+C: Language A isolation, qo-removal
-│       └── morpheme_grid.py    # Phase 4.5B: morpheme grid reinterpretation
+│       ├── morpheme_grid.py     # Phase 4.5B: morpheme grid reinterpretation
+│       ├── paradigm_discovery.py # Phase 5.1: paradigm discovery
+│       ├── paradigm_match.py    # Phase 5.2: paradigm-to-language matching
+│       ├── stem_identification.py # Phase 5.3: frequency-based stem identification
+│       └── phonetic_decode.py   # Phase 5.4+5.5: phonetic decode and validation
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
@@ -256,16 +265,70 @@ Profiles qo- prefixed tokens (starting with EVA `qo`, `qok`, `qot` ligatures) an
 | C.1: qo- identification | Tokenize EVA chars, check if first char is in `{qo, qok, qot}` | `phases/language_a_isolation.py` |
 | C.2: Removal analysis | Build profiles with/without qo-, compare grids, entropy deltas, grid cell clustering | `phases/language_a_isolation.py` |
 
+## Phase 5: Morpheme-Based Decoding
+
+Phase 4.5 established that the syllabary grid encodes morphological structure (stem + affix axes, z > 500, p < 0.001). Phase 5 inverts the prior project's failed whole-token-to-whole-word approach: discover inflectional paradigms first, match paradigm shapes to candidate languages, then attempt phonetic assignment — with strict selectivity gates (> 1.5×) at every step. Each gate failure stops downstream phases.
+
+### Phase 5.1: Paradigm Discovery
+
+Groups tokens by shared stems, catalogs affix variations, and clusters paradigm shapes.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| 5.1a: Stem grouping | Group morpheme decompositions by exact stem string and by grid-cell equivalence (merge allographic variants) | `phases/paradigm_discovery.py` |
+| 5.1b: Shape classification | Classify paradigms by (n_prefix_types, n_suffix_types) shape tuples | `phases/paradigm_discovery.py` |
+| 5.1c: Hierarchical clustering | Cluster paradigms into 5 groups by shape feature vectors using scipy.cluster.hierarchy | `phases/paradigm_discovery.py` |
+| 5.1d: Null test | Shuffle characters within tokens, re-decompose, compare mean paradigm size. Gate: selectivity > 1.5× | `phases/paradigm_discovery.py` |
+
+### Phase 5.2: Paradigm-to-Language Matching
+
+Matches Voynich paradigm shapes against Latin/Occitan morphological profiles; aligns affixes.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| 5.2a: Morphological profiles | Build expected paradigm-size distributions from Latin/Occitan profiles (weighted Gaussians: 40% noun, 30% verb, 20% adj, 10% invariable) | `phases/paradigm_match.py` |
+| 5.2b: Shape matching | Compare Voynich vs reference distributions via JSD, Spearman rho, chi-squared | `phases/paradigm_match.py` |
+| 5.2c: Affix alignment | Rank-based alignment of Voynich suffixes to Latin/Occitan endings | `phases/paradigm_match.py` |
+| 5.2d: Null test | Shuffle + re-match. Gates: JSD separation > 20%, alignment consistency > 50% | `phases/paradigm_match.py` |
+
+### Phase 5.3: Frequency-Based Stem Identification
+
+Identifies top Voynich stems against expected Latin medical vocabulary using four compatibility criteria + cross-consistency.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| 5.3a: Stem ranking | Sort stems by total token count, select top 20 | `phases/stem_identification.py` |
+| 5.3b: Compatibility scoring | Four scores per candidate: paradigm, frequency, section, affix compatibility (each 0–1) | `phases/stem_identification.py` |
+| 5.3c: Optimal assignment | Build cost matrix, solve via Hungarian algorithm (linear_sum_assignment) for 1-to-1 mapping | `phases/stem_identification.py` |
+| 5.3d: Cross-consistency | Verify no duplicate Latin targets, POS-compatible suffix sharing, frequency order preserved | `phases/stem_identification.py` |
+| 5.3e: Dual null controls | (1) Shuffled text control; (2) Random-word control (frequency-matched non-medical vocabulary). Gates: selectivity > 1.5× on both | `phases/stem_identification.py` |
+
+### Phases 5.4+5.5: Phonetic Decode and Validation
+
+Phonetic value assignment (gated on Phase 5.3) and comprehensive validation battery.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| 5.4a: Character mapping | Align EVA chars to Latin chars via positional matching; majority vote per EVA char | `phases/phonetic_decode.py` |
+| 5.4b: Grid organization | Map phonetic values to grid cells via onset×nucleus structure | `phases/phonetic_decode.py` |
+| 5.4c: Corpus decoding | Apply phonetic table to all tokens; compute decoded text entropy and bigram JSD with Latin | `phases/phonetic_decode.py` |
+| 5.5a: Null discrimination | 7 tests: 4 null types × key metrics, each must show selectivity > 1.5× | `phases/phonetic_decode.py` |
+| 5.5b: Phonetic table tests | 5 tests: coverage, consistency, bigram JSD, value cardinality, grid coherence | `phases/phonetic_decode.py` |
+| 5.5c: Cross-validation | Train on herbal_a, test on herbal_b; check decoded bigram JSD transfer | `phases/phonetic_decode.py` |
+| 5.5d: Bootstrap stability | Resample corpus 1000×, rebuild table, verify consistency > 0.60 in 95% of iterations | `phases/phonetic_decode.py` |
+
+**Hard prerequisite:** Phase 5.3 `gate_passed == True` required before Phases 5.4+5.5 execute.
+
 ## Integration
 
 The approaches cross-validate across all phases:
 
-| Approach 1 finds | Approach 2 finds | Phase 3 finds | Phase 4 finds | Phase 4.5 finds | Interpretation |
-|---|---|---|---|---|---|
-| CV syllabary grid with good fit | Closest match = Latin-substitution | D.1 favors syllabary, D.3 favors substitution, PMI r=0.96 | 8/15 metrics discriminate; PMI, bigram, length, stability all pass | Grid captures morphological structure (chi² p<0.001 both axes, JSD=0.46 on nucleus) | **Core findings survive null testing; grid axes encode affix/stem roles** |
-| Strong positional constraints (MI=0.30) | Latin dominates top 5 | Grid 100% stable, sections diverge (Jaccard=0.14) | Currier A/B distinct (H2 diff significant, grid Jaccard=0.14); min sample ~10k tokens | A/B confirmed as distinct systems (JSD z=3.82, vocab overlap=14%) | **Section divergence = genuine A/B split, not artifact** |
-| 5x6 grid, 47% occupancy | No null insertion evidence | Gap pattern random, closest to Cypriot (8% diff) | R=0.39 (syllabary/abugida overlap); nucleus predicts onset more than reverse | R(affix\|stem)=0.61, R(stem\|affix)=0.39 — linguistically natural under morpheme relabeling | **Anomalous reverse R explained** — stems constrain affixes |
-| — | Latin best across encodings | Latin best syllable match | Latin #1, Occitan #2, but CIs overlap on all metrics | qo- removal neutral (14.4% of corpus, distributed across grid, no metric improvement) | **Romance language family**; qo- tokens are functional, not padding |
+| Approach 1 finds | Approach 2 finds | Phase 3 finds | Phase 4 finds | Phase 4.5 finds | Phase 5 finds | Interpretation |
+|---|---|---|---|---|---|---|
+| CV syllabary grid with good fit | Closest match = Latin-substitution | D.1 favors syllabary, D.3 favors substitution, PMI r=0.96 | 8/15 metrics discriminate; PMI, bigram, length, stability all pass | Grid captures morphological structure (chi² p<0.001 both axes, JSD=0.46 on nucleus) | 2,328 stem paradigms discovered (z=178); 23 high-paradigm stems with 7–31 forms each | **Morphological structure confirmed at paradigm level; grid axes encode affix/stem roles** |
+| Strong positional constraints (MI=0.30) | Latin dominates top 5 | Grid 100% stable, sections diverge (Jaccard=0.14) | Currier A/B distinct (H2 diff significant, grid Jaccard=0.14); min sample ~10k tokens | A/B confirmed as distinct systems (JSD z=3.82, vocab overlap=14%) | Paradigm selectivity 1.47× (z=178) — just below 1.5× gate | **Section divergence = genuine A/B split, not artifact** |
+| 5x6 grid, 47% occupancy | No null insertion evidence | Gap pattern random, closest to Cypriot (8% diff) | R=0.39 (syllabary/abugida overlap); nucleus predicts onset more than reverse | R(affix\|stem)=0.61, R(stem\|affix)=0.39 — linguistically natural under morpheme relabeling | Occitan JSD=0.65 vs Latin JSD=0.71; not separable (ratio=0.92) | **Anomalous reverse R explained** — stems constrain affixes; **Romance family confirmed** |
+| — | Latin best across encodings | Latin best syllable match | Latin #1, Occitan #2, but CIs overlap on all metrics | qo- removal neutral (14.4% of corpus, distributed across grid, no metric improvement) | Random-word selectivity 0.99× — frequency priors dominate over morphological content; **phonetic decode blocked** | **Selectivity ceiling** prevents stem-to-word identification; new discriminants needed |
 
 ## Data
 
@@ -681,21 +744,114 @@ H₂ increases from 2.12 to 2.38 after stripping affixes, confirming that affixe
 
 **Verdict: MORPHOLOGICAL.** The syllabary grid captures genuine morphological structure. Grid axes correspond to affix and stem roles, explaining the previously inconclusive script type classification.
 
+### Paradigm Discovery (Phase 5.1)
+
+**Stem paradigm inventory (Language A, paragraph tokens):**
+
+| Metric | Value |
+|--------|-------|
+| Total stems | 2,328 |
+| Stems with affixes | 486 (20.9%) |
+| Singleton stems | 1,842 (79.1%) |
+| Mean paradigm size | 1.62 forms/stem |
+| Median paradigm size | 1 |
+| Grid-merged stems | 1,693 |
+| Grid-merged mean paradigm size | 2.22 |
+
+**Top 5 paradigms by token count:**
+
+| Stem | Forms | Tokens | Prefixes | Suffixes | Shape |
+|------|-------|--------|----------|----------|-------|
+| ch | 29 | 579 | d, o, s, y | aiin, al, am, an, dy, ey, iin, ol, y | (4, 9) |
+| daiin | 1 | 468 | — | — | (0, 0) |
+| sh | 20 | 264 | d, o, s, y | aiin, al, am, an, dy, ey, ol, y | (4, 8) |
+| k | 31 | 263 | d, o, s, y | aiiin, aiin, al, am, an, ey, ol, y | (4, 8) |
+| chor | 10 | 227 | d, o, s, y | aiin, dy, ol, y | (4, 4) |
+
+**Hierarchical clustering (5 clusters):**
+
+| Cluster | Paradigms | Mean Forms | Mean Suffixes | Mean Prefixes | Representatives |
+|---------|-----------|------------|---------------|---------------|-----------------|
+| 1 | 171 | 2.6 | 2.2 | 0.0 | qok, dy, qoke |
+| 2 | 51 | 2.2 | 0.0 | 1.5 | kchor, sheor, cheeor |
+| 3 | 162 | 3.5 | 1.8 | 1.5 | a, shor, dal |
+| 4 | 23 | 17.0 | 6.9 | 3.2 | ch, sh, k |
+| 5 | 79 | 5.1 | 2.9 | 1.7 | chor, s, ol |
+
+**Null test:** Real mean paradigm size 1.62 vs null mean 1.10 (z = 178.4). Selectivity ratio = **1.47×** (below 1.5× gate threshold).
+
+**Verdict: GATE FAILED.** Paradigm structure is highly statistically significant (z = 178) but selectivity ratio 1.47× narrowly misses the 1.5× threshold. The signal is real but not strong enough for confident downstream use.
+
+### Paradigm-to-Language Matching (Phase 5.2)
+
+**Language comparison:**
+
+| Language | JSD | Rank Correlation | Chi² | Combined Score |
+|----------|-----|-----------------|------|----------------|
+| Occitan | 0.650 | -0.280 | 23,267 | 0.248 |
+| Latin | 0.709 | -0.748 | 26,185 | 0.154 |
+
+**Affix alignment (top 5 Voynich → Occitan suffix mappings):**
+
+| Voynich Suffix | Occitan Ending | Rank Distance |
+|----------------|---------------|---------------|
+| -aiin | -a | 0 |
+| -ol | -as | 0 |
+| -al | -e | 0 |
+| -y | -es | 0 |
+| -am | -s | 0 |
+
+Alignment consistency: 1.00 (13/13 aligned). Null JSD mean: 0.827 (real vs null z = 87.3).
+
+**Gate results:** JSD ratio = 0.92 (needs < 0.80 for 20% separation). Consistency gate passes (1.00 > 0.50). Separation gate fails — Latin and Occitan are not distinguishable at the paradigm level.
+
+**Verdict: ROMANCE FAMILY ONLY.** Both Romance languages match well (combined scores 0.15–0.25) but cannot be separated. Consistent with Phase 4.4 finding that Latin/Occitan CIs overlap.
+
+### Stem Identification (Phase 5.3)
+
+**Top 5 stem identifications (by combined score):**
+
+| Voynich Stem | Freq | Forms | Latin Word | POS | Combined |
+|--------------|------|-------|------------|-----|----------|
+| qok | 139 | 8 | accipe (accept) | verb | 1.00 |
+| a | 114 | 7 | frigida (cold) | adj | 0.96 |
+| ol | 104 | 8 | humida (moist) | adj | 0.92 |
+| ke | 132 | 12 | misce (mix) | verb | 0.90 |
+| s | 149 | 6 | dolor (pain) | noun | 0.88 |
+
+**Cross-consistency:** 1.00 (0 violations in 20 identifications). No duplicate Latin targets, all POS-compatible.
+
+**Null controls:**
+
+| Control | Mean Score | Std | z-score | Selectivity |
+|---------|-----------|-----|---------|-------------|
+| Random-word | 0.808 | 0.010 | -1.11 | **0.99×** |
+| Shuffled text | 0.733 | 0.013 | 4.79 | **1.09×** |
+
+**Verdict: GATE FAILED.** Cross-consistency is perfect (1.00), but the critical random-word control shows selectivity of only 0.99× — frequency-matched random Latin words score as well as the real medical vocabulary. This confirms the "selectivity ceiling" identified in the prior project: compatibility metrics are dominated by frequency and section priors rather than morphological structure. The shuffled-text selectivity (1.09×) also fails the 1.5× threshold.
+
+### Phonetic Decode (Phases 5.4+5.5)
+
+**Verdict: STOPPED AT GATE 5.3.** Phase 5.3 gate failed (random-word selectivity 0.99×), so phonetic value assignment was not attempted. This is by design — the gate system prevents compounding unreliable identifications into a phonetic table that would appear meaningful but lack genuine selectivity.
+
+**Stop condition:** "Phase 5.3 gate failed: identifications not reliable"
+
 ### Cross-Validation Summary
 
-| Finding | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 4.5 | Assessment |
-|---------|---------|---------|---------|---------|-----------|------------|
-| **Language** | — | Latin (top 5 matches), no nulls, Romance phonotactics | Latin best syllable match, PMI r=0.96 | Latin #1, Occitan #2, CIs overlap | Language A (Romance-like) vs B (notation); qo- functional | **Romance language family** in Language A; Language B may be non-linguistic |
-| **Encoding** | Strong positional constraints (MI=0.30) → syllabary | simple_substitution best, 5x6 grid 47% | D.1 favors syllabary, D.3 favors substitution | R=0.39 in syllabary/abugida overlap | Grid axes = affix/stem; R(affix\|stem)=0.61 natural | **Morphological syllabary** — grid encodes affix+stem structure |
-| **Grid validity** | 7x11 original (27% occupancy) | 5x6 refined (47%, z=-239) | 100% stable, but sections diverge (Jaccard=0.14) | Minimum 10k tokens needed; A/B split genuine | Lang A grid 50% occupancy vs B 37%; both axes significant (z>500) | **Grid is real, morphologically grounded** |
-| **Currier A/B** | — | — | — | H2 diff significant, grid Jaccard=0.14 | JSD z=3.82, vocab overlap 14%, distinct token inventories | **Distinct systems** (not just dialects) |
-| **Null characters** | — | No null insertion evidence | 11/20 null tests discriminate | 8/15 metrics discriminate, all critical pass | qo- removal neutral; 67% have suffixes, 30% prefixes | **No null padding**; apparent padding is morphological |
-| **Internal structure** | z = -652/-494 vs shuffled | z = -65 fingerprint, z = -69 stripped | H2 z=-1157, Zipf z=298 vs shuffled | — | H₂(stems)=2.38 > H₂(full)=2.12; affixes carry grammatical info | **Morpheme structure confirmed** |
-| **Scholarly rigor** | — | — | 5/7 hypotheses pass, H1 robust to corpus size | All 4 gates evaluated with CIs | All null tests z>500; contingency chi² p<0.001 | **All Phase 4.5 findings survive null testing** |
+| Finding | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 4.5 | Phase 5 | Assessment |
+|---------|---------|---------|---------|---------|-----------|---------|------------|
+| **Language** | — | Latin (top 5 matches), no nulls, Romance phonotactics | Latin best syllable match, PMI r=0.96 | Latin #1, Occitan #2, CIs overlap | Language A (Romance-like) vs B (notation); qo- functional | Occitan/Latin paradigms indistinguishable (JSD ratio=0.92); affix alignment consistency 1.00 | **Romance language family** in Language A; Language B may be non-linguistic |
+| **Encoding** | Strong positional constraints (MI=0.30) → syllabary | simple_substitution best, 5x6 grid 47% | D.1 favors syllabary, D.3 favors substitution | R=0.39 in syllabary/abugida overlap | Grid axes = affix/stem; R(affix\|stem)=0.61 natural | 486 multi-form paradigms with prefix+suffix structure; 5 clusters match inflectional system | **Morphological syllabary** — grid encodes affix+stem structure |
+| **Grid validity** | 7x11 original (27% occupancy) | 5x6 refined (47%, z=-239) | 100% stable, but sections diverge (Jaccard=0.14) | Minimum 10k tokens needed; A/B split genuine | Lang A grid 50% occupancy vs B 37%; both axes significant (z>500) | Grid-cell merging reduces stems 2,328→1,693 (allographic variants) | **Grid is real, morphologically grounded** |
+| **Decoding** | — | — | — | — | — | Random-word selectivity 0.99× blocks stem ID; phonetic decode stopped at gate 5.3 | **Selectivity ceiling** — current metrics insufficient for token-level identification |
+| **Currier A/B** | — | — | — | H2 diff significant, grid Jaccard=0.14 | JSD z=3.82, vocab overlap 14%, distinct token inventories | — | **Distinct systems** (not just dialects) |
+| **Null characters** | — | No null insertion evidence | 11/20 null tests discriminate | 8/15 metrics discriminate, all critical pass | qo- removal neutral; 67% have suffixes, 30% prefixes | — | **No null padding**; apparent padding is morphological |
+| **Internal structure** | z = -652/-494 vs shuffled | z = -65 fingerprint, z = -69 stripped | H2 z=-1157, Zipf z=298 vs shuffled | — | H₂(stems)=2.38 > H₂(full)=2.12; affixes carry grammatical info | Paradigm selectivity z=178 (real vs shuffled); cross-consistency 1.00 on 20 IDs | **Morpheme structure confirmed at paradigm level** |
+| **Scholarly rigor** | — | — | 5/7 hypotheses pass, H1 robust to corpus size | All 4 gates evaluated with CIs | All null tests z>500; contingency chi² p<0.001 | 4 gates with dual null controls; random-word control catches selectivity ceiling | **Gate system correctly prevents overconfident decoding** |
 
 ## Results Files
 
-Analysis outputs are saved as JSON to `results/` (39 files total):
+Analysis outputs are saved as JSON to `results/` (43 files total):
 
 **Phase 1 — Stroke Analysis:**
 - `stroke_positional.json` — Stroke positional distributions and MI
@@ -755,6 +911,12 @@ Analysis outputs are saved as JSON to `results/` (39 files total):
 **Phase 4.5 — Language A Isolation, Morpheme Grid, qo- Removal:**
 - `language_a_isolation.json` — Language A/B profiles, A/B comparison with null test, qo- removal analysis
 - `morpheme_grid.json` — Morpheme decomposition stats, contingency tables, R-value reinterpretation, entropy stripping
+
+**Phase 5 — Morpheme-Based Decoding:**
+- `paradigm_discovery.json` — Stem paradigms, size distribution, hierarchical clusters, null test, gate status
+- `paradigm_match.json` — Latin/Occitan JSD/rho/chi², affix alignments, separation test, gate status
+- `stem_identification.json` — 20 stem identifications, compatibility scores, cross-consistency, dual null controls
+- `phonetic_decode.json` — Gate check result (stopped at gate 5.3 if stem ID unreliable)
 
 ## Background
 

@@ -26,6 +26,11 @@ Usage:
     voynich lang-a            # Phase 4.5A+C: language A isolation + qo-removal
     voynich morpheme-grid     # Phase 4.5B: morpheme grid reinterpretation
     voynich phase4-5          # Run all Phase 4.5 analyses
+    voynich paradigms         # Phase 5.1: paradigm discovery
+    voynich paradigm-match    # Phase 5.2: paradigm-to-language matching
+    voynich stem-id           # Phase 5.3: frequency-based stem identification
+    voynich phonetic          # Phase 5.4+5.5: phonetic decode and validation
+    voynich phase5            # Run all Phase 5 analyses
 """
 import sys
 import time
@@ -224,6 +229,49 @@ def cmd_phase45():
     cmd_morpheme_grid()
 
 
+def cmd_paradigms():
+    """Run Phase 5.1: paradigm discovery."""
+    from voynich.phases.paradigm_discovery import run_paradigm_discovery
+    t0 = time.time()
+    run_paradigm_discovery()
+    print(f"\nParadigm discovery completed in {time.time() - t0:.1f}s")
+
+
+def cmd_paradigm_match():
+    """Run Phase 5.2: paradigm-to-language matching."""
+    from voynich.phases.paradigm_match import run_paradigm_match
+    t0 = time.time()
+    run_paradigm_match()
+    print(f"\nParadigm matching completed in {time.time() - t0:.1f}s")
+
+
+def cmd_stem_id():
+    """Run Phase 5.3: frequency-based stem identification."""
+    from voynich.phases.stem_identification import run_stem_identification
+    t0 = time.time()
+    run_stem_identification()
+    print(f"\nStem identification completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phonetic():
+    """Run Phase 5.4+5.5: phonetic value assignment and validation."""
+    from voynich.phases.phonetic_decode import run_phonetic_decode
+    t0 = time.time()
+    run_phonetic_decode()
+    print(f"\nPhonetic decode completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase5():
+    """Run all Phase 5 analyses sequentially (with gate checking)."""
+    cmd_paradigms()
+    print("\n" + "=" * 70 + "\n")
+    cmd_paradigm_match()
+    print("\n" + "=" * 70 + "\n")
+    cmd_stem_id()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phonetic()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -247,6 +295,11 @@ def main():
         'lang-a': cmd_lang_a,
         'morpheme-grid': cmd_morpheme_grid,
         'phase4-5': cmd_phase45,
+        'paradigms': cmd_paradigms,
+        'paradigm-match': cmd_paradigm_match,
+        'stem-id': cmd_stem_id,
+        'phonetic': cmd_phonetic,
+        'phase5': cmd_phase5,
     }
 
     if len(sys.argv) < 2:
