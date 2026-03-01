@@ -473,6 +473,10 @@ class VoynichCorpus:
         """Get all pages by a specific scribe."""
         return [p for p in self.pages.values() if p.hand == hand]
 
+    def get_pages_by_language(self, language: str) -> List[VoynichPage]:
+        """Get all pages assigned to a Currier language ('A' or 'B')."""
+        return [p for p in self.pages.values() if p.language == language]
+
     def get_folio_sequence(self, quire_order: Optional[List[int]] = None) -> List[VoynichPage]:
         """Get pages in quire ordering."""
         if quire_order is None:

@@ -23,6 +23,9 @@ Usage:
     voynich abugida           # Phase 4.3: abugida hypothesis test
     voynich multi-language    # Phase 4.4: multi-language comparison
     voynich phase4            # Run all Phase 4 analyses
+    voynich lang-a            # Phase 4.5A+C: language A isolation + qo-removal
+    voynich morpheme-grid     # Phase 4.5B: morpheme grid reinterpretation
+    voynich phase4-5          # Run all Phase 4.5 analyses
 """
 import sys
 import time
@@ -198,6 +201,29 @@ def cmd_phase4():
     cmd_multi_language()
 
 
+def cmd_lang_a():
+    """Run Phase 4.5A+C: Language A isolation and qo-removal."""
+    from voynich.phases.language_a_isolation import run_language_a_isolation
+    t0 = time.time()
+    run_language_a_isolation()
+    print(f"\nLanguage A isolation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_morpheme_grid():
+    """Run Phase 4.5B: morpheme grid reinterpretation."""
+    from voynich.phases.morpheme_grid import run_morpheme_grid
+    t0 = time.time()
+    run_morpheme_grid()
+    print(f"\nMorpheme grid analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase45():
+    """Run all Phase 4.5 analyses sequentially."""
+    cmd_lang_a()
+    print("\n" + "=" * 70 + "\n")
+    cmd_morpheme_grid()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -218,6 +244,9 @@ def main():
         'abugida': cmd_abugida,
         'multi-language': cmd_multi_language,
         'phase4': cmd_phase4,
+        'lang-a': cmd_lang_a,
+        'morpheme-grid': cmd_morpheme_grid,
+        'phase4-5': cmd_phase45,
     }
 
     if len(sys.argv) < 2:
