@@ -645,3 +645,89 @@ def get_paradigm_shape_profile(language: str) -> Dict[str, Dict]:
     elif language == 'occitan':
         return OCCITAN_PARADIGM_PROFILES
     return {}
+
+
+# ---------------------------------------------------------------------------
+# Plant Name Declension Lookup (Phase 6)
+# ---------------------------------------------------------------------------
+
+def infer_declension(nominative: str) -> str:
+    """
+    Infer Latin declension class from nominative singular form.
+
+    Most medieval plant names are:
+    - 1st declension (feminine -a): rosa, herba, viola, salvia, malva
+    - 2nd declension (neuter -um / masc -us): absinthium, rosmarinus
+    - 3rd declension: papaver, radix, cannabis, caulis
+
+    Returns one of: noun_1st, noun_2nd, noun_3rd, noun_4th.
+    """
+    word = nominative.lower().strip()
+    if word.endswith('um') or word.endswith('us'):
+        return 'noun_2nd'
+    elif word.endswith('a'):
+        return 'noun_1st'
+    elif word.endswith('is') or word.endswith('x') or word.endswith('en'):
+        return 'noun_3rd'
+    elif word.endswith('o'):
+        return 'noun_3rd'
+    elif word.endswith('er'):
+        return 'noun_3rd'
+    return 'noun_3rd'
+
+
+def expected_paradigm_shape(declension: str) -> Tuple[int, int]:
+    """
+    Return expected (n_prefix_types, n_suffix_types) for a declension.
+
+    Based on LATIN_DECLENSION_SUFFIXES counts:
+    - noun_1st: (2, 6)  -- 0-2 Voynich prefix types, 6 case endings
+    - noun_2nd: (2, 6)
+    - noun_3rd: (2, 6)
+    - noun_4th: (2, 5)
+
+    The prefix count reflects Voynich determiners/prepositions rather
+    than Latin prefixes proper.
+    """
+    suffix_counts = {
+        'noun_1st': 6,
+        'noun_2nd': 6,
+        'noun_3rd': 6,
+        'noun_4th': 5,
+    }
+    n_suf = suffix_counts.get(declension, 6)
+    return (2, n_suf)
+
+
+def extract_latin_stem(nominative: str, declension: str) -> str:
+    """
+    Extract the stem from a Latin nominative singular.
+
+    Rules by declension:
+    - noun_1st: drop -a (rosa -> ros, viola -> viol)
+    - noun_2nd: drop -um or -us (absinthium -> absinthi, rosmarinus -> rosmarin)
+    - noun_3rd: drop -is/-x/-en/-o/-er or return unchanged
+    - noun_4th: drop -us (quercus -> querc)
+    """
+    word = nominative.lower().strip()
+    if declension == 'noun_1st' and word.endswith('a'):
+        return word[:-1]
+    elif declension == 'noun_2nd':
+        if word.endswith('um'):
+            return word[:-2]
+        elif word.endswith('us'):
+            return word[:-2]
+    elif declension == 'noun_3rd':
+        if word.endswith('is'):
+            return word[:-2]
+        elif word.endswith('x'):
+            return word[:-1]
+        elif word.endswith('en'):
+            return word[:-2]
+        elif word.endswith('o'):
+            return word[:-1]
+        elif word.endswith('er'):
+            return word
+    elif declension == 'noun_4th' and word.endswith('us'):
+        return word[:-2]
+    return word

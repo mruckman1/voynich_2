@@ -37,6 +37,12 @@ voynich paradigm-match    # Phase 5.2: paradigm-to-language matching
 voynich stem-id           # Phase 5.3: frequency-based stem identification
 voynich phonetic          # Phase 5.4+5.5: phonetic decode and validation
 voynich phase5            # Run all Phase 5 analyses
+voynich illustration      # Phase 6.0: illustration-constrained setup
+voynich rosetta           # Phase 6 D+E: Rosetta folio selection
+voynich anchor            # Phase 6 A+B: anchor-and-propagate
+voynich compete           # Phase 6 C: competitive ID resolution
+voynich phase6-validate   # Phase 6 validation battery
+voynich phase6            # Run all Phase 6 analyses
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -60,7 +66,7 @@ voynich_2/
 │   ├── analysis/                # Main analysis approaches
 │   │   ├── strokes.py           # Approach 1: stroke decomposition, Ventris grid
 │   │   └── fingerprint.py       # Approach 2: entropy profiling, profile matching
-│   └── phases/                  # Phase 2–5 workstreams
+│   └── phases/                  # Phase 2–6 workstreams
 │       ├── nulls.py             # Phase 2A: null character identification
 │       ├── grid_refine.py       # Phase 2B: syllabary grid refinement
 │       ├── degeneracy.py        # Phase 3D: substitution vs syllabary tests
@@ -76,12 +82,18 @@ voynich_2/
 │       ├── paradigm_discovery.py # Phase 5.1: paradigm discovery
 │       ├── paradigm_match.py    # Phase 5.2: paradigm-to-language matching
 │       ├── stem_identification.py # Phase 5.3: frequency-based stem identification
-│       └── phonetic_decode.py   # Phase 5.4+5.5: phonetic decode and validation
+│       ├── phonetic_decode.py   # Phase 5.4+5.5: phonetic decode and validation
+│       ├── illustration_constrained.py # Phase 6.0: illustration-constrained setup
+│       ├── rosetta_selection.py # Phase 6 D+E: Rosetta folio selection
+│       ├── anchor_propagate.py  # Phase 6 A+B: anchor-and-propagate decoding
+│       ├── competitive_id.py    # Phase 6 C: competitive ID resolution
+│       └── illustration_validate.py # Phase 6: validation battery
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
 │       ├── latin/               # Circa Instans, De Viribus Herbarum
-│       └── occitan/             # Régime du Corps
+│       ├── occitan/             # Régime du Corps
+│       └── voynich_plant/       # Plant ID concordance CSV + medieval Latin name mapping
 ├── results/                     # JSON output from analysis runs
 └── archive/                     # Previous codebase (consonant-skeleton approach — deprecated)
 ```
@@ -318,6 +330,68 @@ Phonetic value assignment (gated on Phase 5.3) and comprehensive validation batt
 | 5.5d: Bootstrap stability | Resample corpus 1000×, rebuild table, verify consistency > 0.60 in 95% of iterations | `phases/phonetic_decode.py` |
 
 **Hard prerequisite:** Phase 5.3 `gate_passed == True` required before Phases 5.4+5.5 execute.
+
+## Phase 6: Illustration-Constrained Decoding
+
+Phase 5 hit a "selectivity ceiling" — frequency-matched random Latin words scored as well as real medical vocabulary (selectivity 0.99×). Phase 6 breaks this ceiling by inverting the approach: instead of decode-then-validate, it uses botanical illustration identifications as cross-modal constraints that pin specific Latin plant names to specific folios, then checks whether a consistent character-to-sound mapping emerges across multiple anchor folios.
+
+The pipeline: **E** (encoding model test) → **D** (Rosetta folio selection) → **B** (paradigm filtering) → **A** (anchor-and-propagate) → **C** (competitive ID resolution) → **Validation**
+
+### Phase 6.0: Illustration-Constrained Setup
+
+Parses the multi-source plant identification concordance and maps Linnaean binomials to medieval Latin names.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| 6.0a: Concordance parsing | Parse 70-entry multi-source concordance CSV (Bax, Tucker & Janick, Sherwood, etc.), group by folio | `phases/illustration_constrained.py` |
+| 6.0b: Medieval name mapping | Map Linnaean binomials to medieval Latin equivalents with declension metadata (69 plants, 63 resolved) | `phases/illustration_constrained.py` |
+| 6.0c: Tier classification | Tier 1 (genus consensus across sources), Tier 2 (single high-confidence), Tier 3 (contested) | `phases/illustration_constrained.py` |
+| 6.0d: Dominant stem extraction | Extract the most frequent morpheme stem from each folio's tokens | `phases/illustration_constrained.py` |
+
+### Phase 6 D+E: Rosetta Folio Selection
+
+Scores folios on 5 criteria and selects the best set for anchor testing, then tests encoding models.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| D.1: Folio scoring | Score each folio on: ID confidence, name distinctiveness, dominant stem clarity, EVA char coverage, char novelty | `phases/rosetta_selection.py` |
+| D.2: Greedy selection | Select folios maximizing combined score + character diversity across the set | `phases/rosetta_selection.py` |
+| E.1: Encoding model test | Test 4 models (syllabic, alphabetic, abbreviated, mixed) by comparing expected vs observed token structure | `phases/rosetta_selection.py` |
+
+### Phase 6 A+B: Anchor-and-Propagate
+
+The core decoding engine. Hypothesizes that each Rosetta folio's dominant stem = the medieval Latin plant name, applies paradigm filtering, then checks cross-consistency of character mappings.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| A.1: Anchor hypotheses | For each Rosetta folio, align EVA chars of dominant stem to Latin chars of medieval name | `phases/anchor_propagate.py` |
+| B.1: Paradigm filtering | Reject hypotheses where Voynich paradigm shape is incompatible with Latin declension class | `phases/anchor_propagate.py` |
+| A.2: Cross-consistency | For each EVA char appearing in 2+ anchors, check if the same Latin mapping is assigned unanimously | `phases/anchor_propagate.py` |
+| A.3: Propagation | Apply consensus mapping to decode all non-anchor herbal_a tokens | `phases/anchor_propagate.py` |
+| A.4: Null tests | (1) Shuffle which folio text goes with which plant name; (2) Replace plant names with random Circa Instans words | `phases/anchor_propagate.py` |
+
+### Phase 6 C: Competitive ID Resolution
+
+Beam search over competing plant identifications for contested folios.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| C.1: Contested enumeration | Identify Tier 2+3 folios with multiple candidate IDs | `phases/competitive_id.py` |
+| C.2: Beam search | Greedy beam search (width=10), add one contested folio at a time, keep top states by unanimity × log(n_chars+1) | `phases/competitive_id.py` |
+
+### Phase 6 Validation
+
+Full validation battery with null tests, leave-one-out, train/test split, and bootstrap stability.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| V.1: Three null tests | Shuffled tokens, shuffled characters, random plant names — each must show selectivity > 1.5× | `phases/illustration_validate.py` |
+| V.2: Leave-one-out | Remove each anchor, rebuild mapping, check stability | `phases/illustration_validate.py` |
+| V.3: Train/test split | 60/40 split, test generalization of character mapping | `phases/illustration_validate.py` |
+| V.4: Bootstrap stability | Resample anchors 200×, verify unanimity CI width | `phases/illustration_validate.py` |
+| V.5: Stop conditions | Hard stop (<0.20 or all nulls fail), soft stop (0.20–0.50), green light (>0.50 + all nulls >1.5×) | `phases/illustration_validate.py` |
+
+**Gate structure:** illustration_constrained (≥8 Tier 1+2 folios) → rosetta_selection (≥8 folios, score >0.5) → anchor_propagate (unanimity >0.50, z >2.0) → competitive_id (separation >0.05) → validation (stop conditions)
 
 ## Integration
 
@@ -836,22 +910,98 @@ Alignment consistency: 1.00 (13/13 aligned). Null JSD mean: 0.827 (real vs null 
 
 **Stop condition:** "Phase 5.3 gate failed: identifications not reliable"
 
+### Illustration-Constrained Decoding (Phase 6)
+
+Phase 6 uses botanical illustration identifications as cross-modal constraints — if experts agree a folio depicts *Papaver somniferum*, the dominant stem on that folio should map to the medieval Latin word "papaver." A consistent character mapping emerging across multiple such anchor folios would break the selectivity ceiling.
+
+**Concordance and tier classification (Phase 6.0):**
+
+| Metric | Value |
+|--------|-------|
+| Concordance entries | 70 |
+| Folios with identifications | 50 |
+| Unique plants identified | 69 |
+| Medieval names resolved | 63 (6 New World plants unresolvable) |
+| Tier 1 folios (genus consensus) | 1 |
+| Tier 2 folios (partial consensus) | 11 |
+| Tier 3 folios (contested) | 38 |
+
+**Rosetta folio selection (Phase 6 D+E):**
+
+| Folio | Plant (medieval Latin) | Combined Score |
+|-------|----------------------|----------------|
+| f37v | anagallis | 1.102 |
+| f25v | dracaena | 0.901 |
+| f9v | viola | 0.733 |
+| f47v | pulmonaria | 0.664 |
+| f54r | carthamus | 0.564 |
+| f33r | papaver | 0.509 |
+| f24r | silene | 0.489 |
+| f56r | ros solis | 0.449 |
+
+EVA character coverage: 39/44 characters (88.6%). Best encoding model: morphographic-syllabic (consistency 0.76). Gate passed.
+
+**Anchor-and-propagate (Phase 6 A+B):**
+
+| Metric | Value |
+|--------|-------|
+| Anchors generated | 8 (all paradigm-compatible) |
+| Unique EVA chars mapped | 5 |
+| Unanimous chars | 2 of 5 |
+| **Unanimity ratio** | **0.40** |
+| Conflicting chars | 3 of 5 |
+| Decode coverage | 10.4% (527 fully decoded, 2,904 partial) |
+| Null z-score (shuffled folios) | 32.0 |
+| Null z-score (random plants) | 6.75 |
+| Gate | **FAILED** (unanimity < 0.50) |
+
+The high z-scores (32.0 and 6.75) confirm that the real folio-to-plant assignments produce more consistent mappings than random assignments — there is *some* cross-modal signal. However, unanimity of only 0.40 means the signal is too weak for reliable character-level decoding.
+
+**Competitive ID resolution (Phase 6 C):**
+
+| Metric | Value |
+|--------|-------|
+| Contested folios | 9 |
+| Combinations explored | 1,728 |
+| Best unanimity | 0.20 |
+| Runner-up unanimity | 0.20 |
+| Separation | 0.00 |
+| Gate | **FAILED** (no clear winner) |
+
+**Validation battery (Phase 6):**
+
+| Test | z-score | Selectivity | Status |
+|------|---------|-------------|--------|
+| Null: shuffled tokens | -0.22 | 0.88× | Failed |
+| Null: shuffled chars | 0.04 | 1.00× | Failed |
+| Null: random names | -0.23 | 0.98× | Failed |
+
+| Stability Test | Result |
+|---------------|--------|
+| Leave-one-out mean unanimity | 0.41 (range 0.25–0.60, unstable) |
+| Train/test transfer ratio | 0.0 (mapping does not generalize) |
+| Bootstrap 95% CI | [0.0, 0.8] (maximally wide) |
+
+**Verdict: HARD STOP.** All three null tests show selectivity < 1.5×, the train/test split shows zero transfer, and bootstrap CIs are maximally wide. The illustration-constrained approach does not yield a statistically distinguishable or stable character mapping. The approach is abandoned.
+
+**Interpretation:** The cross-modal signal detected by anchor propagation (z = 32.0 vs shuffled folios) is real but insufficient. With only 12 Tier 1+2 folios and 5 unique EVA characters mapped, the constraint space is too sparse to resolve character-level ambiguities. The fundamental limitation is the plant identification concordance itself — most identifications are contested (38 of 50 folios at Tier 3), and even the best-supported IDs do not converge on a coherent mapping.
+
 ### Cross-Validation Summary
 
-| Finding | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 4.5 | Phase 5 | Assessment |
-|---------|---------|---------|---------|---------|-----------|---------|------------|
-| **Language** | — | Latin (top 5 matches), no nulls, Romance phonotactics | Latin best syllable match, PMI r=0.96 | Latin #1, Occitan #2, CIs overlap | Language A (Romance-like) vs B (notation); qo- functional | Occitan/Latin paradigms indistinguishable (JSD ratio=0.92); affix alignment consistency 1.00 | **Romance language family** in Language A; Language B may be non-linguistic |
-| **Encoding** | Strong positional constraints (MI=0.30) → syllabary | simple_substitution best, 5x6 grid 47% | D.1 favors syllabary, D.3 favors substitution | R=0.39 in syllabary/abugida overlap | Grid axes = affix/stem; R(affix\|stem)=0.61 natural | 486 multi-form paradigms with prefix+suffix structure; 5 clusters match inflectional system | **Morphological syllabary** — grid encodes affix+stem structure |
-| **Grid validity** | 7x11 original (27% occupancy) | 5x6 refined (47%, z=-239) | 100% stable, but sections diverge (Jaccard=0.14) | Minimum 10k tokens needed; A/B split genuine | Lang A grid 50% occupancy vs B 37%; both axes significant (z>500) | Grid-cell merging reduces stems 2,328→1,693 (allographic variants) | **Grid is real, morphologically grounded** |
-| **Decoding** | — | — | — | — | — | Random-word selectivity 0.99× blocks stem ID; phonetic decode stopped at gate 5.3 | **Selectivity ceiling** — current metrics insufficient for token-level identification |
-| **Currier A/B** | — | — | — | H2 diff significant, grid Jaccard=0.14 | JSD z=3.82, vocab overlap 14%, distinct token inventories | — | **Distinct systems** (not just dialects) |
-| **Null characters** | — | No null insertion evidence | 11/20 null tests discriminate | 8/15 metrics discriminate, all critical pass | qo- removal neutral; 67% have suffixes, 30% prefixes | — | **No null padding**; apparent padding is morphological |
-| **Internal structure** | z = -652/-494 vs shuffled | z = -65 fingerprint, z = -69 stripped | H2 z=-1157, Zipf z=298 vs shuffled | — | H₂(stems)=2.38 > H₂(full)=2.12; affixes carry grammatical info | Paradigm selectivity z=178 (real vs shuffled); cross-consistency 1.00 on 20 IDs | **Morpheme structure confirmed at paradigm level** |
-| **Scholarly rigor** | — | — | 5/7 hypotheses pass, H1 robust to corpus size | All 4 gates evaluated with CIs | All null tests z>500; contingency chi² p<0.001 | 4 gates with dual null controls; random-word control catches selectivity ceiling | **Gate system correctly prevents overconfident decoding** |
+| Finding | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 4.5 | Phase 5 | Phase 6 | Assessment |
+|---------|---------|---------|---------|---------|-----------|---------|---------|------------|
+| **Language** | — | Latin (top 5 matches), no nulls, Romance phonotactics | Latin best syllable match, PMI r=0.96 | Latin #1, Occitan #2, CIs overlap | Language A (Romance-like) vs B (notation); qo- functional | Occitan/Latin paradigms indistinguishable (JSD ratio=0.92); affix alignment consistency 1.00 | 63/69 plants mapped to medieval Latin; cross-modal signal z=32.0 vs shuffled | **Romance language family** in Language A; Language B may be non-linguistic |
+| **Encoding** | Strong positional constraints (MI=0.30) → syllabary | simple_substitution best, 5x6 grid 47% | D.1 favors syllabary, D.3 favors substitution | R=0.39 in syllabary/abugida overlap | Grid axes = affix/stem; R(affix\|stem)=0.61 natural | 486 multi-form paradigms with prefix+suffix structure; 5 clusters match inflectional system | Best model: morphographic-syllabic (consistency 0.76) | **Morphological syllabary** — grid encodes affix+stem structure |
+| **Grid validity** | 7x11 original (27% occupancy) | 5x6 refined (47%, z=-239) | 100% stable, but sections diverge (Jaccard=0.14) | Minimum 10k tokens needed; A/B split genuine | Lang A grid 50% occupancy vs B 37%; both axes significant (z>500) | Grid-cell merging reduces stems 2,328→1,693 (allographic variants) | — | **Grid is real, morphologically grounded** |
+| **Decoding** | — | — | — | — | — | Random-word selectivity 0.99× blocks stem ID; phonetic decode stopped at gate 5.3 | Unanimity 0.40 (below 0.50 threshold); train/test transfer 0.0; all null tests <1.5×; **HARD STOP** | **Selectivity ceiling persists** — cross-modal constraints insufficient with current concordance |
+| **Currier A/B** | — | — | — | H2 diff significant, grid Jaccard=0.14 | JSD z=3.82, vocab overlap 14%, distinct token inventories | — | — | **Distinct systems** (not just dialects) |
+| **Null characters** | — | No null insertion evidence | 11/20 null tests discriminate | 8/15 metrics discriminate, all critical pass | qo- removal neutral; 67% have suffixes, 30% prefixes | — | — | **No null padding**; apparent padding is morphological |
+| **Internal structure** | z = -652/-494 vs shuffled | z = -65 fingerprint, z = -69 stripped | H2 z=-1157, Zipf z=298 vs shuffled | — | H₂(stems)=2.38 > H₂(full)=2.12; affixes carry grammatical info | Paradigm selectivity z=178 (real vs shuffled); cross-consistency 1.00 on 20 IDs | 8 Rosetta folios, 88.6% EVA coverage; paradigm filtering passes all 8 anchors | **Morpheme structure confirmed at paradigm level** |
+| **Scholarly rigor** | — | — | 5/7 hypotheses pass, H1 robust to corpus size | All 4 gates evaluated with CIs | All null tests z>500; contingency chi² p<0.001 | 4 gates with dual null controls; random-word control catches selectivity ceiling | 5-stage gate pipeline with 3 null tests, LOO, train/test, bootstrap; HARD STOP issued correctly | **Gate system correctly prevents overconfident decoding** |
 
 ## Results Files
 
-Analysis outputs are saved as JSON to `results/` (43 files total):
+Analysis outputs are saved as JSON to `results/` (48 files total):
 
 **Phase 1 — Stroke Analysis:**
 - `stroke_positional.json` — Stroke positional distributions and MI
@@ -917,6 +1067,13 @@ Analysis outputs are saved as JSON to `results/` (43 files total):
 - `paradigm_match.json` — Latin/Occitan JSD/rho/chi², affix alignments, separation test, gate status
 - `stem_identification.json` — 20 stem identifications, compatibility scores, cross-consistency, dual null controls
 - `phonetic_decode.json` — Gate check result (stopped at gate 5.3 if stem ID unreliable)
+
+**Phase 6 — Illustration-Constrained Decoding:**
+- `illustration_constrained.json` — Plant concordance, tier classification, medieval name mapping, dominant stems
+- `rosetta_selection.json` — Rosetta folio scores, encoding model test, selected folios with EVA coverage
+- `anchor_propagate.json` — Anchor hypotheses, cross-consistency matrix, propagation results, null tests
+- `competitive_id.json` — Beam search over contested folios, best vs runner-up assignments
+- `illustration_validate.json` — 3 null tests, leave-one-out, train/test split, bootstrap, stop conditions
 
 ## Background
 

@@ -31,6 +31,12 @@ Usage:
     voynich stem-id           # Phase 5.3: frequency-based stem identification
     voynich phonetic          # Phase 5.4+5.5: phonetic decode and validation
     voynich phase5            # Run all Phase 5 analyses
+    voynich illustration      # Phase 6.0: illustration-constrained setup
+    voynich rosetta           # Phase 6 D+E: Rosetta folio selection
+    voynich anchor            # Phase 6 A+B: anchor-and-propagate
+    voynich compete           # Phase 6 C: competitive ID resolution
+    voynich phase6-validate   # Phase 6 validation battery
+    voynich phase6            # Run all Phase 6 analyses
 """
 import sys
 import time
@@ -272,6 +278,59 @@ def cmd_phase5():
     cmd_phonetic()
 
 
+def cmd_illustration():
+    """Run Phase 6.0: illustration-constrained setup."""
+    from voynich.phases.illustration_constrained import run_illustration_constrained
+    t0 = time.time()
+    run_illustration_constrained()
+    print(f"\nIllustration-constrained setup completed in {time.time() - t0:.1f}s")
+
+
+def cmd_rosetta():
+    """Run Phase 6 D+E: Rosetta folio selection and encoding model test."""
+    from voynich.phases.rosetta_selection import run_rosetta_selection
+    t0 = time.time()
+    run_rosetta_selection()
+    print(f"\nRosetta selection completed in {time.time() - t0:.1f}s")
+
+
+def cmd_anchor():
+    """Run Phase 6 A+B: anchor-and-propagate with paradigm filtering."""
+    from voynich.phases.anchor_propagate import run_anchor_propagate
+    t0 = time.time()
+    run_anchor_propagate()
+    print(f"\nAnchor-and-propagate completed in {time.time() - t0:.1f}s")
+
+
+def cmd_compete():
+    """Run Phase 6 C: competitive ID resolution."""
+    from voynich.phases.competitive_id import run_competitive_id
+    t0 = time.time()
+    run_competitive_id()
+    print(f"\nCompetitive ID resolution completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase6_validate():
+    """Run Phase 6 validation battery."""
+    from voynich.phases.illustration_validate import run_illustration_validate
+    t0 = time.time()
+    run_illustration_validate()
+    print(f"\nPhase 6 validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase6():
+    """Run all Phase 6 analyses sequentially (with gate checking)."""
+    cmd_illustration()
+    print("\n" + "=" * 70 + "\n")
+    cmd_rosetta()
+    print("\n" + "=" * 70 + "\n")
+    cmd_anchor()
+    print("\n" + "=" * 70 + "\n")
+    cmd_compete()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase6_validate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -300,6 +359,12 @@ def main():
         'stem-id': cmd_stem_id,
         'phonetic': cmd_phonetic,
         'phase5': cmd_phase5,
+        'illustration': cmd_illustration,
+        'rosetta': cmd_rosetta,
+        'anchor': cmd_anchor,
+        'compete': cmd_compete,
+        'phase6-validate': cmd_phase6_validate,
+        'phase6': cmd_phase6,
     }
 
     if len(sys.argv) < 2:
