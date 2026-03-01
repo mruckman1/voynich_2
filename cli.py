@@ -13,6 +13,11 @@ Usage:
     python cli.py nulls           # Phase 2A: null character identification
     python cli.py grid            # Phase 2B: syllabary grid refinement
     python cli.py phase2          # Run both Phase 2 analyses
+    python cli.py degeneracy      # Phase 3D: break substitution vs syllabary degeneracy
+    python cli.py grid-validate   # Phase 3E: validate syllabary grid
+    python cli.py syllable-match  # Phase 3F: syllable-level language matching
+    python cli.py validate-all    # Phase 3G: scholarly validation framework
+    python cli.py phase3          # Run all Phase 3 workstreams
 """
 import sys
 import time
@@ -102,6 +107,49 @@ def cmd_both():
     cmd_fingerprint()
 
 
+def cmd_degeneracy():
+    """Run Phase 3D: break substitution vs syllabary degeneracy."""
+    from degeneracy import run_degeneracy_analysis
+    t0 = time.time()
+    run_degeneracy_analysis()
+    print(f"\nDegeneracy analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_grid_validate():
+    """Run Phase 3E: validate syllabary grid."""
+    from grid_validate import run_grid_validation
+    t0 = time.time()
+    run_grid_validation()
+    print(f"\nGrid validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_syllable_match():
+    """Run Phase 3F: syllable-level language matching."""
+    from syllable_match import run_syllable_matching
+    t0 = time.time()
+    run_syllable_matching()
+    print(f"\nSyllable matching completed in {time.time() - t0:.1f}s")
+
+
+def cmd_validate_all():
+    """Run Phase 3G: scholarly validation framework."""
+    from scholarly import run_scholarly_validation
+    t0 = time.time()
+    run_scholarly_validation()
+    print(f"\nScholarly validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase3():
+    """Run all Phase 3 workstreams sequentially."""
+    cmd_degeneracy()
+    print("\n" + "=" * 70 + "\n")
+    cmd_grid_validate()
+    print("\n" + "=" * 70 + "\n")
+    cmd_syllable_match()
+    print("\n" + "=" * 70 + "\n")
+    cmd_validate_all()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -112,6 +160,11 @@ def main():
         'nulls': cmd_nulls,
         'grid': cmd_grid,
         'phase2': cmd_phase2,
+        'degeneracy': cmd_degeneracy,
+        'grid-validate': cmd_grid_validate,
+        'syllable-match': cmd_syllable_match,
+        'validate-all': cmd_validate_all,
+        'phase3': cmd_phase3,
     }
 
     if len(sys.argv) < 2:

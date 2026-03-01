@@ -10,17 +10,22 @@ Both approaches are grounded in one confirmed empirical finding: EVA composition
 
 ```bash
 uv sync
-python cli.py corpus        # Load and summarize the EVA corpus
-python cli.py reference     # Show reference corpus summary
-python cli.py strokes       # Approach 1: stroke-level syllabary analysis
-python cli.py fingerprint   # Approach 2: information-theoretic fingerprinting
-python cli.py both          # Run both approaches
-python cli.py nulls         # Phase 2A: null character identification
-python cli.py grid          # Phase 2B: syllabary grid refinement
-python cli.py phase2        # Run both Phase 2 analyses
+python cli.py corpus          # Load and summarize the EVA corpus
+python cli.py reference       # Show reference corpus summary
+python cli.py strokes         # Approach 1: stroke-level syllabary analysis
+python cli.py fingerprint     # Approach 2: information-theoretic fingerprinting
+python cli.py both            # Run both approaches
+python cli.py nulls           # Phase 2A: null character identification
+python cli.py grid            # Phase 2B: syllabary grid refinement
+python cli.py phase2          # Run both Phase 2 analyses
+python cli.py degeneracy      # Phase 3D: break substitution vs syllabary degeneracy
+python cli.py grid-validate   # Phase 3E: validate syllabary grid
+python cli.py syllable-match  # Phase 3F: syllable-level language matching
+python cli.py validate-all    # Phase 3G: scholarly validation framework
+python cli.py phase3          # Run all Phase 3 workstreams
 ```
 
-Requires Python 3.12+ and NumPy. The EVA transcription data (IVTFF format) should be placed in `data/corpus/`.
+Requires Python 3.12+, NumPy, and SciPy. The EVA transcription data (IVTFF format) should be placed in `data/corpus/`.
 
 ## Project Structure
 
@@ -28,12 +33,16 @@ Requires Python 3.12+ and NumPy. The EVA transcription data (IVTFF format) shoul
 voynich_2/
 ├── cli.py               # Entry point — run analyses from the command line
 ├── corpus.py            # IVTFF parser, EVA tokenizer, corpus access by section/scribe/language
-├── reference.py         # Reference corpus loading, RTF conversion, text cleaning
+├── reference.py         # Reference corpus loading, RTF conversion, syllable-level stats
 ├── strokes.py           # Approach 1: stroke decomposition, positional analysis, Ventris grid
 ├── fingerprint.py       # Approach 2: entropy profiling, reference library, profile matching
 ├── nulls.py             # Phase 2A: null character identification and stripping experiments
 ├── grid_refine.py       # Phase 2B: syllabary grid refinement via distributional clustering
-├── stats.py             # Entropy calculations, Zipf's law, bigram matrices, MI, TTR
+├── degeneracy.py        # Phase 3D: substitution vs syllabary degeneracy tests
+├── grid_validate.py     # Phase 3E: grid gap analysis, stability, and section consistency
+├── syllable_match.py    # Phase 3F: CV labeling, retranscription, language matching
+├── scholarly.py         # Phase 3G: pre-registration, null testing, effect sizes, sensitivity
+├── stats.py             # Entropy, Zipf, bigram matrices, MI, TTR, Latin syllabifier, DTW
 ├── ciphers.py           # Historical cipher implementations + encoding simulators
 ├── data/
 │   ├── corpus/          # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
@@ -91,16 +100,63 @@ The original Ventris grid (7 onsets x 11 nuclei) was only 27.3% occupied — too
 | 2B.3 | **Grid Validation Sweep** — Score each candidate grid on occupancy (30%), discriminant z-score (25%), syllable bigram H2 (25%), and syllables/token (20%). | `grid_refine.py` |
 | 2B.4 | **Language Narrowing** — Map best grid dimensions against known syllabary sizes (Japanese kana, Romance CV, Latin, Germanic, Semitic). | `grid_refine.py` |
 
+## Phase 3: Breaking the Degeneracy
+
+Phase 2 established Latin + simple_substitution as the best fingerprint match (0.9854 cosine similarity) and a refined 5x6 syllabary grid (46.7% occupancy). However, the entropy profile can't distinguish "alphabetic substitution on Latin" from "CV syllabary encoding a Latin-like language." Phase 3 resolves this degeneracy through four workstreams.
+
+### Workstream D: Substitution vs Syllabary Degeneracy Tests
+
+Three independent statistical tests compare how well the Voynich text's structure matches an alphabetic substitution model vs a CV syllabary model.
+
+| Test | Description | Module |
+|------|-------------|--------|
+| D.1 | **Token Length Correlation** — Compare Voynich glyph-count distribution against Latin character-count and Latin syllable-count distributions using Pearson correlation and Earth Mover's Distance. | `degeneracy.py` |
+| D.2 | **Bigram Transition Structure** — Build Voynich char bigram matrix, find optimal permutation mapping to Latin char bigrams (substitution) and Latin syllable bigrams (syllabary) via the Hungarian algorithm, compare Frobenius distances. | `degeneracy.py` |
+| D.3 | **Position-Within-Token Entropy** — Compute H(unit\|position=k) curves for Voynich, Latin chars, and Latin syllables. Compare curve shapes via Dynamic Time Warping distance. | `degeneracy.py` |
+
+### Workstream E: Grid Validation
+
+Four tests validate whether the 5x6 syllabary grid from Phase 2B is a genuine structural feature or an artifact.
+
+| Test | Description | Module |
+|------|-------------|--------|
+| E.1 | **Gap Analysis** — Test whether the 16 empty cells form a systematic pattern (chi-squared) or are randomly distributed. Compare against Linear B, Cypriot, and Japanese kana gap patterns. | `grid_validate.py` |
+| E.2 | **Frequency Distribution** — Fit Zipf's law to grid cell usage frequencies. Test against theoretical Zipf via KS test. | `grid_validate.py` |
+| E.3 | **Bootstrap Stability** — Rebuild the grid 200 times from 50% subsamples. Measure Jaccard similarity of filled-cell sets across iterations. | `grid_validate.py` |
+| E.4 | **Cross-Section Consistency** — Build per-section grids and compare against the full-corpus grid. Test whether sections use the same syllabary. | `grid_validate.py` |
+
+### Workstream F: Syllable-Level Language Matching
+
+Convert the grid into an abstract syllabary, retranscribe the entire corpus, and match against candidate languages at the syllable level.
+
+| Step | Description | Module |
+|------|-------------|--------|
+| F.1 | **CV Labeling** — Assign frequency-ordered C_iV_j labels to each filled grid cell (C1=most common onset, V1=most common nucleus). | `syllable_match.py` |
+| F.2 | **Corpus Retranscription** — Convert every EVA token to a CV label sequence. Compute syllable-level entropy (H1, H2), TTR, and ambiguity rate. | `syllable_match.py` |
+| F.3 | **Syllable Bigram Matching** — For each candidate language, syllabify reference text, build syllable bigram matrix, find optimal permutation mapping via the Hungarian algorithm, rank by Frobenius distance. | `syllable_match.py` |
+| F.4 | **PMI Correlation** — Under the best-fit mapping, compute Pointwise Mutual Information for top-50 Voynich syllable bigrams and corresponding Latin bigrams. Pearson correlation measures structural similarity. | `syllable_match.py` |
+
+### Workstream G: Scholarly Validation Framework
+
+A validation layer wrapping all Phase 3 experiments for reproducibility and statistical rigor.
+
+| Component | Description | Module |
+|-----------|-------------|--------|
+| G.1 | **Pre-Registration** — Seven hypotheses with pre-specified metrics, directions, and thresholds, frozen before experiments run. | `scholarly.py` |
+| G.2 | **Null Testing** — Test key metrics against four null text types (shuffle, random, Markov, token-shuffle). Report z-scores, selectivity ratios, and discrimination. | `scholarly.py` |
+| G.3 | **Effect Sizes** — Cohen's d, bootstrap CIs, and Bayes factors for all main findings. | `scholarly.py` |
+| G.4 | **Reproducibility Manifest** — Python/NumPy/SciPy versions, random seeds, SHA256 hashes of all data and result files. | `scholarly.py` |
+| G.5 | **Sensitivity Analysis** — Vary grid cluster count and corpus size, track metric stability. | `scholarly.py` |
+
 ## Integration
 
-The two approaches cross-validate:
+The approaches cross-validate across all phases:
 
-| Approach 1 finds | Approach 2 finds | Interpretation |
-|---|---|---|
-| CV syllabary grid with good fit | Closest match = [lang]-syllabic | Strong convergent evidence for syllabary encoding |
-| CV syllabary grid with good fit | Closest match = [lang]-substitution | Conflict — grid may be an artifact of glyph structure |
-| No syllabary structure | Closest match = [lang]-substitution | Consistent — script is alphabetic |
-| CV syllabary grid | No good match | Novel encoding or unknown language |
+| Approach 1 finds | Approach 2 finds | Phase 3 finds | Interpretation |
+|---|---|---|---|
+| CV syllabary grid with good fit | Closest match = Latin-substitution | D.1 favors syllabary, D.3 favors substitution, PMI r=0.96 | **The degeneracy is genuine** — both models fit the data |
+| Strong positional constraints (MI=0.30) | Latin dominates top 5 | Grid 100% stable, sections diverge (Jaccard=0.14) | **Latin substrate likely**, but grid varies by section |
+| 5x6 grid, 47% occupancy | No null insertion evidence | Gap pattern random, closest to Cypriot (8% diff) | **Grid structure is real but sparse** |
 
 ## Data
 
@@ -243,18 +299,108 @@ The refined 5x6 grid maintains full discriminant significance (z = -239.1) while
 
 The 5-onset inventory is smaller than expected for any known language's syllabary, but the 6-nuclei dimension is consistent with Romance and Japanese-like phonotactics. The low onset count may reflect further mergeable categories or a genuinely small consonant inventory.
 
+### Degeneracy Tests (Phase 3D)
+
+Three tests to determine whether the Voynich script is an alphabetic substitution cipher or a CV syllabary:
+
+| Test | Metric (substitution) | Metric (syllabary) | Verdict |
+|------|----------------------|---------------------|---------|
+| D.1: Length correlation | r = 0.553, EMD = 0.040 | r = 0.797, EMD = 0.013 | **syllabary** |
+| D.2: Bigram structure | Frobenius = 3.12 | Frobenius = 2.87 | inconclusive |
+| D.3: Positional entropy | DTW = 4.02 | DTW = 17.39 | **substitution** |
+
+**Overall verdict: inconclusive.** D.1 favors syllabary (token lengths correlate much better with Latin syllable counts than character counts). D.3 favors substitution (position-within-token entropy curve shape matches Latin characters better). D.2 is too close to call. The degeneracy is genuine — both models explain different aspects of the data.
+
+### Grid Validation (Phase 3E)
+
+| Test | Result | Threshold | Status |
+|------|--------|-----------|--------|
+| E.1: Gap pattern | chi-squared p = 0.073 | p < 0.05 | Random (not systematic) |
+| E.2: Zipf fit | exponent = 2.10, R^2 = 0.57 | R^2 > 0.90 | Below threshold |
+| E.3: Bootstrap stability | 100% cells stable, Jaccard = 0.995 | >90% stable | **Passed** |
+| E.4: Section consistency | mean Jaccard = 0.14 | >80% agreement | **Failed** |
+
+**Key findings:**
+- The grid is **extremely stable** under resampling — all 14 cells appear in >99.5% of 200 bootstrap iterations.
+- But per-section grids **diverge sharply** from the full-corpus grid. Best agreement is astronomical (0.29), worst is biological (0.08). This supports the Currier A/B language distinction: different manuscript sections may use different syllable inventories.
+- Gap pattern is closest to Cypriot syllabary (occupancy diff = 8%), not to Japanese kana (45% diff) or Linear B (13% diff).
+
+### Syllable-Level Retranscription and Matching (Phase 3F)
+
+The 5x6 grid was converted to an abstract CV syllabary (14 types) and the entire corpus retranscribed:
+
+| Metric | Value |
+|--------|-------|
+| CV types | 14 |
+| CV tokens | 125,929 |
+| Ambiguity rate | 0.0% |
+| CV H1 | 2.90 bits |
+| CV H2 | 2.43 bits |
+| Mean CV/word | 3.48 |
+
+**Sample retranscriptions:**
+
+| EVA token | CV sequence |
+|-----------|-------------|
+| fachys | C2V3.C1V1.C3V4.C2V5.C3V1 |
+| ykal | C2V5.C2V3.C1V2 |
+| ataiin | C1V1.C2V3.C1V6 |
+| shol | C3V4.C1V2 |
+| sory | C3V1.C1V1.C2V5 |
+
+**Language matching (optimal permutation via Hungarian algorithm):**
+
+| Language | Frobenius Distance | JSD |
+|----------|-------------------|-----|
+| Latin | 2.087 | 0.996 |
+| Occitan | 2.277 | 0.990 |
+
+**PMI correlation:** Under the best-fit mapping, Voynich syllable bigram PMI values correlate with Latin syllable bigram PMI at r = 0.960 (p < 0.001, 50 common bigrams). This is strong evidence that the sequential structure of Voynich syllables mirrors Latin syllable combinatorics.
+
+### Scholarly Validation (Phase 3G)
+
+**Pre-registered hypotheses (5/7 passed):**
+
+| Hypothesis | Metric | Result | Passed |
+|------------|--------|--------|--------|
+| D1: Lengths closer to syllables | EMD difference | -0.027 | Yes |
+| D2: Syllabary Frobenius lower | Frobenius difference | -0.249 | Yes |
+| D3: DTW to syllables lower | DTW difference | +13.37 | No |
+| E1: Non-random gap pattern | chi-squared p | 0.073 | No |
+| E3: Grid stable under subsampling | Stable fraction | 1.000 | Yes |
+| F3: Latin best language match | Best = Latin? | Yes | Yes |
+| F4: PMI correlation positive | PMI r | 0.960 | Yes |
+
+**Null discrimination (11/20 metrics discriminate):**
+
+| Metric | vs Shuffle | vs Random | vs Markov | vs Token-shuffle |
+|--------|-----------|-----------|-----------|-----------------|
+| H1 | no | no | z = -202 | no |
+| H2 | z = -1157 | z = -762 | z = -240 | z = -72 |
+| Word H1 | z = -1407 | z = -1564 | z = -458 | no |
+| Mean word length | no | no | no | no |
+| Zipf exponent | z = 298 | z = 551 | z = 222 | no |
+
+H2 (bigram entropy) and word-level entropy are the strongest discriminants — they separate real Voynich from all null models. Zipf exponent discriminates well except against token-shuffle, as expected (shuffling token order preserves the word frequency distribution).
+
+**Sensitivity:**
+- Grid occupancy is **not robust** to nucleus cluster count (sensitivity = 0.20, varies 37-47% across 4-8 clusters)
+- H1 entropy is **robust** to corpus size (sensitivity = 0.008, stable from 1,000 to 36,238 tokens)
+
 ### Cross-Validation Summary
 
-| Finding | Approach 1 (Structure) | Approach 2 (Fingerprint) | Phase 2A (Nulls) | Phase 2B (Grid) | Assessment |
-|---------|----------------------|------------------------|-----------------|----------------|------------|
-| **Language** | — | Latin (top 5 matches) | Stable under stripping | Romance/Japanese-like phonotactics | **Latin or close relative** |
-| **Encoding** | Strong positional constraints → syllabary | simple_substitution best | No null insertion | 5x6 CV grid, 47% occupancy | **Simple substitution or light cipher on a syllabic script** |
-| **Null characters** | — | null_insertion not preferred | No character removal improves match | — | **No evidence of null padding** |
-| **Internal structure** | z = -652/-494 vs shuffled | z = -65 vs shuffled | z = -69 stripped vs shuffled | z = -239 refined grid | **Highly structured, not random or shuffled** |
+| Finding | Phase 1 | Phase 2 | Phase 3 | Assessment |
+|---------|---------|---------|---------|------------|
+| **Language** | — | Latin (top 5 matches), no nulls, Romance phonotactics | Latin best syllable match, PMI r=0.96 | **Latin or close relative** |
+| **Encoding** | Strong positional constraints (MI=0.30) → syllabary | simple_substitution best, 5x6 grid 47% | D.1 favors syllabary, D.3 favors substitution | **Genuinely degenerate** — both models partially fit |
+| **Grid validity** | 7x11 original (27% occupancy) | 5x6 refined (47%, z=-239) | 100% stable, but sections diverge (Jaccard=0.14) | **Grid is real but section-dependent** |
+| **Null characters** | — | No null insertion evidence | 11/20 null tests discriminate | **No evidence of null padding** |
+| **Internal structure** | z = -652/-494 vs shuffled | z = -65 fingerprint, z = -69 stripped | H2 z=-1157, Zipf z=298 vs shuffled | **Highly structured, not random** |
+| **Scholarly rigor** | — | — | 5/7 hypotheses pass, H1 robust to corpus size | **Most findings replicate** |
 
 ## Results Files
 
-Analysis outputs are saved as JSON to `results/`:
+Analysis outputs are saved as JSON to `results/` (33 files total):
 
 **Phase 1 — Stroke Analysis:**
 - `stroke_positional.json` — Stroke positional distributions and MI
@@ -279,6 +425,31 @@ Analysis outputs are saved as JSON to `results/`:
 - `grid_candidates.json` — All validated grid configs with composite scores
 - `grid_refined_best.json` — Best grid cell contents and merge history
 - `language_narrowing.json` — Ranked language families by grid dimension fit
+
+**Phase 3D — Degeneracy Tests:**
+- `degeneracy_length.json` — Token length correlation (Voynich vs Latin char/syllable)
+- `degeneracy_bigram.json` — Bigram structure comparison (Frobenius distances)
+- `degeneracy_positional.json` — Positional entropy curves and DTW distances
+- `degeneracy_verdict.json` — Per-test and overall verdict
+
+**Phase 3E — Grid Validation:**
+- `grid_gaps.json` — Gap pattern analysis, chi-squared, reference syllabary comparison
+- `grid_frequency.json` — Cell frequency distribution and Zipf fit
+- `grid_stability.json` — Bootstrap stability (200 iterations, per-cell rates)
+- `grid_sections.json` — Per-section grid Jaccard similarity vs full grid
+
+**Phase 3F — Syllable Matching:**
+- `cv_labels.json` — CV label assignments for each grid cell
+- `retranscription_stats.json` — Corpus-wide CV statistics, sample retranscriptions
+- `syllable_language_ranking.json` — Languages ranked by syllable bigram distance
+- `syllable_pmi.json` — PMI correlation between Voynich and best-fit language
+
+**Phase 3G — Scholarly Validation:**
+- `hypotheses_preregistered.json` — 7 pre-registered hypotheses with pass/fail results
+- `null_test_results.json` — 5 metrics x 4 null types, z-scores and discrimination
+- `effect_sizes.json` — Cohen's d, bootstrap CIs for key metrics
+- `reproducibility_manifest.json` — Versions, seeds, SHA256 hashes
+- `sensitivity.json` — Grid cluster count and corpus size sensitivity
 
 ## Background
 

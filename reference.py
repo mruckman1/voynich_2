@@ -407,3 +407,97 @@ def get_reference_text(
     # Fall back to synthetic
     from ciphers import generate_reference_text as _synth
     return _synth(language, n_words=n_words, seed=seed)
+
+
+# ---------------------------------------------------------------------------
+# Syllable-Level Reference Statistics
+# ---------------------------------------------------------------------------
+
+def get_reference_syllable_stats(
+    language: str,
+    corpus: Optional[ReferenceCorpus] = None,
+    n_words: int = 5000,
+    seed: int = 42,
+) -> Dict:
+    """
+    Compute syllable-level statistics for a reference language.
+
+    Returns dict with:
+        syllable_lengths: list of syllable counts per word
+        char_lengths: list of character counts per word
+        syllable_bigrams: (matrix, alphabet) for syllable-level bigrams
+        char_bigrams: (matrix, alphabet) for character-level bigrams
+        positional_entropy_char: H(char|position=k)
+        positional_entropy_syl: H(syllable|position=k)
+    """
+    from stats import (syllabify_latin, syllabify_latin_text,
+                       bigram_transition_matrix, word_positional_entropy,
+                       first_order_entropy)
+    from collections import Counter
+
+    text = get_reference_text(language, n_words=n_words, seed=seed, corpus=corpus)
+    tokens = text.split()
+
+    # Character-level stats
+    char_lengths = [len(w) for w in tokens]
+    char_mat, char_alph = bigram_transition_matrix(text)
+    pos_ent_char = word_positional_entropy(tokens)
+
+    # Syllable-level stats
+    syllabified = syllabify_latin_text(text)
+    syl_lengths = [len(s) for s in syllabified]
+
+    # Build syllable bigram matrix
+    all_syllables: List[str] = []
+    for syls in syllabified:
+        all_syllables.extend(syls)
+
+    syl_text = ' '.join(all_syllables)
+    syl_alph = sorted(set(all_syllables))
+
+    # Build syllable transition matrix directly
+    import numpy as np
+    syl_to_idx = {s: i for i, s in enumerate(syl_alph)}
+    n_syls = len(syl_alph)
+    syl_counts = np.zeros((n_syls, n_syls), dtype=float)
+
+    for word_syls in syllabified:
+        for k in range(len(word_syls) - 1):
+            s1, s2 = word_syls[k], word_syls[k + 1]
+            if s1 in syl_to_idx and s2 in syl_to_idx:
+                syl_counts[syl_to_idx[s1]][syl_to_idx[s2]] += 1
+
+    row_sums = syl_counts.sum(axis=1, keepdims=True)
+    row_sums[row_sums == 0] = 1
+    syl_mat = syl_counts / row_sums
+
+    # Syllable positional entropy: H(syllable at position k in word)
+    import math
+    from collections import defaultdict
+    pos_syls: Dict[int, List[str]] = defaultdict(list)
+    for word_syls in syllabified:
+        for k, s in enumerate(word_syls):
+            if k < 10:
+                pos_syls[k].append(s)
+
+    pos_ent_syl: Dict[str, float] = {}
+    for pos in range(10):
+        if pos not in pos_syls or not pos_syls[pos]:
+            break
+        syls_at_pos = pos_syls[pos]
+        counts = Counter(syls_at_pos)
+        total = len(syls_at_pos)
+        h = -sum((c / total) * math.log2(c / total)
+                 for c in counts.values() if c > 0)
+        pos_ent_syl[f'pos_{pos}'] = round(h, 4)
+
+    return {
+        'syllable_lengths': syl_lengths,
+        'char_lengths': char_lengths,
+        'syllable_bigrams': (syl_mat, syl_alph),
+        'char_bigrams': (char_mat, char_alph),
+        'positional_entropy_char': pos_ent_char,
+        'positional_entropy_syl': pos_ent_syl,
+        'n_syllable_types': n_syls,
+        'n_words': len(tokens),
+    }
