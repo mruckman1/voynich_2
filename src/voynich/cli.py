@@ -4,20 +4,20 @@ Voynich 2: Stroke-Level Syllabary & Information-Theoretic Fingerprinting
 Two complementary language-agnostic approaches to the Voynich manuscript.
 
 Usage:
-    python cli.py                 # Show corpus summary
-    python cli.py corpus          # Load and summarize the EVA corpus
-    python cli.py reference       # Show reference corpus summary
-    python cli.py strokes         # Approach 1: stroke-level syllabary analysis
-    python cli.py fingerprint     # Approach 2: information-theoretic fingerprinting
-    python cli.py both            # Run both approaches sequentially
-    python cli.py nulls           # Phase 2A: null character identification
-    python cli.py grid            # Phase 2B: syllabary grid refinement
-    python cli.py phase2          # Run both Phase 2 analyses
-    python cli.py degeneracy      # Phase 3D: break substitution vs syllabary degeneracy
-    python cli.py grid-validate   # Phase 3E: validate syllabary grid
-    python cli.py syllable-match  # Phase 3F: syllable-level language matching
-    python cli.py validate-all    # Phase 3G: scholarly validation framework
-    python cli.py phase3          # Run all Phase 3 workstreams
+    voynich                   # Show corpus summary
+    voynich corpus            # Load and summarize the EVA corpus
+    voynich reference         # Show reference corpus summary
+    voynich strokes           # Approach 1: stroke-level syllabary analysis
+    voynich fingerprint       # Approach 2: information-theoretic fingerprinting
+    voynich both              # Run both approaches sequentially
+    voynich nulls             # Phase 2A: null character identification
+    voynich grid              # Phase 2B: syllabary grid refinement
+    voynich phase2            # Run both Phase 2 analyses
+    voynich degeneracy        # Phase 3D: break substitution vs syllabary degeneracy
+    voynich grid-validate     # Phase 3E: validate syllabary grid
+    voynich syllable-match    # Phase 3F: syllable-level language matching
+    voynich validate-all      # Phase 3G: scholarly validation framework
+    voynich phase3            # Run all Phase 3 workstreams
 """
 import sys
 import time
@@ -25,7 +25,7 @@ import time
 
 def cmd_corpus():
     """Load and display corpus summary."""
-    from corpus import load_corpus
+    from voynich.core.corpus import load_corpus
     corpus = load_corpus(verbose=True)
     summary = corpus.summary()
     print("\nCorpus Summary:")
@@ -43,7 +43,7 @@ def cmd_corpus():
 
 def cmd_strokes():
     """Run Approach 1: stroke-level syllabary analysis."""
-    from strokes import run_stroke_analysis
+    from voynich.analysis.strokes import run_stroke_analysis
     t0 = time.time()
     run_stroke_analysis()
     print(f"\nStroke analysis completed in {time.time() - t0:.1f}s")
@@ -51,7 +51,7 @@ def cmd_strokes():
 
 def cmd_fingerprint():
     """Run Approach 2: information-theoretic fingerprinting."""
-    from fingerprint import run_fingerprint_analysis
+    from voynich.analysis.fingerprint import run_fingerprint_analysis
     t0 = time.time()
     run_fingerprint_analysis()
     print(f"\nFingerprint analysis completed in {time.time() - t0:.1f}s")
@@ -59,7 +59,7 @@ def cmd_fingerprint():
 
 def cmd_reference():
     """Show reference corpus summary."""
-    from reference import load_reference_corpus
+    from voynich.core.reference import load_reference_corpus
     try:
         corpus = load_reference_corpus(verbose=True)
     except FileNotFoundError as e:
@@ -79,7 +79,7 @@ def cmd_reference():
 
 def cmd_nulls():
     """Run Phase 2A: null character identification."""
-    from nulls import run_null_analysis
+    from voynich.phases.nulls import run_null_analysis
     t0 = time.time()
     run_null_analysis()
     print(f"\nNull analysis completed in {time.time() - t0:.1f}s")
@@ -87,7 +87,7 @@ def cmd_nulls():
 
 def cmd_grid():
     """Run Phase 2B: syllabary grid refinement."""
-    from grid_refine import run_grid_refinement
+    from voynich.phases.grid_refine import run_grid_refinement
     t0 = time.time()
     run_grid_refinement()
     print(f"\nGrid refinement completed in {time.time() - t0:.1f}s")
@@ -109,7 +109,7 @@ def cmd_both():
 
 def cmd_degeneracy():
     """Run Phase 3D: break substitution vs syllabary degeneracy."""
-    from degeneracy import run_degeneracy_analysis
+    from voynich.phases.degeneracy import run_degeneracy_analysis
     t0 = time.time()
     run_degeneracy_analysis()
     print(f"\nDegeneracy analysis completed in {time.time() - t0:.1f}s")
@@ -117,7 +117,7 @@ def cmd_degeneracy():
 
 def cmd_grid_validate():
     """Run Phase 3E: validate syllabary grid."""
-    from grid_validate import run_grid_validation
+    from voynich.phases.grid_validate import run_grid_validation
     t0 = time.time()
     run_grid_validation()
     print(f"\nGrid validation completed in {time.time() - t0:.1f}s")
@@ -125,7 +125,7 @@ def cmd_grid_validate():
 
 def cmd_syllable_match():
     """Run Phase 3F: syllable-level language matching."""
-    from syllable_match import run_syllable_matching
+    from voynich.phases.syllable_match import run_syllable_matching
     t0 = time.time()
     run_syllable_matching()
     print(f"\nSyllable matching completed in {time.time() - t0:.1f}s")
@@ -133,7 +133,7 @@ def cmd_syllable_match():
 
 def cmd_validate_all():
     """Run Phase 3G: scholarly validation framework."""
-    from scholarly import run_scholarly_validation
+    from voynich.phases.scholarly import run_scholarly_validation
     t0 = time.time()
     run_scholarly_validation()
     print(f"\nScholarly validation completed in {time.time() - t0:.1f}s")

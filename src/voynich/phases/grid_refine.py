@@ -20,9 +20,10 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
-from corpus import load_corpus, tokenize_eva_chars
-from stats import cosine_similarity
-from strokes import (
+from voynich.core.corpus import load_corpus, tokenize_eva_chars
+from voynich.core.stats import cosine_similarity
+from voynich.core._paths import results_dir as _results_dir
+from voynich.analysis.strokes import (
     SyllabaryGrid, build_ventris_grid, decompose_glyph,
     segment_token_as_syllables, syllable_sequence_stats,
     syllabary_discriminant_test,
@@ -615,9 +616,9 @@ def run_grid_refinement() -> Dict:
         print(f"  {r['family']:<20} {r['score']:>6.3f} {exp:>16} {r['description']}")
 
     # --- Save results ---
-    os.makedirs('results', exist_ok=True)
+    rd = _results_dir()
 
-    with open(os.path.join('results', 'grid_similarity_matrices.json'), 'w') as f:
+    with open(os.path.join(rd, 'grid_similarity_matrices.json'), 'w') as f:
         json.dump({
             'nucleus_similarity': {
                 'labels': nuc_labels,
@@ -629,14 +630,14 @@ def run_grid_refinement() -> Dict:
             },
         }, f, indent=2)
 
-    with open(os.path.join('results', 'grid_candidates.json'), 'w') as f:
+    with open(os.path.join(rd, 'grid_candidates.json'), 'w') as f:
         json.dump({
             'candidates': [asdict(v) for v in validations],
             'best': best.grid_label,
         }, f, indent=2)
 
     # Save best grid detail
-    with open(os.path.join('results', 'grid_refined_best.json'), 'w') as f:
+    with open(os.path.join(rd, 'grid_refined_best.json'), 'w') as f:
         json.dump({
             'row_labels': best_merged_grid.row_labels,
             'col_labels': best_merged_grid.col_labels,
@@ -648,7 +649,7 @@ def run_grid_refinement() -> Dict:
             'onset_clusters': best.onset_clusters,
         }, f, indent=2)
 
-    with open(os.path.join('results', 'language_narrowing.json'), 'w') as f:
+    with open(os.path.join(rd, 'language_narrowing.json'), 'w') as f:
         json.dump({
             'grid_dimensions': {
                 'onsets': len(best_merged_grid.row_labels),
@@ -657,7 +658,7 @@ def run_grid_refinement() -> Dict:
             'rankings': rankings,
         }, f, indent=2)
 
-    print(f"\n  Results saved to results/")
+    print(f"\n  Results saved to {rd}/")
 
     return {
         'validations': validations,

@@ -19,6 +19,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from voynich.core._paths import data_dir as _data_dir
+
 
 # ---------------------------------------------------------------------------
 # Data classes
@@ -268,7 +270,7 @@ def clean_reference_text(raw: str, language: str = 'latin') -> str:
 # ---------------------------------------------------------------------------
 
 def _default_reference_dir() -> str:
-    return str(Path(__file__).parent / 'data' / 'reference')
+    return str(_data_dir('reference'))
 
 
 def discover_reference_texts(
@@ -405,7 +407,7 @@ def get_reference_text(
             return ' '.join(combined[start:start + n_words])
 
     # Fall back to synthetic
-    from ciphers import generate_reference_text as _synth
+    from voynich.core.ciphers import generate_reference_text as _synth
     return _synth(language, n_words=n_words, seed=seed)
 
 
@@ -430,9 +432,9 @@ def get_reference_syllable_stats(
         positional_entropy_char: H(char|position=k)
         positional_entropy_syl: H(syllable|position=k)
     """
-    from stats import (syllabify_latin, syllabify_latin_text,
-                       bigram_transition_matrix, word_positional_entropy,
-                       first_order_entropy)
+    from voynich.core.stats import (syllabify_latin, syllabify_latin_text,
+                                    bigram_transition_matrix, word_positional_entropy,
+                                    first_order_entropy)
     from collections import Counter
 
     text = get_reference_text(language, n_words=n_words, seed=seed, corpus=corpus)

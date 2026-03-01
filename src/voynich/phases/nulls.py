@@ -22,13 +22,14 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
-from corpus import VoynichCorpus, load_corpus, tokenize_eva_chars
-from stats import first_order_entropy, conditional_entropy, compute_all_entropy
-from fingerprint import (
+from voynich.core.corpus import VoynichCorpus, load_corpus, tokenize_eva_chars
+from voynich.core.stats import first_order_entropy, conditional_entropy, compute_all_entropy
+from voynich.core._paths import results_dir as _results_dir
+from voynich.analysis.fingerprint import (
     compute_profile, EntropyProfile, ReferenceLibrary,
     compute_voynich_profile, generate_null_text,
 )
-from strokes import decompose_glyph, stroke_positional_analysis, Stroke
+from voynich.analysis.strokes import decompose_glyph, stroke_positional_analysis, Stroke
 
 
 # ---------------------------------------------------------------------------
@@ -544,7 +545,7 @@ def run_null_analysis() -> Dict:
     # --- Build Reference Library (reused for A.2 + A.4) ---
     print("\n--- Building Reference Library (reused for all experiments) ---")
     try:
-        from reference import load_reference_corpus
+        from voynich.core.reference import load_reference_corpus
         ref_corpus = load_reference_corpus(verbose=False)
     except (FileNotFoundError, ImportError):
         ref_corpus = None
@@ -605,9 +606,9 @@ def run_null_analysis() -> Dict:
         disc = {'error': 'no stripping results'}
 
     # --- Save results ---
-    os.makedirs('results', exist_ok=True)
+    rd = _results_dir()
 
-    with open(os.path.join('results', 'null_char_profiles.json'), 'w') as f:
+    with open(os.path.join(rd, 'null_char_profiles.json'), 'w') as f:
         json.dump({
             'baseline': {'h1': round(compute_all_entropy(text)['H1'], 4),
                          'h2': round(compute_all_entropy(text)['H2'], 4),
@@ -615,17 +616,17 @@ def run_null_analysis() -> Dict:
             'characters': [asdict(p) for p in char_profiles],
         }, f, indent=2)
 
-    with open(os.path.join('results', 'stripping_experiment.json'), 'w') as f:
+    with open(os.path.join(rd, 'stripping_experiment.json'), 'w') as f:
         baseline_info = baseline_matches[0] if baseline_matches else {}
         json.dump({
             'baseline_match': baseline_info,
             'results': [asdict(r) for r in all_results],
         }, f, indent=2)
 
-    with open(os.path.join('results', 'stroke_null_validation.json'), 'w') as f:
+    with open(os.path.join(rd, 'stroke_null_validation.json'), 'w') as f:
         json.dump(stroke_val, f, indent=2)
 
-    with open(os.path.join('results', 'stripped_discriminant.json'), 'w') as f:
+    with open(os.path.join(rd, 'stripped_discriminant.json'), 'w') as f:
         json.dump(disc, f, indent=2, default=str)
 
     print(f"\n  Results saved to results/")

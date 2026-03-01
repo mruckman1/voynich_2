@@ -26,9 +26,10 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 
-from corpus import load_corpus, VoynichCorpus, tokenize_eva_chars
-from stats import cohens_d, log_bayes_factor, bootstrap_ci, first_order_entropy
-from fingerprint import generate_null_text
+from voynich.core.corpus import load_corpus, VoynichCorpus, tokenize_eva_chars
+from voynich.core.stats import cohens_d, log_bayes_factor, bootstrap_ci, first_order_entropy
+from voynich.core._paths import results_dir as _results_dir
+from voynich.analysis.fingerprint import generate_null_text
 
 
 # ---------------------------------------------------------------------------
@@ -165,15 +166,15 @@ def evaluate_hypotheses(results: Dict) -> List[Hypothesis]:
 
 def _list_results() -> List[str]:
     """List available result files."""
-    results_dir = 'results'
-    if not os.path.isdir(results_dir):
+    rd = _results_dir()
+    if not os.path.isdir(rd):
         return []
-    return os.listdir(results_dir)
+    return os.listdir(rd)
 
 
 def _load_result(filename: str) -> Any:
     """Load a result JSON file."""
-    path = os.path.join('results', filename)
+    path = os.path.join(_results_dir(), filename)
     if not os.path.exists(path):
         return {}
     with open(path) as f:
@@ -274,10 +275,10 @@ def comprehensive_null_test(
     # Define metrics
     metrics = {
         'H1': lambda t, txt: first_order_entropy(txt),
-        'H2': lambda t, txt: __import__('stats').conditional_entropy(txt, order=1),
-        'word_H1': lambda t, txt: __import__('stats').word_unigram_entropy(t),
+        'H2': lambda t, txt: __import__('voynich.core.stats', fromlist=['conditional_entropy']).conditional_entropy(txt, order=1),
+        'word_H1': lambda t, txt: __import__('voynich.core.stats', fromlist=['word_unigram_entropy']).word_unigram_entropy(t),
         'mean_word_length': lambda t, txt: float(np.mean([len(w) for w in t])) if t else 0,
-        'zipf_exponent': lambda t, txt: __import__('stats').zipf_analysis(t).get('zipf_exponent', 0),
+        'zipf_exponent': lambda t, txt: __import__('voynich.core.stats', fromlist=['zipf_analysis']).zipf_analysis(t).get('zipf_exponent', 0),
     }
 
     results = {}
@@ -359,10 +360,15 @@ def _file_sha256(filepath: str) -> str:
 
 
 def generate_reproducibility_manifest(
-    results_dir: str = 'results',
-    data_dir: str = 'data',
+    results_dir: str = None,
+    data_dir: str = None,
 ) -> Dict:
     """Generate a reproducibility manifest."""
+    if results_dir is None:
+        results_dir = str(_results_dir())
+    if data_dir is None:
+        from voynich.core._paths import data_dir as _data_dir
+        data_dir = str(_data_dir())
     manifest = {
         'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
         'python_version': sys.version,
@@ -458,8 +464,8 @@ def run_sensitivity_analyses(corpus: VoynichCorpus) -> List[SensitivityResult]:
     results = []
 
     # Sensitivity to grid nucleus cluster count
-    from grid_validate import build_grid_from_tokens
-    from strokes import syllable_sequence_stats
+    from voynich.phases.grid_validate import build_grid_from_tokens
+    from voynich.analysis.strokes import syllable_sequence_stats
 
     def _grid_occupancy(n_nuclei):
         grid = build_grid_from_tokens(tokens, n_nucleus_clusters=n_nuclei)
@@ -471,7 +477,7 @@ def run_sensitivity_analyses(corpus: VoynichCorpus) -> List[SensitivityResult]:
     ))
 
     # Sensitivity to subsample size for H1
-    from stats import first_order_entropy
+    from voynich.core.stats import first_order_entropy
 
     def _h1_at_n(n_tokens):
         subset = tokens[:n_tokens]
@@ -494,7 +500,7 @@ def run_sensitivity_analyses(corpus: VoynichCorpus) -> List[SensitivityResult]:
 
 def run_scholarly_validation() -> Dict:
     """Run all Workstream G validation and print/save results."""
-    os.makedirs('results', exist_ok=True)
+    rd = _results_dir()
 
     print("=" * 70)
     print("WORKSTREAM G: SCHOLARLY VALIDATION FRAMEWORK")
@@ -514,7 +520,7 @@ def run_scholarly_validation() -> Dict:
         result_str = f'{h.result:.4f}' if h.result is not None else 'N/A'
         print(f"  {h.id:<5} {passed_str:>6} {result_str:>10} {h.description[:50]}")
 
-    with open('results/hypotheses_preregistered.json', 'w') as f:
+    with open(os.path.join(rd, 'hypotheses_preregistered.json'), 'w') as f:
         json.dump([asdict(h) for h in hypotheses], f, indent=2)
 
     # G.2: Comprehensive Null Testing
@@ -538,7 +544,7 @@ def run_scholarly_validation() -> Dict:
         null_data[metric_name] = {
             nt: asdict(nr) for nt, nr in type_results.items()
         }
-    with open('results/null_test_results.json', 'w') as f:
+    with open(os.path.join(rd, 'null_test_results.json'), 'w') as f:
         json.dump(null_data, f, indent=2)
 
     # G.3: Effect Sizes
@@ -563,7 +569,7 @@ def run_scholarly_validation() -> Dict:
         print(f"  {r.metric_name:<20} {r.point_estimate:>10.4f} {ci_str:>20} "
               f"{r.cohens_d_value:>6.2f} {r.interpretation:>10}")
 
-    with open('results/effect_sizes.json', 'w') as f:
+    with open(os.path.join(rd, 'effect_sizes.json'), 'w') as f:
         json.dump([asdict(r) for r in effect_reports], f, indent=2)
 
     # G.4: Reproducibility Manifest
@@ -575,7 +581,7 @@ def run_scholarly_validation() -> Dict:
     print(f"  Data files: {len(manifest['data_hashes'])}")
     print(f"  Result files: {len(manifest['result_hashes'])}")
 
-    with open('results/reproducibility_manifest.json', 'w') as f:
+    with open(os.path.join(rd, 'reproducibility_manifest.json'), 'w') as f:
         json.dump(manifest, f, indent=2)
 
     # G.5: Sensitivity Analysis
@@ -587,7 +593,7 @@ def run_scholarly_validation() -> Dict:
         for val, metric in zip(s.parameter_values, s.metric_values):
             print(f"    {val}: {metric:.4f}")
 
-    with open('results/sensitivity.json', 'w') as f:
+    with open(os.path.join(rd, 'sensitivity.json'), 'w') as f:
         json.dump([asdict(s) for s in sensitivities], f, indent=2)
 
     # Summary

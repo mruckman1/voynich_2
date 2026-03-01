@@ -22,13 +22,14 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 from scipy.stats import ks_2samp, chi2_contingency
 
-from corpus import load_corpus, VoynichCorpus, VOYNICH_SECTIONS, tokenize_eva_chars
-from stats import cosine_similarity
-from strokes import (
+from voynich.core.corpus import load_corpus, VoynichCorpus, VOYNICH_SECTIONS, tokenize_eva_chars
+from voynich.core.stats import cosine_similarity
+from voynich.core._paths import results_dir as _results_dir
+from voynich.analysis.strokes import (
     SyllabaryGrid, build_ventris_grid, decompose_glyph,
     segment_token_as_syllables, syllable_sequence_stats,
 )
-from grid_refine import (
+from voynich.phases.grid_refine import (
     build_context_vectors, pairwise_similarity_matrix,
     hierarchical_cluster, merge_grid_categories,
     assess_onset_merging,
@@ -504,7 +505,7 @@ def section_grid_consistency(
 
 def run_grid_validation() -> Dict:
     """Run all Workstream E tests and print/save results."""
-    os.makedirs('results', exist_ok=True)
+    rd = _results_dir()
 
     print("=" * 70)
     print("WORKSTREAM E: GRID VALIDATION AND GAP ANALYSIS")
@@ -540,7 +541,7 @@ def run_grid_validation() -> Dict:
         print(f"  vs {name}: occupancy diff = "
               f"{comp['occupancy_diff']:.2f}")
 
-    with open('results/grid_gaps.json', 'w') as f:
+    with open(os.path.join(rd, 'grid_gaps.json'), 'w') as f:
         json.dump(asdict(e1), f, indent=2)
 
     # E.2: Frequency Distribution
@@ -555,7 +556,7 @@ def run_grid_validation() -> Dict:
     for cell, freq in e2.top_cells[:5]:
         print(f"    {cell}: {freq:,}")
 
-    with open('results/grid_frequency.json', 'w') as f:
+    with open(os.path.join(rd, 'grid_frequency.json'), 'w') as f:
         json.dump({
             'n_cells': e2.n_cells,
             'zipf_exponent': e2.zipf_exponent,
@@ -588,7 +589,7 @@ def run_grid_validation() -> Dict:
         marker = "OK" if stab >= 0.9 else ("WEAK" if stab >= 0.5 else "UNSTABLE")
         print(f"    {cell}: {stab:.1%} [{marker}]")
 
-    with open('results/grid_stability.json', 'w') as f:
+    with open(os.path.join(rd, 'grid_stability.json'), 'w') as f:
         json.dump(asdict(e3), f, indent=2)
 
     # E.4: Cross-Section Consistency
@@ -607,7 +608,7 @@ def run_grid_validation() -> Dict:
     print(f"  Min Jaccard:  {e4.min_jaccard:.4f} ({e4.min_jaccard_section})")
     print(f"  >> Consistent: {e4.consistent}")
 
-    with open('results/grid_sections.json', 'w') as f:
+    with open(os.path.join(rd, 'grid_sections.json'), 'w') as f:
         json.dump(asdict(e4), f, indent=2)
 
     # Summary

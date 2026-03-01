@@ -10,20 +10,23 @@ Both approaches are grounded in one confirmed empirical finding: EVA composition
 
 ```bash
 uv sync
-python cli.py corpus          # Load and summarize the EVA corpus
-python cli.py reference       # Show reference corpus summary
-python cli.py strokes         # Approach 1: stroke-level syllabary analysis
-python cli.py fingerprint     # Approach 2: information-theoretic fingerprinting
-python cli.py both            # Run both approaches
-python cli.py nulls           # Phase 2A: null character identification
-python cli.py grid            # Phase 2B: syllabary grid refinement
-python cli.py phase2          # Run both Phase 2 analyses
-python cli.py degeneracy      # Phase 3D: break substitution vs syllabary degeneracy
-python cli.py grid-validate   # Phase 3E: validate syllabary grid
-python cli.py syllable-match  # Phase 3F: syllable-level language matching
-python cli.py validate-all    # Phase 3G: scholarly validation framework
-python cli.py phase3          # Run all Phase 3 workstreams
+uv pip install -e .
+voynich corpus            # Load and summarize the EVA corpus
+voynich reference         # Show reference corpus summary
+voynich strokes           # Approach 1: stroke-level syllabary analysis
+voynich fingerprint       # Approach 2: information-theoretic fingerprinting
+voynich both              # Run both approaches
+voynich nulls             # Phase 2A: null character identification
+voynich grid              # Phase 2B: syllabary grid refinement
+voynich phase2            # Run both Phase 2 analyses
+voynich degeneracy        # Phase 3D: break substitution vs syllabary degeneracy
+voynich grid-validate     # Phase 3E: validate syllabary grid
+voynich syllable-match    # Phase 3F: syllable-level language matching
+voynich validate-all      # Phase 3G: scholarly validation framework
+voynich phase3            # Run all Phase 3 workstreams
 ```
+
+Alternatively, use `python -m voynich <command>` without installing.
 
 Requires Python 3.12+, NumPy, and SciPy. The EVA transcription data (IVTFF format) should be placed in `data/corpus/`.
 
@@ -31,25 +34,32 @@ Requires Python 3.12+, NumPy, and SciPy. The EVA transcription data (IVTFF forma
 
 ```
 voynich_2/
-├── cli.py               # Entry point — run analyses from the command line
-├── corpus.py            # IVTFF parser, EVA tokenizer, corpus access by section/scribe/language
-├── reference.py         # Reference corpus loading, RTF conversion, syllable-level stats
-├── strokes.py           # Approach 1: stroke decomposition, positional analysis, Ventris grid
-├── fingerprint.py       # Approach 2: entropy profiling, reference library, profile matching
-├── nulls.py             # Phase 2A: null character identification and stripping experiments
-├── grid_refine.py       # Phase 2B: syllabary grid refinement via distributional clustering
-├── degeneracy.py        # Phase 3D: substitution vs syllabary degeneracy tests
-├── grid_validate.py     # Phase 3E: grid gap analysis, stability, and section consistency
-├── syllable_match.py    # Phase 3F: CV labeling, retranscription, language matching
-├── scholarly.py         # Phase 3G: pre-registration, null testing, effect sizes, sensitivity
-├── stats.py             # Entropy, Zipf, bigram matrices, MI, TTR, Latin syllabifier, DTW
-├── ciphers.py           # Historical cipher implementations + encoding simulators
+├── pyproject.toml               # Project metadata, dependencies, console_scripts
+├── src/voynich/                 # Python package (installed via `uv pip install -e .`)
+│   ├── __init__.py              # Package root
+│   ├── __main__.py              # python -m voynich support
+│   ├── cli.py                   # Entry point — run analyses from the command line
+│   ├── core/                    # Foundation modules
+│   │   ├── corpus.py            # IVTFF parser, EVA tokenizer, corpus access
+│   │   ├── stats.py             # Entropy, Zipf, bigram matrices, MI, TTR, DTW
+│   │   ├── ciphers.py           # Historical cipher implementations + encoding simulators
+│   │   └── reference.py         # Reference corpus loading, RTF conversion, syllable stats
+│   ├── analysis/                # Main analysis approaches
+│   │   ├── strokes.py           # Approach 1: stroke decomposition, Ventris grid
+│   │   └── fingerprint.py       # Approach 2: entropy profiling, profile matching
+│   └── phases/                  # Phase 2 and Phase 3 workstreams
+│       ├── nulls.py             # Phase 2A: null character identification
+│       ├── grid_refine.py       # Phase 2B: syllabary grid refinement
+│       ├── degeneracy.py        # Phase 3D: substitution vs syllabary tests
+│       ├── grid_validate.py     # Phase 3E: grid gap analysis, stability
+│       ├── syllable_match.py    # Phase 3F: CV labeling, language matching
+│       └── scholarly.py         # Phase 3G: pre-registration, null testing
 ├── data/
-│   ├── corpus/          # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
-│   └── reference/       # Real historical corpora organized by language (not in git)
-│       └── latin/       # Circa Instans, De Viribus Herbarum
-├── results/             # JSON output from analysis runs
-└── archive/             # Previous codebase (consonant-skeleton approach — deprecated)
+│   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
+│   └── reference/               # Real historical corpora organized by language (not in git)
+│       └── latin/               # Circa Instans, De Viribus Herbarum
+├── results/                     # JSON output from analysis runs
+└── archive/                     # Previous codebase (consonant-skeleton approach — deprecated)
 ```
 
 ## Approach 1: Stroke-Level Syllabary Analysis
@@ -60,11 +70,11 @@ This approach follows the Ventris method: map the script's internal structure (w
 
 | Phase | Description | Module |
 |-------|-------------|--------|
-| 1.1 | **Stroke Decomposition** — Decompose EVA characters into 11 atomic stroke primitives (loop, open_curve, vertical, hook, descender, ascender, crossbar, sigmoid, plume, connector, tail). Covers all 23 single EVA characters + 17 ligatures. | `strokes.py` |
-| 1.2 | **Positional Analysis** — Compute P(stroke \| position) for initial/medial/final positions. Measure MI(stroke, position) and chi-squared vs random/alphabetic null models. Strong positional constraints = syllabic structure. | `strokes.py` |
-| 1.3 | **Ventris Grid** — Build a consonant x vowel grid grouping glyphs by shared initial stroke (onset) and final stroke (nucleus). Compare occupancy against Linear B, hiragana, and Cypriot syllabaries. | `strokes.py` |
-| 1.4 | **Token Segmentation** — Re-analyze Voynich tokens as sequences of syllable units from the grid. Compute syllable-level entropy, TTR, and bigram statistics. | `strokes.py` |
-| 1.5 | **Discriminant Validation** — Test whether the syllabary structure discriminates real Voynich text from character-shuffled null text (z-score on H2). | `strokes.py` |
+| 1.1 | **Stroke Decomposition** — Decompose EVA characters into 11 atomic stroke primitives (loop, open_curve, vertical, hook, descender, ascender, crossbar, sigmoid, plume, connector, tail). Covers all 23 single EVA characters + 17 ligatures. | `analysis/strokes.py` |
+| 1.2 | **Positional Analysis** — Compute P(stroke \| position) for initial/medial/final positions. Measure MI(stroke, position) and chi-squared vs random/alphabetic null models. Strong positional constraints = syllabic structure. | `analysis/strokes.py` |
+| 1.3 | **Ventris Grid** — Build a consonant x vowel grid grouping glyphs by shared initial stroke (onset) and final stroke (nucleus). Compare occupancy against Linear B, hiragana, and Cypriot syllabaries. | `analysis/strokes.py` |
+| 1.4 | **Token Segmentation** — Re-analyze Voynich tokens as sequences of syllable units from the grid. Compute syllable-level entropy, TTR, and bigram statistics. | `analysis/strokes.py` |
+| 1.5 | **Discriminant Validation** — Test whether the syllabary structure discriminates real Voynich text from character-shuffled null text (z-score on H2). | `analysis/strokes.py` |
 
 ## Approach 2: Information-Theoretic Fingerprinting
 
@@ -72,11 +82,11 @@ Instead of decoding first and checking after, characterize the Voynich text's st
 
 | Phase | Description | Module |
 |-------|-------------|--------|
-| 2.1 | **Voynich Entropy Profile** — Compute a 37-dimensional vector: H1/H2/H3 (character), word entropy, MI at lags 1–10, intra-token MI, positional entropy at 10 positions, word-length entropy, Zipf exponent, TTR at 5 corpus sizes, bigram matrix entropy. | `fingerprint.py`, `stats.py` |
-| 2.2 | **Reference Library** — Build equivalent profiles for 7 languages (Latin, Italian, German, Spanish, Hebrew, Arabic, Occitan) x 9 encoding schemes (raw, simple substitution, polyalphabetic, homophonic, nomenclator, syllabic, abbreviation light/heavy, null insertion) = 63 combinations. Uses real historical corpora when available (`reference.py`), falling back to synthetic text from word lists (`ciphers.py`). | `fingerprint.py`, `reference.py`, `ciphers.py` |
-| 2.3 | **Profile Matching** — Rank reference profiles by cosine similarity to the Voynich vector. Compute pairwise confusion matrix to identify which combinations are distinguishable. | `fingerprint.py` |
-| 2.4 | **Section Differentiation** — Compute per-section profiles (herbal A/B, astronomical, biological, cosmological, pharmaceutical, recipes) and match independently. Tests whether sections encode different languages or use different schemes. | `fingerprint.py` |
-| 2.5 | **Discriminant Validation** — Generate null text (shuffle, random, Markov) and verify that real Voynich matches reference profiles significantly better than null text does. | `fingerprint.py` |
+| 2.1 | **Voynich Entropy Profile** — Compute a 37-dimensional vector: H1/H2/H3 (character), word entropy, MI at lags 1–10, intra-token MI, positional entropy at 10 positions, word-length entropy, Zipf exponent, TTR at 5 corpus sizes, bigram matrix entropy. | `analysis/fingerprint.py`, `core/stats.py` |
+| 2.2 | **Reference Library** — Build equivalent profiles for 7 languages (Latin, Italian, German, Spanish, Hebrew, Arabic, Occitan) x 9 encoding schemes (raw, simple substitution, polyalphabetic, homophonic, nomenclator, syllabic, abbreviation light/heavy, null insertion) = 63 combinations. Uses real historical corpora when available (`reference.py`), falling back to synthetic text from word lists (`ciphers.py`). | `analysis/fingerprint.py`, `core/reference.py`, `core/ciphers.py` |
+| 2.3 | **Profile Matching** — Rank reference profiles by cosine similarity to the Voynich vector. Compute pairwise confusion matrix to identify which combinations are distinguishable. | `analysis/fingerprint.py` |
+| 2.4 | **Section Differentiation** — Compute per-section profiles (herbal A/B, astronomical, biological, cosmological, pharmaceutical, recipes) and match independently. Tests whether sections encode different languages or use different schemes. | `analysis/fingerprint.py` |
+| 2.5 | **Discriminant Validation** — Generate null text (shuffle, random, Markov) and verify that real Voynich matches reference profiles significantly better than null text does. | `analysis/fingerprint.py` |
 
 ## Phase 2A: Null Character Identification
 
@@ -84,10 +94,10 @@ Some EVA characters may be meaningless padding (nulls) inserted to obscure the p
 
 | Phase | Description | Module |
 |-------|-------------|--------|
-| 2A.1 | **Per-Character Information Content** — For each EVA glyph, compute: frequency/rank, H(next\|c) and H(prev\|c), MI(char, position_in_token), and H1/H2 change after removal. Combine into a composite `null_score`. | `nulls.py` |
-| 2A.2 | **Systematic Stripping** — Strip each character individually, re-profile, and match against the reference library. Test top-5 pairs and top-3 triple. Track whether stripping shifts the match away from `null_insertion`. | `nulls.py` |
-| 2A.3 | **Stroke Cross-Validation** — Check whether top null candidates' stroke components have low positional MI (expected for nulls, which appear at any position). | `nulls.py` |
-| 2A.4 | **Discriminant Validation** — Verify that stripped text still discriminates from shuffled null text (z-score > 2.0). | `nulls.py` |
+| 2A.1 | **Per-Character Information Content** — For each EVA glyph, compute: frequency/rank, H(next\|c) and H(prev\|c), MI(char, position_in_token), and H1/H2 change after removal. Combine into a composite `null_score`. | `phases/nulls.py` |
+| 2A.2 | **Systematic Stripping** — Strip each character individually, re-profile, and match against the reference library. Test top-5 pairs and top-3 triple. Track whether stripping shifts the match away from `null_insertion`. | `phases/nulls.py` |
+| 2A.3 | **Stroke Cross-Validation** — Check whether top null candidates' stroke components have low positional MI (expected for nulls, which appear at any position). | `phases/nulls.py` |
+| 2A.4 | **Discriminant Validation** — Verify that stripped text still discriminates from shuffled null text (z-score > 2.0). | `phases/nulls.py` |
 
 ## Phase 2B: Syllabary Grid Refinement
 
@@ -95,10 +105,10 @@ The original Ventris grid (7 onsets x 11 nuclei) was only 27.3% occupied — too
 
 | Phase | Description | Module |
 |-------|-------------|--------|
-| 2B.1 | **Nucleus Merging** — Build context vectors (co-occurrence with onsets) for each nucleus category. Hierarchical agglomerative clustering (cosine similarity, average linkage) with cuts at 4/5/6/7 clusters. | `grid_refine.py` |
-| 2B.2 | **Onset Merging** — Same approach for onsets, conditional on any pair exceeding 0.85 similarity. | `grid_refine.py` |
-| 2B.3 | **Grid Validation Sweep** — Score each candidate grid on occupancy (30%), discriminant z-score (25%), syllable bigram H2 (25%), and syllables/token (20%). | `grid_refine.py` |
-| 2B.4 | **Language Narrowing** — Map best grid dimensions against known syllabary sizes (Japanese kana, Romance CV, Latin, Germanic, Semitic). | `grid_refine.py` |
+| 2B.1 | **Nucleus Merging** — Build context vectors (co-occurrence with onsets) for each nucleus category. Hierarchical agglomerative clustering (cosine similarity, average linkage) with cuts at 4/5/6/7 clusters. | `phases/grid_refine.py` |
+| 2B.2 | **Onset Merging** — Same approach for onsets, conditional on any pair exceeding 0.85 similarity. | `phases/grid_refine.py` |
+| 2B.3 | **Grid Validation Sweep** — Score each candidate grid on occupancy (30%), discriminant z-score (25%), syllable bigram H2 (25%), and syllables/token (20%). | `phases/grid_refine.py` |
+| 2B.4 | **Language Narrowing** — Map best grid dimensions against known syllabary sizes (Japanese kana, Romance CV, Latin, Germanic, Semitic). | `phases/grid_refine.py` |
 
 ## Phase 3: Breaking the Degeneracy
 
@@ -110,9 +120,9 @@ Three independent statistical tests compare how well the Voynich text's structur
 
 | Test | Description | Module |
 |------|-------------|--------|
-| D.1 | **Token Length Correlation** — Compare Voynich glyph-count distribution against Latin character-count and Latin syllable-count distributions using Pearson correlation and Earth Mover's Distance. | `degeneracy.py` |
-| D.2 | **Bigram Transition Structure** — Build Voynich char bigram matrix, find optimal permutation mapping to Latin char bigrams (substitution) and Latin syllable bigrams (syllabary) via the Hungarian algorithm, compare Frobenius distances. | `degeneracy.py` |
-| D.3 | **Position-Within-Token Entropy** — Compute H(unit\|position=k) curves for Voynich, Latin chars, and Latin syllables. Compare curve shapes via Dynamic Time Warping distance. | `degeneracy.py` |
+| D.1 | **Token Length Correlation** — Compare Voynich glyph-count distribution against Latin character-count and Latin syllable-count distributions using Pearson correlation and Earth Mover's Distance. | `phases/degeneracy.py` |
+| D.2 | **Bigram Transition Structure** — Build Voynich char bigram matrix, find optimal permutation mapping to Latin char bigrams (substitution) and Latin syllable bigrams (syllabary) via the Hungarian algorithm, compare Frobenius distances. | `phases/degeneracy.py` |
+| D.3 | **Position-Within-Token Entropy** — Compute H(unit\|position=k) curves for Voynich, Latin chars, and Latin syllables. Compare curve shapes via Dynamic Time Warping distance. | `phases/degeneracy.py` |
 
 ### Workstream E: Grid Validation
 
@@ -120,10 +130,10 @@ Four tests validate whether the 5x6 syllabary grid from Phase 2B is a genuine st
 
 | Test | Description | Module |
 |------|-------------|--------|
-| E.1 | **Gap Analysis** — Test whether the 16 empty cells form a systematic pattern (chi-squared) or are randomly distributed. Compare against Linear B, Cypriot, and Japanese kana gap patterns. | `grid_validate.py` |
-| E.2 | **Frequency Distribution** — Fit Zipf's law to grid cell usage frequencies. Test against theoretical Zipf via KS test. | `grid_validate.py` |
-| E.3 | **Bootstrap Stability** — Rebuild the grid 200 times from 50% subsamples. Measure Jaccard similarity of filled-cell sets across iterations. | `grid_validate.py` |
-| E.4 | **Cross-Section Consistency** — Build per-section grids and compare against the full-corpus grid. Test whether sections use the same syllabary. | `grid_validate.py` |
+| E.1 | **Gap Analysis** — Test whether the 16 empty cells form a systematic pattern (chi-squared) or are randomly distributed. Compare against Linear B, Cypriot, and Japanese kana gap patterns. | `phases/grid_validate.py` |
+| E.2 | **Frequency Distribution** — Fit Zipf's law to grid cell usage frequencies. Test against theoretical Zipf via KS test. | `phases/grid_validate.py` |
+| E.3 | **Bootstrap Stability** — Rebuild the grid 200 times from 50% subsamples. Measure Jaccard similarity of filled-cell sets across iterations. | `phases/grid_validate.py` |
+| E.4 | **Cross-Section Consistency** — Build per-section grids and compare against the full-corpus grid. Test whether sections use the same syllabary. | `phases/grid_validate.py` |
 
 ### Workstream F: Syllable-Level Language Matching
 
@@ -131,10 +141,10 @@ Convert the grid into an abstract syllabary, retranscribe the entire corpus, and
 
 | Step | Description | Module |
 |------|-------------|--------|
-| F.1 | **CV Labeling** — Assign frequency-ordered C_iV_j labels to each filled grid cell (C1=most common onset, V1=most common nucleus). | `syllable_match.py` |
-| F.2 | **Corpus Retranscription** — Convert every EVA token to a CV label sequence. Compute syllable-level entropy (H1, H2), TTR, and ambiguity rate. | `syllable_match.py` |
-| F.3 | **Syllable Bigram Matching** — For each candidate language, syllabify reference text, build syllable bigram matrix, find optimal permutation mapping via the Hungarian algorithm, rank by Frobenius distance. | `syllable_match.py` |
-| F.4 | **PMI Correlation** — Under the best-fit mapping, compute Pointwise Mutual Information for top-50 Voynich syllable bigrams and corresponding Latin bigrams. Pearson correlation measures structural similarity. | `syllable_match.py` |
+| F.1 | **CV Labeling** — Assign frequency-ordered C_iV_j labels to each filled grid cell (C1=most common onset, V1=most common nucleus). | `phases/syllable_match.py` |
+| F.2 | **Corpus Retranscription** — Convert every EVA token to a CV label sequence. Compute syllable-level entropy (H1, H2), TTR, and ambiguity rate. | `phases/syllable_match.py` |
+| F.3 | **Syllable Bigram Matching** — For each candidate language, syllabify reference text, build syllable bigram matrix, find optimal permutation mapping via the Hungarian algorithm, rank by Frobenius distance. | `phases/syllable_match.py` |
+| F.4 | **PMI Correlation** — Under the best-fit mapping, compute Pointwise Mutual Information for top-50 Voynich syllable bigrams and corresponding Latin bigrams. Pearson correlation measures structural similarity. | `phases/syllable_match.py` |
 
 ### Workstream G: Scholarly Validation Framework
 
@@ -142,11 +152,11 @@ A validation layer wrapping all Phase 3 experiments for reproducibility and stat
 
 | Component | Description | Module |
 |-----------|-------------|--------|
-| G.1 | **Pre-Registration** — Seven hypotheses with pre-specified metrics, directions, and thresholds, frozen before experiments run. | `scholarly.py` |
-| G.2 | **Null Testing** — Test key metrics against four null text types (shuffle, random, Markov, token-shuffle). Report z-scores, selectivity ratios, and discrimination. | `scholarly.py` |
-| G.3 | **Effect Sizes** — Cohen's d, bootstrap CIs, and Bayes factors for all main findings. | `scholarly.py` |
-| G.4 | **Reproducibility Manifest** — Python/NumPy/SciPy versions, random seeds, SHA256 hashes of all data and result files. | `scholarly.py` |
-| G.5 | **Sensitivity Analysis** — Vary grid cluster count and corpus size, track metric stability. | `scholarly.py` |
+| G.1 | **Pre-Registration** — Seven hypotheses with pre-specified metrics, directions, and thresholds, frozen before experiments run. | `phases/scholarly.py` |
+| G.2 | **Null Testing** — Test key metrics against four null text types (shuffle, random, Markov, token-shuffle). Report z-scores, selectivity ratios, and discrimination. | `phases/scholarly.py` |
+| G.3 | **Effect Sizes** — Cohen's d, bootstrap CIs, and Bayes factors for all main findings. | `phases/scholarly.py` |
+| G.4 | **Reproducibility Manifest** — Python/NumPy/SciPy versions, random seeds, SHA256 hashes of all data and result files. | `phases/scholarly.py` |
+| G.5 | **Sensitivity Analysis** — Vary grid cluster count and corpus size, track metric stability. | `phases/scholarly.py` |
 
 ## Integration
 
@@ -162,7 +172,7 @@ The approaches cross-validate across all phases:
 
 ### Voynich Corpus
 
-The project uses EVA (Extended Voynich Alphabet) transcription files in IVTFF format. The parser (`corpus.py`) supports three transcription sources with automatic preference ordering: ZL3b-n.txt > RF1b-e.txt > IT2a-n.txt.
+The project uses EVA (Extended Voynich Alphabet) transcription files in IVTFF format. The parser (`core/corpus.py`) supports three transcription sources with automatic preference ordering: ZL3b-n.txt > RF1b-e.txt > IT2a-n.txt.
 
 The corpus provides filtered access by:
 - **Section**: herbal_a, herbal_b, astronomical, biological, cosmological, pharmaceutical, recipes
@@ -171,13 +181,13 @@ The corpus provides filtered access by:
 
 ### Reference Corpora
 
-Real historical texts for fingerprint comparison live in `data/reference/<language>/`. These are not tracked in git — acquire and place them locally. The loader (`reference.py`) auto-discovers `.txt` files by language directory and handles RTF-to-text conversion automatically.
+Real historical texts for fingerprint comparison live in `data/reference/<language>/`. These are not tracked in git — acquire and place them locally. The loader (`core/reference.py`) auto-discovers `.txt` files by language directory and handles RTF-to-text conversion automatically.
 
 **Currently available (Latin):**
 - **Circa Instans** — Salernitan herbal/pharmaceutical text (~12th century, ~25,850 tokens)
 - **De Viribus Herbarum** (Macer Floridus) — Herbal poem, medical botany (~47,678 tokens)
 
-**To add a new corpus:** place a `.txt` file (plain text or RTF) in `data/reference/<language>/`. It will be automatically discovered, cleaned, and used by `fingerprint.py` on the next run. Languages without real corpora fall back to synthetic text from `ciphers.py`.
+**To add a new corpus:** place a `.txt` file (plain text or RTF) in `data/reference/<language>/`. It will be automatically discovered, cleaned, and used by `analysis/fingerprint.py` on the next run. Languages without real corpora fall back to synthetic text from `core/ciphers.py`.
 
 ## Results Summary
 

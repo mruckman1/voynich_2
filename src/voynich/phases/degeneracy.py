@@ -22,16 +22,17 @@ import numpy as np
 from scipy.optimize import linear_sum_assignment
 from scipy.stats import wasserstein_distance as emd
 
-from corpus import load_corpus, VoynichCorpus, tokenize_eva_chars
-from stats import (
+from voynich.core.corpus import load_corpus, VoynichCorpus, tokenize_eva_chars
+from voynich.core.stats import (
     syllabify_latin, syllabify_latin_text,
     bigram_transition_matrix, dtw_distance, frobenius_distance,
     bootstrap_ci, pearson_correlation, first_order_entropy,
 )
-from reference import (
+from voynich.core.reference import (
     load_reference_corpus, get_reference_text,
     get_reference_syllable_stats, ReferenceCorpus,
 )
+from voynich.core._paths import results_dir as _results_dir
 
 
 # ---------------------------------------------------------------------------
@@ -291,7 +292,7 @@ def bigram_structure_test(
     frob_syl = optimal_permutation_distance(v_mat, s_mat_trimmed)
 
     # JSD comparison
-    from stats import jensen_shannon_divergence
+    from voynich.core.stats import jensen_shannon_divergence
     v_flat = v_mat.flatten() + 1e-10
     v_flat /= v_flat.sum()
 
@@ -491,7 +492,7 @@ def positional_entropy_test(
 
 def run_degeneracy_analysis() -> Dict:
     """Run all Workstream D tests and print/save results."""
-    os.makedirs('results', exist_ok=True)
+    rd = _results_dir()
 
     print("=" * 70)
     print("WORKSTREAM D: SUBSTITUTION vs SYLLABARY DEGENERACY")
@@ -520,7 +521,7 @@ def run_degeneracy_analysis() -> Dict:
     print(f"  Null r(syl) mean:   {d1.null_r_syl_mean:.4f}")
     print(f"  >> D.1 VERDICT: {d1.verdict}")
 
-    with open('results/degeneracy_length.json', 'w') as f:
+    with open(os.path.join(rd, 'degeneracy_length.json'), 'w') as f:
         json.dump(asdict(d1), f, indent=2)
 
     # D.2: Bigram Structure
@@ -539,7 +540,7 @@ def run_degeneracy_analysis() -> Dict:
     print(f"  Selectivity syl:           {d2.selectivity_syl:.2f}x")
     print(f"  >> D.2 VERDICT: {d2.verdict}")
 
-    with open('results/degeneracy_bigram.json', 'w') as f:
+    with open(os.path.join(rd, 'degeneracy_bigram.json'), 'w') as f:
         json.dump(asdict(d2), f, indent=2)
 
     # D.3: Positional Entropy
@@ -559,7 +560,7 @@ def run_degeneracy_analysis() -> Dict:
     print(f"  Selectivity syl:    {d3.selectivity_syl:.2f}x")
     print(f"  >> D.3 VERDICT: {d3.verdict}")
 
-    with open('results/degeneracy_positional.json', 'w') as f:
+    with open(os.path.join(rd, 'degeneracy_positional.json'), 'w') as f:
         json.dump(asdict(d3), f, indent=2)
 
     # Overall verdict
@@ -584,7 +585,7 @@ def run_degeneracy_analysis() -> Dict:
         'd3_verdict': d3.verdict,
         'overall_verdict': overall,
     }
-    with open('results/degeneracy_verdict.json', 'w') as f:
+    with open(os.path.join(rd, 'degeneracy_verdict.json'), 'w') as f:
         json.dump(verdict_data, f, indent=2)
 
     return {

@@ -23,10 +23,11 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
-from corpus import (
+from voynich.core.corpus import (
     VoynichCorpus, load_corpus, tokenize_eva_chars,
     EVA_GLYPHS, EVA_LIGATURES_SORTED,
 )
+from voynich.core._paths import results_dir as _results_dir
 
 
 # ---------------------------------------------------------------------------
@@ -829,11 +830,10 @@ def run_stroke_analysis():
     print(f"  Discriminates (|z_H2| > 2.0): {'YES' if disc['discriminates'] else 'NO'}")
 
     # --- Save results ---
-    results_dir = os.path.join(os.path.dirname(__file__), 'results')
-    os.makedirs(results_dir, exist_ok=True)
+    rd = _results_dir()
 
     # Save positional analysis
-    with open(os.path.join(results_dir, 'stroke_positional.json'), 'w') as f:
+    with open(os.path.join(rd, 'stroke_positional.json'), 'w') as f:
         json.dump(pos_analysis, f, indent=2)
 
     # Save grid
@@ -845,7 +845,7 @@ def run_stroke_analysis():
         'n_filled': grid.n_filled,
         'n_total': grid.n_total,
     }
-    with open(os.path.join(results_dir, 'ventris_grid.json'), 'w') as f:
+    with open(os.path.join(rd, 'ventris_grid.json'), 'w') as f:
         json.dump(grid_data, f, indent=2)
 
     # Save syllable stats
@@ -854,17 +854,17 @@ def run_stroke_analysis():
     syl_stats_serializable['top_20_syllables'] = [
         {'syllable': s, 'count': c} for s, c in syl_stats.get('top_20_syllables', [])
     ]
-    with open(os.path.join(results_dir, 'syllable_stats.json'), 'w') as f:
+    with open(os.path.join(rd, 'syllable_stats.json'), 'w') as f:
         json.dump(syl_stats_serializable, f, indent=2, default=str)
 
     # Save discriminant results
     disc_serializable = {k: v for k, v in disc.items() if k != 'real'}
     disc_serializable['real_h1'] = disc['real'].get('syllable_h1', 0)
     disc_serializable['real_h2'] = disc['real'].get('syllable_h2', 0)
-    with open(os.path.join(results_dir, 'stroke_discriminant.json'), 'w') as f:
+    with open(os.path.join(rd, 'stroke_discriminant.json'), 'w') as f:
         json.dump(disc_serializable, f, indent=2)
 
-    print(f"\n  Results saved to {results_dir}/")
+    print(f"\n  Results saved to {rd}/")
     print("=" * 70)
 
     return {

@@ -15,6 +15,8 @@ from pathlib import Path
 from collections import Counter
 from typing import Dict, List, Tuple, Optional
 
+from voynich.core._paths import data_dir as _data_dir
+
 
 # ---------------------------------------------------------------------------
 # EVA Glyph Metadata (embedded — no JSON dependency)
@@ -518,7 +520,7 @@ def load_corpus(data_dir: str = None, verbose: bool = True) -> VoynichCorpus:
     Prefers: ZL3b-n.txt > RF1b-e.txt > IT2a-n.txt
     """
     if data_dir is None:
-        data_dir = str(Path(__file__).parent / 'data' / 'corpus')
+        data_dir = str(_data_dir('corpus'))
 
     preferred = [
         'ZL3b-n.txt',

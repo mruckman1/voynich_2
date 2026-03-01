@@ -22,21 +22,22 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 
-from corpus import load_corpus, VoynichCorpus, tokenize_eva_chars
-from stats import (
+from voynich.core.corpus import load_corpus, VoynichCorpus, tokenize_eva_chars
+from voynich.core.stats import (
     syllabify_latin, syllabify_latin_text,
     bigram_transition_matrix, cosine_similarity, jensen_shannon_divergence,
     frobenius_distance, bootstrap_ci, pearson_correlation, first_order_entropy,
 )
-from strokes import (
+from voynich.core._paths import results_dir as _results_dir
+from voynich.analysis.strokes import (
     SyllabaryGrid, build_ventris_grid, decompose_glyph,
     segment_token_as_syllables,
 )
-from reference import (
+from voynich.core.reference import (
     load_reference_corpus, get_reference_text,
     get_reference_syllable_stats, ReferenceCorpus,
 )
-from grid_validate import build_grid_from_tokens
+from voynich.phases.grid_validate import build_grid_from_tokens
 
 
 # ---------------------------------------------------------------------------
@@ -65,7 +66,7 @@ def assign_cv_labels(
     - Columns (nuclei) -> V1, V2, ..., Vm (ordered by total frequency)
     - Cell label = C_i + V_j
     """
-    from grid_refine import segment_token_merged
+    from voynich.phases.grid_refine import segment_token_merged
 
     # Build merge maps for this grid
     onset_merge, nucleus_merge = _build_merge_maps(grid)
@@ -552,7 +553,7 @@ def pmi_comparison(
 
 def run_syllable_matching() -> Dict:
     """Run all Workstream F tests and print/save results."""
-    os.makedirs('results', exist_ok=True)
+    rd = _results_dir()
 
     print("=" * 70)
     print("WORKSTREAM F: SYLLABLE-LEVEL RETRANSCRIPTION AND MATCHING")
@@ -574,7 +575,7 @@ def run_syllable_matching() -> Dict:
         print(f"    {label.cv_label} ({key}): {label.frequency:,} occurrences, "
               f"glyphs: {label.glyphs}")
 
-    with open('results/cv_labels.json', 'w') as f:
+    with open(os.path.join(rd, 'cv_labels.json'), 'w') as f:
         json.dump({k: asdict(v) for k, v in cv_labels.items()}, f, indent=2)
 
     # F.2: Retranscription
@@ -596,7 +597,7 @@ def run_syllable_matching() -> Dict:
     for orig, retrans_str in retrans.sample_retranscriptions[:5]:
         print(f"    {orig} -> {retrans_str}")
 
-    with open('results/retranscription_stats.json', 'w') as f:
+    with open(os.path.join(rd, 'retranscription_stats.json'), 'w') as f:
         json.dump(asdict(retrans), f, indent=2)
 
     # F.3: Language Matching
@@ -611,7 +612,7 @@ def run_syllable_matching() -> Dict:
               f"{r.jsd:>8.4f} {r.selectivity:>11.2f}x "
               f"{r.n_ref_syllable_types:>10}")
 
-    with open('results/syllable_language_ranking.json', 'w') as f:
+    with open(os.path.join(rd, 'syllable_language_ranking.json'), 'w') as f:
         json.dump([asdict(r) for r in lang_results], f, indent=2)
 
     # F.4: PMI Comparison
@@ -625,7 +626,7 @@ def run_syllable_matching() -> Dict:
     print(f"  Common bigrams:        {pmi_result.n_common_bigrams}")
     print(f"  >> Significant: {pmi_result.significant}")
 
-    with open('results/syllable_pmi.json', 'w') as f:
+    with open(os.path.join(rd, 'syllable_pmi.json'), 'w') as f:
         json.dump(asdict(pmi_result), f, indent=2)
 
     # Summary

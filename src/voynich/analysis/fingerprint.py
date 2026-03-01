@@ -21,8 +21,8 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
-from corpus import VoynichCorpus, load_corpus, VOYNICH_SECTIONS
-from stats import (
+from voynich.core.corpus import VoynichCorpus, load_corpus, VOYNICH_SECTIONS
+from voynich.core.stats import (
     compute_all_entropy, first_order_entropy, conditional_entropy,
     word_unigram_entropy, word_conditional_entropy,
     zipf_analysis, word_positional_entropy,
@@ -31,11 +31,12 @@ from stats import (
     token_length_entropy, type_token_ratio_at_n,
     cosine_similarity, jensen_shannon_divergence,
 )
-from ciphers import (
+from voynich.core.ciphers import (
     ENCODING_SCHEMES, REFERENCE_LANGUAGES,
     generate_reference_text, apply_encoding,
 )
-from reference import load_reference_corpus, get_reference_text, ReferenceCorpus
+from voynich.core.reference import load_reference_corpus, get_reference_text, ReferenceCorpus
+from voynich.core._paths import results_dir as _results_dir
 
 
 # ---------------------------------------------------------------------------
@@ -625,20 +626,19 @@ def run_fingerprint_analysis():
               "methods match nearly as well")
 
     # --- Save results ---
-    results_dir = os.path.join(os.path.dirname(__file__), 'results')
-    os.makedirs(results_dir, exist_ok=True)
+    rd = _results_dir()
 
     # Save Voynich profile
-    with open(os.path.join(results_dir, 'voynich_profile.json'), 'w') as f:
+    with open(os.path.join(rd, 'voynich_profile.json'), 'w') as f:
         json.dump(voynich.to_dict(), f, indent=2, default=str)
 
     # Save section profiles
     section_data = {s: p.to_dict() for s, p in section_profiles.items()}
-    with open(os.path.join(results_dir, 'section_profiles.json'), 'w') as f:
+    with open(os.path.join(rd, 'section_profiles.json'), 'w') as f:
         json.dump(section_data, f, indent=2, default=str)
 
     # Save match rankings
-    with open(os.path.join(results_dir, 'match_rankings.json'), 'w') as f:
+    with open(os.path.join(rd, 'match_rankings.json'), 'w') as f:
         json.dump(matches, f, indent=2)
 
     # Save discriminant results
@@ -651,10 +651,10 @@ def run_fingerprint_analysis():
             }
         else:
             disc_serializable[k] = v
-    with open(os.path.join(results_dir, 'discriminant_validation.json'), 'w') as f:
+    with open(os.path.join(rd, 'discriminant_validation.json'), 'w') as f:
         json.dump(disc_serializable, f, indent=2, default=str)
 
-    print(f"\n  Results saved to {results_dir}/")
+    print(f"\n  Results saved to {rd}/")
     print("=" * 70)
 
     return {
