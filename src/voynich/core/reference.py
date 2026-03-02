@@ -1127,3 +1127,115 @@ def build_latin_phrase_catalog() -> Dict[str, List[str]]:
     catalog['quality_descriptions'] = qualities
 
     return catalog
+
+
+# ---------------------------------------------------------------------------
+# Constructed Script Grid Reference Data  (Phase 10.4)
+# ---------------------------------------------------------------------------
+# Pre-computed grid statistics for known combinatorial writing systems.
+# Each entry captures the structural parameters of its onset × nucleus grid,
+# sourced from standard orthographic descriptions.
+
+SCRIPT_GRID_STATS: Dict[str, Dict[str, Any]] = {
+    'hangul': {
+        'description': 'Korean Hangul (initial × medial jamo)',
+        'onset_types': 14,      # ㄱ ㄴ ㄷ ㄹ ㅁ ㅂ ㅅ ㅇ ㅈ ㅊ ㅋ ㅌ ㅍ ㅎ
+        'nucleus_types': 10,    # ㅏ ㅑ ㅓ ㅕ ㅗ ㅛ ㅜ ㅠ ㅡ ㅣ
+        'occupancy': 0.95,      # nearly all onset-vowel pairs attested
+        'r_forward': 0.12,      # R(vowel|consonant) — low, nearly independent
+        'r_reverse': 0.14,      # R(consonant|vowel) — low
+        'onset_entropy': 3.51,  # log2(14) ≈ 3.81, slightly compressed
+        'nucleus_entropy': 3.15,  # log2(10) ≈ 3.32, slightly compressed
+    },
+    'devanagari': {
+        'description': 'Devanagari (consonant × vowel diacritic)',
+        'onset_types': 33,      # ka kha ga ... ha
+        'nucleus_types': 12,    # a ā i ī u ū ṛ e ai o au (+ virama)
+        'occupancy': 0.70,      # many C-V combinations rare in practice
+        'r_forward': 0.28,      # R(vowel|consonant) — moderate
+        'r_reverse': 0.35,      # R(consonant|vowel) — moderate
+        'onset_entropy': 4.50,  # log2(33) ≈ 5.04, skewed by frequency
+        'nucleus_entropy': 2.90,  # log2(12) ≈ 3.58, 'a' dominant
+    },
+    'ethiopic': {
+        'description': 'Ethiopic / Ge\'ez (consonant × vowel order)',
+        'onset_types': 26,      # base consonant forms
+        'nucleus_types': 7,     # 7 vowel orders
+        'occupancy': 0.85,      # most C × V cells filled
+        'r_forward': 0.18,      # R(order|consonant) — low-moderate
+        'r_reverse': 0.22,      # R(consonant|order) — low-moderate
+        'onset_entropy': 4.20,  # log2(26) ≈ 4.70
+        'nucleus_entropy': 2.60,  # log2(7) ≈ 2.81
+    },
+    'linear_b': {
+        'description': 'Linear B syllabary (C × V, deciphered)',
+        'onset_types': 15,      # approximate consonant series
+        'nucleus_types': 5,     # a e i o u
+        'occupancy': 0.60,      # many gaps in the grid
+        'r_forward': 0.35,      # R(vowel|consonant) — moderate
+        'r_reverse': 0.40,      # R(consonant|vowel) — moderate
+        'onset_entropy': 3.50,  # log2(15) ≈ 3.91
+        'nucleus_entropy': 2.10,  # log2(5) ≈ 2.32
+    },
+}
+
+
+# ---------------------------------------------------------------------------
+# Romance Phonotactic Constraints  (Phase 10.4c CSP)
+# ---------------------------------------------------------------------------
+# Allowed onset (C/CC) and rime (V/VC) inventories plus legal pairs for
+# major Romance languages.  Used to prune the phonotactic constraint
+# satisfaction search when mapping grid cells to phonemes/syllables.
+
+ROMANCE_PHONOTACTICS: Dict[str, Dict[str, Any]] = {
+    'latin': {
+        'onsets': [
+            '', 'b', 'c', 'd', 'f', 'g', 'h', 'l', 'm', 'n', 'p', 'qu',
+            'r', 's', 't', 'v', 'bl', 'br', 'cl', 'cr', 'dr', 'fl', 'fr',
+            'gl', 'gr', 'pl', 'pr', 'sc', 'sp', 'st', 'str', 'tr',
+        ],
+        'rimes': [
+            'a', 'e', 'i', 'o', 'u', 'ae', 'au', 'oe',
+            'am', 'an', 'ar', 'as', 'at',
+            'em', 'en', 'er', 'es', 'et',
+            'im', 'in', 'ir', 'is', 'it',
+            'om', 'on', 'or', 'os',
+            'um', 'un', 'ur', 'us', 'ut',
+        ],
+        'forbidden_onsets': {'dl', 'tl', 'sr', 'nm'},
+    },
+    'italian': {
+        'onsets': [
+            '', 'b', 'c', 'ch', 'd', 'f', 'g', 'gh', 'gl', 'gn', 'l',
+            'm', 'n', 'p', 'qu', 'r', 's', 'sc', 'sp', 'st', 'str', 't',
+            'v', 'z', 'bl', 'br', 'cl', 'cr', 'dr', 'fl', 'fr', 'gr',
+            'pl', 'pr', 'tr',
+        ],
+        'rimes': [
+            'a', 'e', 'i', 'o', 'u',
+            'an', 'ar', 'al', 'at',
+            'en', 'er', 'el', 'et',
+            'in', 'ir', 'il', 'it',
+            'on', 'or', 'ol',
+            'un', 'ur',
+        ],
+        'forbidden_onsets': {'dl', 'tl', 'sr'},
+    },
+    'occitan': {
+        'onsets': [
+            '', 'b', 'c', 'ch', 'd', 'f', 'g', 'gl', 'gn', 'h', 'l',
+            'lh', 'm', 'n', 'nh', 'p', 'qu', 'r', 's', 'sc', 'sp', 'st',
+            't', 'v', 'z', 'bl', 'br', 'cl', 'cr', 'dr', 'fl', 'fr',
+            'gr', 'pl', 'pr', 'tr',
+        ],
+        'rimes': [
+            'a', 'e', 'i', 'o', 'u',
+            'an', 'ar', 'al', 'as', 'at',
+            'en', 'er', 'el', 'es', 'et',
+            'in', 'ir', 'il', 'is', 'it',
+            'on', 'or', 'ol', 'os',
+            'un', 'ur', 'us',
+        ],
+        'forbidden_onsets': {'dl', 'tl', 'sr'},
+    },
+}

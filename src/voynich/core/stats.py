@@ -1629,3 +1629,130 @@ def entropy_curve(text: str, max_order: int = 8) -> Dict[int, float]:
     for order in range(1, max_order + 1):
         curve[order] = conditional_entropy(text, order=order)
     return curve
+
+
+# ---------------------------------------------------------------------------
+# Token-Level Entropy with Smoothing & Back-off (Phase 10)
+# ---------------------------------------------------------------------------
+
+def token_conditional_entropy(
+    tokens: List[str],
+    order: int,
+) -> float:
+    """
+    Token-level conditional entropy H(W_t | W_{t-1}, ..., W_{t-order}).
+
+    For order 0, returns word_unigram_entropy(tokens).
+    For order >= 1, uses plug-in MLE: H(ngram) - H(context).
+    For order > 3 where sparsity causes upward bias, applies
+    interpolated back-off across sub-orders.
+    """
+    if order == 0:
+        return word_unigram_entropy(tokens)
+
+    n = len(tokens)
+    if n <= order:
+        return 0.0
+
+    if order <= 3:
+        # Direct plug-in (same formula as word_conditional_entropy)
+        return word_conditional_entropy(tokens, order=order)
+
+    # Interpolated back-off for order > 3:
+    # Higher-order MLE estimates suffer from positive bias when most
+    # contexts are seen only once.  Interpolate across sub-orders,
+    # weighting by how much data each order has.
+    h_estimates = []
+    weights = []
+    for sub_order in range(1, order + 1):
+        h_sub = word_conditional_entropy(tokens, order=sub_order)
+
+        # Weight: mean context count determines reliability
+        n_contexts = n - sub_order
+        if n_contexts <= 0:
+            continue
+        ngram_counts: Counter = Counter()
+        for i in range(n_contexts):
+            ctx = tuple(tokens[i:i + sub_order])
+            ngram_counts[ctx] += 1
+        n_unique_ctx = len(ngram_counts)
+        mean_count = n_contexts / max(n_unique_ctx, 1)
+
+        # Jelinek-Mercer: trust higher-order more when contexts have
+        # enough observations
+        lam = mean_count / (mean_count + 5.0)
+        w = lam ** (sub_order - 1)  # order 1 always has weight ~1
+        h_estimates.append(h_sub)
+        weights.append(w)
+
+    if not h_estimates:
+        return 0.0
+
+    total_w = sum(weights)
+    return sum(h * w for h, w in zip(h_estimates, weights)) / total_w
+
+
+def token_entropy_curve(
+    tokens: List[str],
+    orders: Tuple[int, ...] = (0, 1, 2, 3, 5, 10),
+) -> Dict[int, float]:
+    """
+    Compute token-level conditional entropy at each context order.
+
+    Returns {order: H} dict.  Order 0 is the unconditional word entropy.
+    Token-level analog of entropy_curve() (which is character-level).
+    """
+    curve: Dict[int, float] = {}
+    for order in orders:
+        curve[order] = token_conditional_entropy(tokens, order)
+    return curve
+
+
+def fit_exponential_decay(
+    x_vals: List[float],
+    y_vals: List[float],
+) -> Tuple[float, float, float]:
+    """
+    Fit y = A * exp(-x / tau) via log-linear regression on ln(y) = ln(A) - x/tau.
+
+    Filters out y <= 0 entries before fitting.
+    Returns (A, tau, r_squared).  If fitting fails, returns (0, 0, 0).
+    """
+    xs, ys = [], []
+    for x, y in zip(x_vals, y_vals):
+        if y > 0:
+            xs.append(float(x))
+            ys.append(float(y))
+    if len(xs) < 2:
+        return (0.0, 0.0, 0.0)
+
+    log_y = [math.log(y) for y in ys]
+    x_arr = np.array(xs)
+    log_y_arr = np.array(log_y)
+
+    # Linear regression: log_y = intercept + slope * x
+    A_mat = np.vstack([x_arr, np.ones(len(x_arr))]).T
+    result = np.linalg.lstsq(A_mat, log_y_arr, rcond=None)
+    slope, intercept = result[0]
+
+    A = math.exp(intercept)
+    tau = -1.0 / slope if slope != 0 else float('inf')
+
+    # R-squared
+    y_pred = intercept + slope * x_arr
+    ss_res = float(np.sum((log_y_arr - y_pred) ** 2))
+    ss_tot = float(np.sum((log_y_arr - np.mean(log_y_arr)) ** 2))
+    r_sq = 1.0 - ss_res / ss_tot if ss_tot > 0 else 0.0
+
+    return (A, tau, r_sq)
+
+
+def coefficient_of_variation(values: List[float]) -> float:
+    """Coefficient of variation: std / mean.  Returns 0 if mean is near zero."""
+    if not values:
+        return 0.0
+    arr = np.array(values, dtype=float)
+    m = float(np.mean(arr))
+    if abs(m) < 1e-12:
+        return 0.0
+    return float(np.std(arr) / m)

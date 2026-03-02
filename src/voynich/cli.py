@@ -49,6 +49,12 @@ Usage:
     voynich lang-compare      # Phase 9.4: expanded language comparison
     voynich typology          # Phase 9.5: text typology classification
     voynich phase9            # Run all Phase 9 analyses
+    voynich entropy-curves    # Phase 10.1: token-level entropy curves
+    voynich mi-decay          # Phase 10.2: mutual information decay
+    voynich folio-shift       # Phase 10.3: folio-level encoding shifts
+    voynich glyph-grammar     # Phase 10.4: glyph construction grammar
+    voynich hypothesis        # Phase 10.5: hypothesis integration & verdict
+    voynich phase10           # Run all Phase 10 analyses
 """
 import sys
 import time
@@ -583,6 +589,59 @@ def cmd_phase9():
     cmd_typology()
 
 
+def cmd_entropy_curves():
+    """Run Phase 10.1: token-level entropy curves."""
+    from voynich.phases.entropy_curves import run_entropy_curves
+    t0 = time.time()
+    run_entropy_curves()
+    print(f"\nEntropy curves completed in {time.time() - t0:.1f}s")
+
+
+def cmd_mi_decay():
+    """Run Phase 10.2: mutual information decay."""
+    from voynich.phases.mutual_info_decay import run_mutual_info_decay
+    t0 = time.time()
+    run_mutual_info_decay()
+    print(f"\nMI decay completed in {time.time() - t0:.1f}s")
+
+
+def cmd_folio_shift():
+    """Run Phase 10.3: folio-level encoding shifts."""
+    from voynich.phases.folio_shift import run_folio_shift
+    t0 = time.time()
+    run_folio_shift()
+    print(f"\nFolio shift test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_glyph_grammar():
+    """Run Phase 10.4: glyph construction grammar."""
+    from voynich.phases.glyph_grammar import run_glyph_grammar
+    t0 = time.time()
+    run_glyph_grammar()
+    print(f"\nGlyph grammar test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_hypothesis():
+    """Run Phase 10.5: hypothesis integration and verdict."""
+    from voynich.phases.hypothesis_verdict import run_hypothesis_verdict
+    t0 = time.time()
+    run_hypothesis_verdict()
+    print(f"\nHypothesis verdict completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase10():
+    """Run full Phase 10: three-hypothesis testing."""
+    cmd_entropy_curves()
+    print("\n" + "=" * 70 + "\n")
+    cmd_mi_decay()
+    print("\n" + "=" * 70 + "\n")
+    cmd_folio_shift()
+    print("\n" + "=" * 70 + "\n")
+    cmd_glyph_grammar()
+    print("\n" + "=" * 70 + "\n")
+    cmd_hypothesis()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -639,6 +698,12 @@ def main():
         'lang-compare': cmd_lang_compare,
         'typology': cmd_typology,
         'phase9': cmd_phase9,
+        'entropy-curves': cmd_entropy_curves,
+        'mi-decay': cmd_mi_decay,
+        'folio-shift': cmd_folio_shift,
+        'glyph-grammar': cmd_glyph_grammar,
+        'hypothesis': cmd_hypothesis,
+        'phase10': cmd_phase10,
     }
 
     if len(sys.argv) < 2:
