@@ -551,6 +551,33 @@ OCCITAN_PARADIGM_PROFILES: Dict[str, Dict] = {
     'invariable':       {'mean_forms': 1, 'std_forms': 0.5, 'n_suffix_types': 0},
 }
 
+# Italian (Old/Middle Italian) suffix inventory — shares many Latin endings
+ITALIAN_DECLENSION_SUFFIXES: Dict[str, List[str]] = {
+    'noun_fem':   ['a', 'e', 'zione', 'zioni', 'ezza', 'ezze', 'ura', 'ure'],
+    'noun_masc':  ['o', 'i', 'mento', 'menti', 'ore', 'ori', 'one', 'oni'],
+    'adj':        ['o', 'a', 'i', 'e', 'oso', 'osa', 'osi', 'ose',
+                   'ale', 'ali', 'ile', 'ili'],
+    'verb_are':   ['o', 'i', 'a', 'iamo', 'ate', 'ano', 'are', 'ato',
+                   'ata', 'ando', 'ava', 'avi', 'avano'],
+    'verb_ere':   ['o', 'i', 'e', 'iamo', 'ete', 'ono', 'ere', 'uto',
+                   'uta', 'endo', 'eva', 'evi', 'evano'],
+    'verb_ire':   ['o', 'i', 'e', 'iamo', 'ite', 'ono', 'ire', 'ito',
+                   'ita', 'endo', 'iva', 'ivi', 'ivano'],
+}
+
+# German (Middle High German / Early New High German) suffix inventory
+GERMAN_DECLENSION_SUFFIXES: Dict[str, List[str]] = {
+    'noun_strong': ['', 'es', 'em', 'en', 'er'],
+    'noun_weak':   ['e', 'en', 'ens'],
+    'noun_deriv':  ['ung', 'heit', 'keit', 'schaft', 'nis', 'sal', 'tum'],
+    'adj':         ['', 'e', 'er', 'es', 'em', 'en',
+                    'lich', 'isch', 'ig', 'bar', 'sam', 'haft'],
+    'verb':        ['e', 'st', 't', 'en', 'et', 'te', 'ten',
+                    'est', 'tet'],
+    'verb_inf':    ['en', 'eln', 'ern'],
+    'participle':  ['end', 'ent', 'ung'],
+}
+
 # Top-20 expected medical Latin stems (from Circa Instans / De Viribus Herbarum)
 LATIN_MEDICAL_VOCABULARY: List[Tuple[str, str, str]] = [
     ('herba', 'noun', 'herb/plant'),
@@ -831,10 +858,29 @@ LATIN_RECIPE_CONNECTORS = [
     'inde', 'si', 'ut', 'sic', 'quod', 'sicut',
 ]
 
-# All known Latin suffix endings, flattened for heuristic stemming
+# All known suffix endings, flattened for heuristic stemming (per language)
 _ALL_LATIN_SUFFIXES = sorted(set(
     s for group in LATIN_DECLENSION_SUFFIXES.values() for s in group
 ), key=lambda x: -len(x))
+
+_ALL_ITALIAN_SUFFIXES = sorted(set(
+    s for group in ITALIAN_DECLENSION_SUFFIXES.values() for s in group
+), key=lambda x: -len(x))
+
+_ALL_GERMAN_SUFFIXES = sorted(set(
+    s for group in GERMAN_DECLENSION_SUFFIXES.values() for s in group
+), key=lambda x: -len(x))
+
+_ALL_OCCITAN_SUFFIXES = sorted(set(
+    s for group in OCCITAN_DECLENSION_SUFFIXES.values() for s in group
+), key=lambda x: -len(x))
+
+_SUFFIX_TABLE = {
+    'latin': _ALL_LATIN_SUFFIXES,
+    'occitan': _ALL_OCCITAN_SUFFIXES,
+    'italian': _ALL_ITALIAN_SUFFIXES,
+    'german': _ALL_GERMAN_SUFFIXES,
+}
 
 
 def stem_latin_token(token: str) -> str:
@@ -847,6 +893,23 @@ def stem_latin_token(token: str) -> str:
     word = token.lower().strip()
     for suffix in _ALL_LATIN_SUFFIXES:
         if word.endswith(suffix) and len(word) - len(suffix) >= 3:
+            return word[:-len(suffix)]
+    return word
+
+
+def stem_token(token: str, language: str) -> str:
+    """
+    Language-aware heuristic stemmer: strip longest matching suffix.
+
+    Uses the suffix inventory for the specified language.
+    Falls back to stem_latin_token for unknown languages.
+    """
+    suffixes = _SUFFIX_TABLE.get(language)
+    if suffixes is None:
+        return stem_latin_token(token)
+    word = token.lower().strip()
+    for suffix in suffixes:
+        if suffix and word.endswith(suffix) and len(word) - len(suffix) >= 3:
             return word[:-len(suffix)]
     return word
 
@@ -998,3 +1061,69 @@ def compute_slot_profile(
         slot_entropy_by_position=entropies,
         verb_initial_ratio=verb_init,
     )
+
+
+# ---------------------------------------------------------------------------
+# Latin Phrase Catalog (Phase 8)
+# ---------------------------------------------------------------------------
+
+def build_latin_phrase_catalog() -> Dict[str, List[str]]:
+    """
+    Build a catalog of common Latin pharmaceutical phrases for coherence testing.
+
+    Returns dict mapping category -> list of stemmed 2-3 word phrases.
+    Each phrase is a space-separated string of stemmed Latin words that
+    commonly co-occur in medieval herbal/medical texts.
+
+    Built from LATIN_RECIPE_VERBS, LATIN_RECIPE_CONNECTORS, and
+    LATIN_PHARMACEUTICAL_DOMAINS already defined in this module.
+    """
+    catalog: Dict[str, List[str]] = {}
+
+    # Recipe openings: imperative verb + object type
+    openings = []
+    recipe_verbs = ['recip', 'accip', 'misc', 'conter', 'coqu',
+                    'distill', 'pon', 'applic', 'add', 'col']
+    plant_stems = [stem_latin_token(p[0]) for p in
+                   LATIN_PHARMACEUTICAL_DOMAINS.get('plant_names', [])]
+    part_stems = [stem_latin_token(p[0]) for p in
+                  LATIN_PHARMACEUTICAL_DOMAINS.get('plant_parts', [])]
+    for verb in recipe_verbs[:5]:
+        for obj in plant_stems[:5]:
+            openings.append(f"{verb} {obj}")
+        for obj in part_stems[:4]:
+            openings.append(f"{verb} {obj}")
+    catalog['recipe_openings'] = openings
+
+    # Preparation instructions: verb + cum/in + preparation
+    instructions = []
+    prep_stems = [stem_latin_token(p[0]) for p in
+                  LATIN_PHARMACEUTICAL_DOMAINS.get('preparations', [])]
+    for verb in recipe_verbs[:5]:
+        for prep in prep_stems[:5]:
+            instructions.append(f"{verb} cum {prep}")
+            instructions.append(f"{verb} in {prep}")
+    catalog['preparation_instructions'] = instructions
+
+    # Application phrases: verb + super/ad + body part
+    applications = []
+    body_stems = [stem_latin_token(p[0]) for p in
+                  LATIN_PHARMACEUTICAL_DOMAINS.get('body_parts', [])]
+    for verb in ['pon', 'applic', 'add']:
+        for body in body_stems:
+            applications.append(f"{verb} super {body}")
+            applications.append(f"{verb} ad {body}")
+    catalog['application_phrases'] = applications
+
+    # Quality descriptions: est + quality
+    qualities = []
+    qual_stems = [stem_latin_token(q[0]) for q in
+                  LATIN_PHARMACEUTICAL_DOMAINS.get('qualities', [])]
+    for q1 in qual_stems:
+        qualities.append(f"est {q1}")
+        for q2 in qual_stems:
+            if q1 != q2:
+                qualities.append(f"{q1} et {q2}")
+    catalog['quality_descriptions'] = qualities
+
+    return catalog

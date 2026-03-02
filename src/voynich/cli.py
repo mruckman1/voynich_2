@@ -491,6 +491,39 @@ def cmd_phase75():
     cmd_convergence()
 
 
+def cmd_bigram_transfer():
+    """Run Approach 16: bigram transfer cryptanalysis."""
+    from voynich.phases.bigram_transfer import run_bigram_transfer
+    t0 = time.time()
+    run_bigram_transfer()
+    print(f"\nBigram transfer completed in {time.time() - t0:.1f}s")
+
+
+def cmd_mdl_decode():
+    """Run Approach 18: MDL decoding."""
+    from voynich.phases.mdl_decode import run_mdl_decode
+    t0 = time.time()
+    run_mdl_decode()
+    print(f"\nMDL decode completed in {time.time() - t0:.1f}s")
+
+
+def cmd_cipher_validate():
+    """Run Phase 8 validation battery."""
+    from voynich.phases.cipher_validate import run_cipher_validate
+    t0 = time.time()
+    run_cipher_validate()
+    print(f"\nCipher validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase8():
+    """Run full Phase 8: Approaches 16 + 18 + validation."""
+    cmd_bigram_transfer()
+    print("\n" + "=" * 70 + "\n")
+    cmd_mdl_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_cipher_validate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -537,6 +570,10 @@ def main():
         'embed-bridge': cmd_embed_bridge,
         'convergence': cmd_convergence,
         'phase7-5': cmd_phase75,
+        'bigram-transfer': cmd_bigram_transfer,
+        'mdl-decode': cmd_mdl_decode,
+        'cipher-validate': cmd_cipher_validate,
+        'phase8': cmd_phase8,
     }
 
     if len(sys.argv) < 2:

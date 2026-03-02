@@ -12,6 +12,7 @@ Carried over from voynich/modules/statistical_analysis.py with extensions:
 """
 
 import math
+import random
 import numpy as np
 from collections import Counter, defaultdict
 from typing import Any, List, Dict, Tuple, Optional
@@ -1300,3 +1301,183 @@ def fisher_combined_probability(
     df = 2 * len(clamped)
     combined_p = 1.0 - float(chi2_dist.cdf(chi2_stat, df))
     return chi2_stat, df, combined_p
+
+
+# ---------------------------------------------------------------------------
+# N-gram Language Model (Phase 8)
+# ---------------------------------------------------------------------------
+
+def build_ngram_lm(
+    tokens: List[str],
+    order: int = 3,
+    smoothing: float = 0.01,
+) -> Dict:
+    """
+    Build a character-level n-gram language model with add-k smoothing.
+
+    Joins tokens with '_' as word boundary marker, then builds a dictionary
+    mapping (order-1)-character context tuples to {next_char: count} dicts.
+
+    Args:
+        tokens: list of words (each word is a string of characters)
+        order: n-gram order (e.g. 3 for trigram)
+        smoothing: add-k smoothing constant for unseen n-grams
+
+    Returns dict with:
+        'order': int,
+        'vocab': sorted list of characters (including '_'),
+        'vocab_size': int,
+        'counts': dict mapping context_tuple -> {next_char: count},
+        'smoothing': float,
+    """
+    text = '_'.join(tokens)
+    text = '_' + text + '_'
+
+    vocab = sorted(set(text))
+    vocab_size = len(vocab)
+
+    counts: Dict[Tuple, Dict[str, int]] = {}
+    ctx_len = order - 1
+
+    for i in range(ctx_len, len(text)):
+        context = tuple(text[i - ctx_len:i])
+        char = text[i]
+        if context not in counts:
+            counts[context] = {}
+        counts[context][char] = counts[context].get(char, 0) + 1
+
+    return {
+        'order': order,
+        'vocab': vocab,
+        'vocab_size': vocab_size,
+        'counts': counts,
+        'smoothing': smoothing,
+    }
+
+
+def cross_entropy_lm(
+    text: str,
+    lm: Dict,
+    per_char: bool = True,
+) -> float:
+    """
+    Compute cross-entropy of text under a character-level n-gram LM.
+
+    Uses add-k smoothing for unseen n-grams and backs off to shorter
+    contexts when a full context has never been seen.
+
+    Args:
+        text: string to score (should use '_' as word boundary)
+        lm: language model dict from build_ngram_lm()
+        per_char: if True return bits/char, else return total bits
+
+    Returns cross-entropy in bits.
+    """
+    order = lm['order']
+    counts = lm['counts']
+    k = lm['smoothing']
+    V = lm['vocab_size']
+    ctx_len = order - 1
+
+    if len(text) <= ctx_len:
+        return math.log2(V) if per_char else math.log2(V) * max(len(text), 1)
+
+    total_log_prob = 0.0
+    n_chars = 0
+
+    for i in range(ctx_len, len(text)):
+        context = tuple(text[i - ctx_len:i])
+        char = text[i]
+
+        # Try full context, then back off
+        prob = None
+        for backoff in range(ctx_len + 1):
+            ctx = context[backoff:]
+            if ctx in counts:
+                ctx_counts = counts[ctx]
+                total_count = sum(ctx_counts.values())
+                char_count = ctx_counts.get(char, 0)
+                prob = (char_count + k) / (total_count + k * V)
+                break
+
+        if prob is None or prob <= 0:
+            prob = 1.0 / V
+
+        total_log_prob += math.log2(prob)
+        n_chars += 1
+
+    ce = -total_log_prob / n_chars if n_chars > 0 and per_char else -total_log_prob
+    return ce
+
+
+def simulated_annealing(
+    cost_fn,
+    init_state,
+    propose_fn,
+    max_iter: int = 500_000,
+    t_start: float = 1.0,
+    t_end: float = 0.001,
+    n_restarts: int = 10,
+    seed: int = 42,
+    verbose: bool = False,
+    checkpoint_interval: int = 10_000,
+) -> Tuple:
+    """
+    General simulated annealing optimizer.
+
+    Args:
+        cost_fn: state -> float (lower is better)
+        init_state: initial state (deep-copied for each restart)
+        propose_fn: (state, rng) -> new_state
+        max_iter: iterations per restart
+        t_start, t_end: temperature schedule endpoints (exponential cooling)
+        n_restarts: number of independent restarts
+        seed: base random seed (incremented per restart)
+        verbose: print progress
+        checkpoint_interval: record best cost every N iterations
+
+    Returns (best_state, best_cost, convergence_history)
+    where convergence_history records best cost at each checkpoint.
+    """
+    import copy
+
+    cooling_rate = (t_end / t_start) ** (1.0 / max_iter) if max_iter > 0 else 1.0
+
+    global_best_state = None
+    global_best_cost = float('inf')
+    convergence_history: List[float] = []
+
+    for restart in range(n_restarts):
+        rng = random.Random(seed + restart)
+        state = copy.deepcopy(init_state)
+        current_cost = cost_fn(state)
+        best_cost = current_cost
+        best_state = copy.deepcopy(state)
+        temp = t_start
+
+        for it in range(max_iter):
+            new_state = propose_fn(state, rng)
+            new_cost = cost_fn(new_state)
+            delta = new_cost - current_cost
+
+            if delta < 0 or rng.random() < math.exp(-delta / temp):
+                state = new_state
+                current_cost = new_cost
+                if current_cost < best_cost:
+                    best_cost = current_cost
+                    best_state = copy.deepcopy(state)
+
+            temp *= cooling_rate
+
+            if it % checkpoint_interval == 0:
+                convergence_history.append(best_cost)
+
+        if verbose:
+            print(f"    Restart {restart + 1}/{n_restarts}: "
+                  f"best cost = {best_cost:.6f}")
+
+        if best_cost < global_best_cost:
+            global_best_cost = best_cost
+            global_best_state = copy.deepcopy(best_state)
+
+    return global_best_state, global_best_cost, convergence_history

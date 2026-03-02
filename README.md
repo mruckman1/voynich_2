@@ -1,10 +1,10 @@
 # Voynich Manuscript: Syllabary & Information-Theoretic Analysis
 
-A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics and convergence scoring. Nine complementary approaches across seven phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step.
+A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, and cipher-level decoding. Twelve complementary approaches across eight phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step.
 
-**Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints.
+**Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints.
 
-Key finding across all phases: the Voynich manuscript encodes a **Romance language** (Latin or Occitan, not separable) using a **morphological syllabary** with genuine affix+stem structure. Both Voynich Language A and B embedding spaces independently point to Latin as the closest structural match. Fisher's combined probability test across 5 independent evidence families yields p = 2.75×10⁻¹⁰, confirming that the aggregate signal is real even though the selectivity ceiling — where frequency priors dominate over genuine linguistic content — persists at the level of individual word identification.
+Key finding across all phases: the Voynich manuscript encodes a **Romance language** (Latin or Occitan, not separable) using a **morphological syllabary** with genuine affix+stem structure. Both Voynich Language A and B embedding spaces independently point to Latin as the closest structural match. Fisher's combined probability test across 5 independent evidence families yields p = 2.75×10⁻¹⁰, confirming that the aggregate signal is real even though the selectivity ceiling — where frequency priors dominate over genuine linguistic content — persists at the level of individual word identification. Phase 8's MDL decoder, tested against all four candidate languages (Latin, Occitan, Italian, German), cannot discriminate between them — German wins on raw CE due to corpus size, not linguistic affinity. The failed sanity check (4% cipher recovery) and lack of language discrimination confirm the compression gains are frequency-driven, not genuine decryption.
 
 ## Quick Start
 
@@ -55,6 +55,10 @@ voynich verb-id           # Phase 7.5 Step 3: verb identification (Hungarian mat
 voynich embed-bridge      # Phase 7.5 Step 4: illustration-embedding bridge
 voynich convergence       # Phase 7.5 Step 5: convergence scoring (Fisher's test)
 voynich phase7-5          # Run full Phase 7.5 pipeline (Steps 1-5)
+voynich bigram-transfer   # Phase 8 / Approach 16: bigram transfer cryptanalysis
+voynich mdl-decode        # Phase 8 / Approach 18: MDL decoding
+voynich cipher-validate   # Phase 8 validation battery
+voynich phase8            # Run full Phase 8 (Approaches 16 + 18 + validation)
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -72,9 +76,9 @@ voynich_2/
 │   ├── cli.py                   # Entry point — run analyses from the command line
 │   ├── core/                    # Foundation modules
 │   │   ├── corpus.py            # IVTFF parser, EVA tokenizer, corpus access
-│   │   ├── stats.py             # Entropy, Zipf, bigram matrices, MI, TTR, DTW, PPMI/SVD, Procrustes, GW
+│   │   ├── stats.py             # Entropy, Zipf, bigram matrices, MI, TTR, DTW, PPMI/SVD, Procrustes, GW, n-gram LM, SA
 │   │   ├── ciphers.py           # Historical cipher implementations + encoding simulators
-│   │   ├── reference.py         # Reference corpus loading, RTF conversion, syllable stats, Latin recipe segmentation
+│   │   ├── reference.py         # Reference corpus loading, RTF conversion, syllable stats, Latin recipe segmentation, phrase catalog
 │   │   └── _paths.py            # Centralized path resolution for data and results directories
 │   ├── analysis/                # Main analysis approaches
 │   │   ├── strokes.py           # Approach 1: stroke decomposition, Ventris grid
@@ -109,7 +113,10 @@ voynich_2/
 │       ├── noun_subclusters.py # Phase 7.5 Step 2: noun subcluster analysis
 │       ├── verb_identification.py # Phase 7.5 Step 3: verb identification
 │       ├── embedding_bridge.py # Phase 7.5 Step 4: illustration-embedding bridge
-│       └── convergence_score.py # Phase 7.5 Step 5: convergence scoring
+│       ├── convergence_score.py # Phase 7.5 Step 5: convergence scoring
+│       ├── bigram_transfer.py # Phase 8 / Approach 16: bigram transfer cryptanalysis
+│       ├── mdl_decode.py      # Phase 8 / Approach 18: MDL decoding
+│       └── cipher_validate.py # Phase 8: cipher validation & integration
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
@@ -568,6 +575,68 @@ Aggregates all selectivity tests across the entire pipeline using Fisher's combi
 **Result:** 10 metrics across 5 independent families. Fisher combined chi² = 65.88 (df=10), **p = 2.75×10⁻¹⁰** — the aggregate signal is overwhelmingly real. Driven by morpheme grid z-scores (>500), noun embedding coherence (5.38x), verb frequency rho (0.97), and anchor unanimity (5.83x). 76 convergent identifications found, but only 1 stem (tol/viola) has multi-method support from 2+ independent sources.
 
 **Verdict:** The Voynich manuscript's structural properties (morpheme decomposition, embedding geometry, positional slots) are real and converge on a Latin pharmaceutical text model. But individual word identification remains blocked: the selectivity ceiling prevents discriminating correct assignments from frequency-matched alternatives.
+
+## Phase 8: Bigram Transfer Cryptanalysis & MDL Decoding
+
+Phases 5–7.5 hit a selectivity ceiling (~1.0–1.46×) because they match individual stems to individual words (unigram matching). Phase 8 changes the fundamental unit of analysis with two complementary approaches that exploit higher-order structure:
+
+- **Approach 16 (Bigram Transfer)**: matches stem *pairs* — builds NxN bigram transition matrices for Voynich and target language stems, then uses simulated annealing to find the permutation minimizing Frobenius distance between matrices.
+- **Approach 18 (MDL Decoding)**: evaluates *entire candidate decodings* holistically — builds character-level n-gram language models for Latin and Occitan, then finds the stem mapping that minimizes cross-entropy (bits/char) of the decoded text. The best decoding is the most compressible one.
+
+Both operate on the morpheme stem level from Phase 4.5.
+
+### Approach 16: Bigram Transfer Cryptanalysis
+
+| Sub-step | Description | Module |
+|----------|-------------|--------|
+| 16.1 | **Build bigram matrices** — Stem sequences from Voynich (8,652 tokens, 412 unique), Latin (63,771 tokens), and Occitan (41,779 tokens). Top-100 stems, 100×100 transition probability matrices. | `phases/bigram_transfer.py` |
+| 16.2 | **SA permutation search** — For Frobenius distance metric, run 10 restarts × 100K iterations of simulated annealing to find the best stem permutation aligning Voynich→Latin matrices. | `phases/bigram_transfer.py` |
+| 16.3 | **Stability analysis** — Pairwise agreement across 10 independent SA restarts. Top-10 consistent mappings with confidence scores. | `phases/bigram_transfer.py` |
+| 16.4 | **Validation battery** — 4 null tests (shuffled Voynich, random target matrix, Latin-to-Latin sanity check, Occitan target) + split-half cross-validation by folios. | `phases/bigram_transfer.py` |
+
+**Result:** Selectivity = **1.30×** — gate **FAIL** (below 1.5× threshold). Stability = 0.025 (very low pairwise agreement across restarts). The optimizer reduces Frobenius distance 23% below random baseline, but the signal is not selective enough — many different permutations achieve similar distances. Notably, Occitan fits better than Latin (distance 0.042 vs 0.047).
+
+Top consistent mappings: `ch→et` (conf=0.6), `daiin→eius` (0.6), `che→in` (0.6) — all common function words, consistent with frequency matching rather than genuine decryption.
+
+### Approach 18: Minimum Description Length Decoding
+
+| Sub-step | Description | Module |
+|----------|-------------|--------|
+| 18.1 | **Build language models** — Character-level trigram and 5-gram LMs for Latin, Occitan, Italian, and German with add-k smoothing. Measure discrimination gap (heldout vs random text). | `phases/mdl_decode.py` |
+| 18.2 | **Sanity check** — Encipher Latin stems with a random substitution, attempt recovery via MCMC. Validates the approach works on known ciphers before applying to Voynich. | `phases/mdl_decode.py` |
+| 18.3 | **MCMC decoding** — For each target language (Latin, Occitan, Italian, German), run 5 restarts × 100K iterations of simulated annealing with incremental cross-entropy updates. Cost function = bits/char of decoded text under the trigram LM. Language-aware stemmers for each target. | `phases/mdl_decode.py` |
+| 18.4 | **Language ranking** — Rank all target languages by cross-entropy and compression ratio. Compare raw CE (affected by corpus size) vs within-language selectivity (normalized for LM quality). | `phases/mdl_decode.py` |
+| 18.5 | **Validation battery** — Random mappings baseline, shuffled Voynich, wrong-language check, split-half cross-validation. | `phases/mdl_decode.py` |
+
+**4-Language Ranking (by raw cross-entropy):**
+
+| Rank | Language | CE (bits/char) | Compression | Corpus size |
+|------|----------|---------------|-------------|-------------|
+| 1 | German | 1.73 | 1.40× | 149K tokens |
+| 2 | Occitan | 1.91 | 1.36× | 48K tokens |
+| 3 | Italian | 2.17 | 1.77× | 11K tokens |
+| 4 | Latin | 2.24 | 1.32× | 74K tokens |
+
+**Result:** Gate **FAILED** — selectivity = **1.40×** (below 1.5× threshold). German wins on raw CE, but this is misleading: German has the largest corpus (149K tokens, 2× Latin), producing the tightest LM (discrimination gap 6.44 bits vs 4.45 for Latin). The optimizer maps frequent Voynich stems to frequent German function words (`ist`, `und`, `mit`, `auch`) — the same frequency-matching behavior seen across all languages. Cross-validation consistency = 0.96.
+
+The **compression ratio** (random CE / best CE) normalizes for LM quality and tells a different story: Italian leads at 1.77×, followed by German 1.40×, Occitan 1.36×, Latin 1.32×. But Italian's high compression is inflated by its tiny corpus (11K tokens), which makes random mappings score worse.
+
+**Critical caveat:** The **sanity check failed** (only 4% recovery accuracy on a known cipher). The optimizer achieves lower CE than the true mapping on the test cipher, meaning it exploits character frequency patterns without recovering actual substitutions. All four languages achieve compression ratios in the 1.3–1.8× range — consistent with frequency matching, not decryption (genuine decryption would produce 3–5× compression).
+
+**Bottom line:** The MDL decoder **cannot discriminate between languages** because it is not actually decrypting — it finds frequency-optimal mappings that work similarly well for any language with a good enough LM. The language question remains unresolved at the MDL level.
+
+### Cipher Validation & Integration
+
+| Sub-step | Description | Module |
+|----------|-------------|--------|
+| V.1 | **Cross-approach convergence** — Compare mappings from Approaches 16 and 18 (fraction of stems mapped to the same target). | `phases/cipher_validate.py` |
+| V.2 | **Prior phase convergence** — Cross-check decoded stems against illustration IDs (Phase 6), verb positions (Phase 7/9), noun clusters (Phase 7/8). | `phases/cipher_validate.py` |
+| V.3 | **Seeded decoding** — Initialize Approach 18's MCMC from Approach 16's mapping; measure improvement. | `phases/cipher_validate.py` |
+| V.4 | **Combined assessment** — Fisher combined probability across all evidence, confidence level assignment. | `phases/cipher_validate.py` |
+
+**Result:** Overall gate **FAILED**, confidence = **low**. The two approaches agree on only 1% of stem mappings (1/100). Zero prior-phase convergence (0/3 checks passed — no decoded stems match illustration plant IDs, verb patterns, or noun clusters). Seeded decode improves 1.18× (modest). Fisher combined p = 0.90 (no statistical significance).
+
+**Verdict:** `weak_evidence_single_approach_only`. When tested against all four candidate languages (Latin, Occitan, Italian, German), the MDL decoder ranks German first on raw CE — breaking the expected Romance-language pattern. But this reflects corpus size advantage, not linguistic affinity. The compression ratio ranking (Italian > German > Occitan > Latin) is similarly uninformative, driven by corpus size effects. The sanity check failure, zero cross-approach agreement, and zero prior-phase convergence all indicate this is frequency/structural matching, not genuine decryption. The Voynich manuscript is unlikely to be a simple stem-level substitution cipher over any of the four tested languages.
 
 ## Integration
 
@@ -1315,22 +1384,38 @@ Verb candidates do not show the same coherence (ratio 0.96x), likely because the
 
 **Overall verdict: no_significant_signal.** Both individual gates failed, so convergence is not established. However, the noun embedding coherence at 5.4x represents genuine cross-approach validation that the ingredient candidates form a real semantic category.
 
+### Cipher Validation Summary (Phase 8)
+
+| Test | Result | Threshold | Status |
+|------|--------|-----------|--------|
+| Bigram transfer gate | selectivity = 1.30× | > 1.5× | **FAIL** |
+| MDL decode gate (4 languages) | selectivity = 1.40× (best=German) | > 1.5× | **FAIL** |
+| MDL sanity check | 4% recovery on known cipher | > 80% | **FAIL** |
+| MDL language discrimination | All 4 languages within 1.3–1.8× compression | clear winner | **No discrimination** |
+| Cross-approach mapping agreement | 3.1% | > 30% | **FAIL** |
+| Prior-phase convergence | 0/3 checks passed | > 1/3 | **FAIL** |
+| Fisher combined p-value | p = 0.037 | < 0.01 | Not significant |
+
+**Key finding:** The 4-language MDL test (Latin, Occitan, Italian, German) is the most informative null test in Phase 8. If the Voynich manuscript were a genuine cipher over one of these languages, the target language should win decisively — but instead all four achieve similar compression ratios (1.32–1.77×), with the ranking driven by corpus size rather than linguistic affinity. German wins on raw CE solely because it has the largest reference corpus (149K tokens). The sanity check failure (4% recovery on known cipher) confirms the optimizer exploits character frequency distributions rather than recovering genuine substitutions.
+
+**Overall verdict: weak_evidence_single_approach_only.** All gates fail. The 4-language test demonstrates that the MDL decoder cannot distinguish between Romance and Germanic targets, confirming the compression gains are frequency-driven artifacts, not linguistic signal.
+
 ### Cross-Validation Summary
 
-| Finding | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 4.5 | Phase 5 | Phase 6 | Phase 6.1 | Phase 7 | Assessment |
-|---------|---------|---------|---------|---------|-----------|---------|---------|-----------|---------|------------|
-| **Language** | — | Latin (top 5 matches), no nulls, Romance phonotactics | Latin best syllable match, PMI r=0.96 | Latin #1, Occitan #2, CIs overlap | Language A (Romance-like) vs B (notation); qo- functional | Occitan/Latin paradigms indistinguishable (JSD ratio=0.92); affix alignment consistency 1.00 | 63/69 plants mapped to medieval Latin; cross-modal signal z=32.0 vs shuffled | TF-IDF stems folio-specific; "daiin" eliminated (17→0 folios) | Both A and B embedding spaces point to Latin via Procrustes and GW; cross-language convergence YES on both methods | **Romance language family** — now confirmed by 3 independent methods (fingerprint, paradigm, embedding geometry) |
-| **Encoding** | Strong positional constraints (MI=0.30) → syllabary | simple_substitution best, 5x6 grid 47% | D.1 favors syllabary, D.3 favors substitution | R=0.39 in syllabary/abugida overlap | Grid axes = affix/stem; R(affix\|stem)=0.61 natural | 486 multi-form paradigms with prefix+suffix structure; 5 clusters match inflectional system | Best model: morphographic-syllabic (consistency 0.76) | morphographic-abbreviated best (4/8 good fits); hybrid evidence by word length; balanced segmentation unanimity 0.6667 | Prefix/suffix separation 0.90 in affix embedding space; 18 affix types form distinct clusters | **Morphological syllabary** — grid encodes affix+stem structure; affix embedding space confirms |
-| **Grid validity** | 7x11 original (27% occupancy) | 5x6 refined (47%, z=-239) | 100% stable, but sections diverge (Jaccard=0.14) | Minimum 10k tokens needed; A/B split genuine | Lang A grid 50% occupancy vs B 37%; both axes significant (z>500) | Grid-cell merging reduces stems 2,328→1,693 (allographic variants) | — | — | — | **Grid is real, morphologically grounded** |
-| **Decoding** | — | — | — | — | — | Random-word selectivity 0.99× blocks stem ID; phonetic decode stopped at gate 5.3 | Unanimity 0.40 (below 0.50 threshold); train/test transfer 0.0; all null tests <1.5×; **HARD STOP** | Unanimity 0.40→0.5833 (passes 0.50 gate); anchor-propagate PASS; but validation still HARD STOP (selectivities 1.22-1.46×, below 1.5×) | Procrustes selectivity 0.96-0.97×, GW 1.00× — gates FAIL; 14 seed pairs insufficient for discrimination | **Selectivity ceiling persists** at all levels — token, anchor, and corpus-level alignment |
-| **Currier A/B** | — | — | — | H2 diff significant, grid Jaccard=0.14 | JSD z=3.82, vocab overlap 14%, distinct token inventories | — | — | — | A ARI=0.11 (section structure captured); B ARI=-0.003 (no section signal); both converge on Latin | **Distinct systems** — A has semantic structure, B does not; both encode Latin-related content |
-| **Null characters** | — | No null insertion evidence | 11/20 null tests discriminate | 8/15 metrics discriminate, all critical pass | qo- removal neutral; 67% have suffixes, 30% prefixes | — | — | — | — | **No null padding**; apparent padding is morphological |
-| **Internal structure** | z = -652/-494 vs shuffled | z = -65 fingerprint, z = -69 stripped | H2 z=-1157, Zipf z=298 vs shuffled | — | H₂(stems)=2.38 > H₂(full)=2.12; affixes carry grammatical info | Paradigm selectivity z=178 (real vs shuffled); cross-consistency 1.00 on 20 IDs | 8 Rosetta folios, 88.6% EVA coverage; paradigm filtering passes all 8 anchors | Poison anchor pruning available; per-char consistency profiled (high/medium/low) | Noun candidates cluster 5.4× above random in embedding space; verb freq rho=0.97 with Latin recipe verbs; pharmaceutical MI selectivity 1.07× | **Morpheme structure confirmed at paradigm level; noun embedding coherence strong** |
-| **Scholarly rigor** | — | — | 5/7 hypotheses pass, H1 robust to corpus size | All 4 gates evaluated with CIs | All null tests z>500; contingency chi² p<0.001 | 4 gates with dual null controls; random-word control catches selectivity ceiling | 5-stage gate pipeline with 3 null tests, LOO, train/test, bootstrap; HARD STOP issued correctly | Diagnostic investigation (anchor + encoding) confirms small-anchor-set as root cause; HARD STOP maintained | 6 gates across 3 analyses; joint null test; cross-language convergence check; all gates report transparently | **Gate system correctly prevents overconfident decoding; convergent evidence accumulates** |
+| Finding | Phase 1 | Phase 2 | Phase 3 | Phase 4 | Phase 4.5 | Phase 5 | Phase 6 | Phase 6.1 | Phase 7 | Phase 8 | Assessment |
+|---------|---------|---------|---------|---------|-----------|---------|---------|-----------|---------|---------|------------|
+| **Language** | — | Latin (top 5 matches), no nulls, Romance phonotactics | Latin best syllable match, PMI r=0.96 | Latin #1, Occitan #2, CIs overlap | Language A (Romance-like) vs B (notation); qo- functional | Occitan/Latin paradigms indistinguishable (JSD ratio=0.92); affix alignment consistency 1.00 | 63/69 plants mapped to medieval Latin; cross-modal signal z=32.0 vs shuffled | TF-IDF stems folio-specific; "daiin" eliminated (17→0 folios) | Both A and B embedding spaces point to Latin via Procrustes and GW; cross-language convergence YES on both methods | 4-language MDL: German CE=1.73, Occitan 1.91, Italian 2.17, Latin 2.24 — ranking tracks corpus size, not linguistic affinity; bigram transfer favors Occitan (distance 0.042 vs 0.047) | **Romance language family** — confirmed by 3 independent methods (fingerprint, paradigm, embedding geometry); Phase 8 MDL cannot discriminate (German wins on corpus size alone) |
+| **Encoding** | Strong positional constraints (MI=0.30) → syllabary | simple_substitution best, 5x6 grid 47% | D.1 favors syllabary, D.3 favors substitution | R=0.39 in syllabary/abugida overlap | Grid axes = affix/stem; R(affix\|stem)=0.61 natural | 486 multi-form paradigms with prefix+suffix structure; 5 clusters match inflectional system | Best model: morphographic-syllabic (consistency 0.76) | morphographic-abbreviated best (4/8 good fits); hybrid evidence by word length; balanced segmentation unanimity 0.6667 | Prefix/suffix separation 0.90 in affix embedding space; 18 affix types form distinct clusters | Stem-level substitution assumed; no new encoding evidence | **Morphological syllabary** — grid encodes affix+stem structure; affix embedding space confirms |
+| **Grid validity** | 7x11 original (27% occupancy) | 5x6 refined (47%, z=-239) | 100% stable, but sections diverge (Jaccard=0.14) | Minimum 10k tokens needed; A/B split genuine | Lang A grid 50% occupancy vs B 37%; both axes significant (z>500) | Grid-cell merging reduces stems 2,328→1,693 (allographic variants) | — | — | — | — | **Grid is real, morphologically grounded** |
+| **Decoding** | — | — | — | — | — | Random-word selectivity 0.99× blocks stem ID; phonetic decode stopped at gate 5.3 | Unanimity 0.40 (below 0.50 threshold); train/test transfer 0.0; all null tests <1.5×; **HARD STOP** | Unanimity 0.40→0.5833 (passes 0.50 gate); anchor-propagate PASS; but validation still HARD STOP (selectivities 1.22-1.46×, below 1.5×) | Procrustes selectivity 0.96-0.97×, GW 1.00× — gates FAIL; 14 seed pairs insufficient for discrimination | Bigram selectivity 1.30× (FAIL); MDL selectivity 1.40× (FAIL); 4-language test shows no discrimination (German > Occitan > Italian > Latin tracks corpus size); sanity check 4% recovery | **Selectivity ceiling holds** — MDL cannot distinguish Romance from Germanic targets; compression gains are frequency-driven artifacts |
+| **Currier A/B** | — | — | — | H2 diff significant, grid Jaccard=0.14 | JSD z=3.82, vocab overlap 14%, distinct token inventories | — | — | — | A ARI=0.11 (section structure captured); B ARI=-0.003 (no section signal); both converge on Latin | — | **Distinct systems** — A has semantic structure, B does not; both encode Latin-related content |
+| **Null characters** | — | No null insertion evidence | 11/20 null tests discriminate | 8/15 metrics discriminate, all critical pass | qo- removal neutral; 67% have suffixes, 30% prefixes | — | — | — | — | — | **No null padding**; apparent padding is morphological |
+| **Internal structure** | z = -652/-494 vs shuffled | z = -65 fingerprint, z = -69 stripped | H2 z=-1157, Zipf z=298 vs shuffled | — | H₂(stems)=2.38 > H₂(full)=2.12; affixes carry grammatical info | Paradigm selectivity z=178 (real vs shuffled); cross-consistency 1.00 on 20 IDs | 8 Rosetta folios, 88.6% EVA coverage; paradigm filtering passes all 8 anchors | Poison anchor pruning available; per-char consistency profiled (high/medium/low) | Noun candidates cluster 5.4× above random in embedding space; verb freq rho=0.97 with Latin recipe verbs; pharmaceutical MI selectivity 1.07× | Bigram matrix effective rank 54/100; all 4 target languages achieve 1.3–1.8× compression (structure beyond random, but language-indiscriminate) | **Morpheme structure confirmed at paradigm level; noun embedding coherence strong; Phase 8 compression confirms real structure but cannot identify the language** |
+| **Scholarly rigor** | — | — | 5/7 hypotheses pass, H1 robust to corpus size | All 4 gates evaluated with CIs | All null tests z>500; contingency chi² p<0.001 | 4 gates with dual null controls; random-word control catches selectivity ceiling | 5-stage gate pipeline with 3 null tests, LOO, train/test, bootstrap; HARD STOP issued correctly | Diagnostic investigation (anchor + encoding) confirms small-anchor-set as root cause; HARD STOP maintained | 6 gates across 3 analyses; joint null test; cross-language convergence check; all gates report transparently | Sanity check correctly flags false-positive risk; 4-language test serves as strongest null test (no discrimination = frequency artifact); approaches don't converge (3.1% mapping agreement) | **Gate system correctly prevents overconfident decoding; 4-language null test is the decisive diagnostic** |
 
 ## Results Files
 
-Analysis outputs are saved as JSON to `results/` (53 files total):
+Analysis outputs are saved as JSON to `results/` (57 files total):
 
 **Phase 1 — Stroke Analysis:**
 - `stroke_positional.json` — Stroke positional distributions and MI
@@ -1412,6 +1497,14 @@ Analysis outputs are saved as JSON to `results/` (53 files total):
 - `distributional.json` — Per-language (A+B) embedding spaces, Procrustes/GW alignment to Latin and Occitan, affix embeddings, cluster correspondence, null tests, cross-language convergence
 - `positional_slots.json` — Latin recipe segmentation, Voynich pharmaceutical slot analysis, position x paradigm cross-validation, verb/ingredient candidates
 - `approach_integration.json` — Verb/noun cluster coherence in embedding space, slot-embedding kappa, joint null test, convergence verdict
+
+**Phase 7.5 — Convergence Scoring:**
+- `convergence_score.json` — 10 metrics across 5 families, Fisher combined chi², convergent stem identifications
+
+**Phase 8 — Bigram Transfer, MDL Decoding, Cipher Validation:**
+- `bigram_transfer.json` — Voynich/Latin/Occitan bigram matrix stats, SA permutation results, mapping stability, null tests, cross-validation, gate status
+- `mdl_decode.json` — Language model stats, sanity check results, MCMC decoding for Latin and Occitan, compression ratio, word validity, decoded sample, null tests
+- `cipher_validate.json` — Cross-approach convergence, prior-phase convergence, seeded improvement test, Fisher combined assessment, overall gate status
 
 ## Background
 
