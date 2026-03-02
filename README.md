@@ -14,6 +14,8 @@ Phase 11 implements the CSP phonetic decoder predicted by Phase 10. **Latin wins
 
 Phase 11.5 runs five sequential diagnostic and refinement passes. Failure diagnosis identifies 13/14 grid cells with error rates above 60% and classifies 48.5% of decoded tokens as HIT or NEAR_MISS — well above the 15% gate. The relaxation sweep (strict CV → CVC → CCV, levels 0–5) finds that adding syllable types consistently drops selectivity below the 1.5× gate; level 0 (strict CV, 75 syllables) remains the best configuration. Verb constraint integration (Phase 9 assignments) yields only 1 soft constraint due to length-mismatch between Voynich stems and Latin syllabifications; the iterative anchor bootstrapping loop converges on iteration 1 with no improvement. Despite these stalled quantitative metrics, the final V1–V9 battery passes **8/9 tests** (only V9 MCMC fails on dict-hit z-score): Latin remains the top language, selectivity holds at 1.85×, section coherence is confirmed, cross-validation CV = 0.015, V8 readability shows 100% phonotactically plausible endings. The bottleneck is diagnosed as grid precision — the current 14-cell decomposition is correct in structure but insufficiently granular for syllable-level word recovery.
 
+Phase 12 attacks this grid-precision diagnosis directly by working backward from the Phase 11.5.1 correction vectors to test whether EVA character misplacements can be identified and fixed. Four complementary sub-analyses are run: grid recalibration (bias detection + stroke-compatibility-based character move proposal), stroke-alignment audit of all 44 EVA glyphs against the original Phase 3 construction grammar, token decomposition sweep (6 variants testing ligature re-splits such as sh→C3V1 and aiin_collapse), and iterative CSP re-solve on each recalibrated grid. The main finding is **negative but definitive**: all 44 EVA glyphs are correctly placed by stroke analysis (0 misaligned), all 6 decomposition variants degrade performance, and the correction vector bias (60% pointing to "di") leaves no actionable moves after de-biasing. The CSP re-solve on the original grid achieves **dict_hit = 11.15%, selectivity 1.85×** — a marginal +0.05% gain over Phase 11 — with V1–V8 all passing (8/9 tests). The conclusion is that the 11.1% ceiling is not caused by grid misplacements but is structurally inherent to the CV phonotactic model at 14 cells: the grid is correct, and further gains will require a finer-grained phonological representation.
+
 ## Quick Start
 
 ```bash
@@ -89,6 +91,11 @@ voynich verb-constrain    # Phase 11.5.4: verb constraint integration (Phase 9 a
 voynich csp-iterate       # Phase 11.5.5: iterative anchor bootstrapping loop
 voynich csp-final         # Phase 11.5.6-7: multi-language final + V1-V9 validation battery
 voynich phase11-5         # Run full Phase 11.5 pipeline (diagnose → refine → iterate → final)
+voynich grid-recal        # Phase 12.1-12.2: correction vector bias detection + character move proposal
+voynich grid-alt          # Phase 12.4: stroke-alignment audit of all 44 EVA glyphs
+voynich token-decomp      # Phase 12.5: digraph/ligature decomposition variant sweep (6 variants)
+voynich recal-csp         # Phase 12.3+12.6: iterative CSP re-solve on recalibrated grid + V1-V10 validation
+voynich phase12           # Run full Phase 12 pipeline (grid-recal → grid-alt → token-decomp → recal-csp)
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -165,7 +172,11 @@ voynich_2/
 │       ├── csp_refinement.py  # Phase 11.5.2-3: inherent vowel sweep + graduated CVC/CCV relaxation
 │       ├── verb_constraints.py # Phase 11.5.4: verb constraint integration from Phase 9 assignments
 │       ├── csp_iterate.py     # Phase 11.5.5: iterative anchor bootstrapping loop
-│       └── csp_final.py       # Phase 11.5.6-7: multi-language final comparison + V1–V9 validation battery
+│       ├── csp_final.py       # Phase 11.5.6-7: multi-language final comparison + V1–V9 validation battery
+│       ├── grid_recalibrate.py # Phase 12.1-12.2: bias detection, de-biasing, stroke-based character move proposal, co-occurrence validation
+│       ├── grid_alternatives.py # Phase 12.4: stroke-alignment audit of all 44 EVA glyphs; stroke-based and hybrid grid variants
+│       ├── token_decomposition.py # Phase 12.5: PMI analysis + 6 decomposition variants (sh, qo, aiin ligature re-splits)
+│       └── recalibrated_csp.py # Phase 12.3+12.6: iterative CSP re-solve across grid variants + V1–V10 validation battery
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)

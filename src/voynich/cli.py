@@ -65,6 +65,11 @@ Usage:
     voynich csp-iterate       # Phase 11.5.5: iterative CSP refinement
     voynich csp-final         # Phase 11.5.6-7: final multi-language + V1-V9
     voynich phase11-5         # Run full Phase 11.5 pipeline
+    voynich grid-recal        # Phase 12.1-12.2: grid recalibration from correction vectors
+    voynich grid-alt          # Phase 12.4: stroke-based alternative grid construction
+    voynich token-decomp      # Phase 12.5: token decomposition variant sweep
+    voynich recal-csp         # Phase 12.3+12.6: recalibrated CSP + full validation
+    voynich phase12           # Run full Phase 12 pipeline
 """
 import sys
 import time
@@ -738,6 +743,52 @@ def cmd_phase115():
     cmd_csp_final()
 
 
+def cmd_grid_recal():
+    """Run Phase 12.1-12.2: grid recalibration from correction vectors."""
+    from voynich.phases.grid_recalibrate import run_grid_recalibration
+    t0 = time.time()
+    run_grid_recalibration()
+    print(f"\nGrid recalibration completed in {time.time() - t0:.1f}s")
+
+
+def cmd_grid_alt():
+    """Run Phase 12.4: stroke-based alternative grid construction."""
+    from voynich.phases.grid_alternatives import run_grid_alternatives
+    t0 = time.time()
+    run_grid_alternatives()
+    print(f"\nGrid alternatives analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_token_decomp():
+    """Run Phase 12.5: token decomposition variant sweep."""
+    from voynich.phases.token_decomposition import run_token_decomposition
+    t0 = time.time()
+    run_token_decomposition()
+    print(f"\nToken decomposition sweep completed in {time.time() - t0:.1f}s")
+
+
+def cmd_recal_csp():
+    """Run Phase 12.3+12.6: recalibrated CSP solve + full validation."""
+    from voynich.phases.recalibrated_csp import run_recalibrated_csp
+    t0 = time.time()
+    run_recalibrated_csp()
+    print(f"\nRecalibrated CSP completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase12():
+    """Run full Phase 12 pipeline: grid recalibration + alternative grids + decomp variants + final CSP."""
+    print("=" * 70)
+    print("PHASE 12: Grid Recalibration")
+    print("=" * 70)
+    cmd_grid_recal()
+    print("\n" + "=" * 70 + "\n")
+    cmd_grid_alt()
+    print("\n" + "=" * 70 + "\n")
+    cmd_token_decomp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_recal_csp()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -810,6 +861,11 @@ def main():
         'csp-iterate': cmd_csp_iterate,
         'csp-final': cmd_csp_final,
         'phase11-5': cmd_phase115,
+        'grid-recal': cmd_grid_recal,
+        'grid-alt': cmd_grid_alt,
+        'token-decomp': cmd_token_decomp,
+        'recal-csp': cmd_recal_csp,
+        'phase12': cmd_phase12,
     }
 
     if len(sys.argv) < 2:

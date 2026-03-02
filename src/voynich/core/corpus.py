@@ -13,7 +13,7 @@ import re
 import os
 from pathlib import Path
 from collections import Counter
-from typing import Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional
 
 from voynich.core._paths import data_dir as _data_dir
 
@@ -586,3 +586,72 @@ def token_to_grid_cells(
         if cell is not None:
             cells.append(cell)
     return cells
+
+
+def apply_character_moves(
+    cv_labels: Dict[str, Any],
+    moves: List[Dict[str, str]],
+) -> Dict[str, Any]:
+    """Return a deep copy of *cv_labels* with glyph moves applied.
+
+    Each move is ``{'eva_glyph': str, 'from_cell': str, 'to_cell': str}``.
+    Glyphs are removed from ``from_cell['glyphs']`` and appended to
+    ``to_cell['glyphs']``.  Cells that become empty are removed.
+    Frequency counts are left unchanged (caller may recompute if needed).
+    """
+    import copy
+    new_labels: Dict[str, Any] = copy.deepcopy(cv_labels)
+    for move in moves:
+        glyph = move['eva_glyph']
+        from_cell = move['from_cell']
+        to_cell = move['to_cell']
+        if from_cell in new_labels and glyph in new_labels[from_cell].get('glyphs', []):
+            new_labels[from_cell]['glyphs'].remove(glyph)
+        if to_cell in new_labels and glyph not in new_labels[to_cell].get('glyphs', []):
+            new_labels[to_cell]['glyphs'].append(glyph)
+    # Remove cells that became empty
+    empty = [k for k, v in new_labels.items() if not v.get('glyphs')]
+    for k in empty:
+        del new_labels[k]
+    return new_labels
+
+
+def token_to_grid_cells_alt(
+    token: str,
+    eva_to_cell: Dict[str, str],
+    mode: str = 'default',
+) -> List[str]:
+    """Decompose a Voynich token into cell keys using an alternative mode.
+
+    Modes
+    -----
+    'default'
+        Same as :func:`token_to_grid_cells`.
+    'split_aiin'
+        Treat ``aiin`` / ``aiiin`` as two separate characters (``a`` + ``iin``
+        / ``a`` + ``iiin``) rather than as a single ligature.
+    'raw_chars'
+        Tokenize without ligature merging — each raw EVA character is looked
+        up individually.
+    """
+    if mode == 'default':
+        return token_to_grid_cells(token, eva_to_cell)
+    if mode == 'split_aiin':
+        chars = tokenize_eva_chars(token)
+        expanded: List[str] = []
+        for ch in chars:
+            if ch == 'aiin':
+                expanded.extend(['a', 'iin'])
+            elif ch == 'aiiin':
+                expanded.extend(['a', 'iiin'])
+            else:
+                expanded.append(ch)
+        return [eva_to_cell[c] for c in expanded if c in eva_to_cell]
+    if mode == 'raw_chars':
+        cells: List[str] = []
+        for ch in token:
+            cell = eva_to_cell.get(ch)
+            if cell is not None:
+                cells.append(cell)
+        return cells
+    raise ValueError(f"Unknown decomposition mode: {mode!r}")
