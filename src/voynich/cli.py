@@ -40,6 +40,9 @@ Usage:
     voynich anchor-diagnosis  # Phase 6.1B: anchor inconsistency diagnosis
     voynich encoding-diagnosis # Phase 6.1C: encoding model diagnosis
     voynich phase6-1          # Run full Phase 6.1 pipeline (TF-IDF + diagnosis)
+    voynich embeddings        # Approach 8: morpheme distributional semantics
+    voynich slots             # Approach 9: pharmaceutical positional slot analysis
+    voynich phase7            # Run full Phase 7 (Approaches 8 + 9 + integration)
 """
 import sys
 import time
@@ -407,6 +410,34 @@ def cmd_phase61():
     print(f"\nPhase 6.1 validation completed in {time.time() - t0:.1f}s")
 
 
+def cmd_embeddings():
+    """Run Approach 8: morpheme-level distributional semantics."""
+    from voynich.phases.distributional import run_distributional
+    t0 = time.time()
+    run_distributional()
+    print(f"\nDistributional analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_slots():
+    """Run Approach 9: pharmaceutical positional slot analysis."""
+    from voynich.phases.positional_slots import run_positional_slots
+    t0 = time.time()
+    run_positional_slots()
+    print(f"\nPositional slot analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase7():
+    """Run full Phase 7: Approaches 8 + 9 + integration."""
+    cmd_embeddings()
+    print("\n" + "=" * 70 + "\n")
+    cmd_slots()
+    print("\n" + "=" * 70 + "\n")
+    from voynich.phases.approach_integration import run_approach_integration
+    t0 = time.time()
+    run_approach_integration()
+    print(f"\nApproach integration completed in {time.time() - t0:.1f}s")
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -444,6 +475,9 @@ def main():
         'anchor-diagnosis': cmd_anchor_diagnosis,
         'encoding-diagnosis': cmd_encoding_diagnosis,
         'phase6-1': cmd_phase61,
+        'embeddings': cmd_embeddings,
+        'slots': cmd_slots,
+        'phase7': cmd_phase7,
     }
 
     if len(sys.argv) < 2:

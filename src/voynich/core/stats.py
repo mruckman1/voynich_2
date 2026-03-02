@@ -947,3 +947,261 @@ def paradigm_shape_vector(
         n_forms, n_suf, n_pre, float(n_pre > 0),
         max_suf_len, min_suf_len, suf_diversity,
     ], dtype=float)
+
+
+# ---------------------------------------------------------------------------
+# Co-occurrence, Embeddings, and Alignment (Phase 7)
+# ---------------------------------------------------------------------------
+
+def build_cooccurrence_matrix(
+    tokens: List[str],
+    vocab: List[str],
+    window: int = 2,
+) -> Tuple[np.ndarray, Dict[str, int]]:
+    """
+    Build symmetric word-word co-occurrence count matrix.
+
+    Counts how often each pair of vocabulary items co-occurs within
+    a sliding window of *window* tokens on each side.
+
+    Returns (n_vocab × n_vocab) dense count matrix and {word: index} mapping.
+    """
+    word2idx = {w: i for i, w in enumerate(vocab)}
+    n = len(vocab)
+    matrix = np.zeros((n, n), dtype=float)
+    for pos, token in enumerate(tokens):
+        if token not in word2idx:
+            continue
+        i = word2idx[token]
+        lo = max(0, pos - window)
+        hi = min(len(tokens), pos + window + 1)
+        for j_pos in range(lo, hi):
+            if j_pos == pos:
+                continue
+            ctx = tokens[j_pos]
+            if ctx in word2idx:
+                j = word2idx[ctx]
+                matrix[i, j] += 1.0
+    return matrix, word2idx
+
+
+def ppmi_matrix(
+    cooccurrence: np.ndarray,
+    alpha: float = 0.75,
+) -> np.ndarray:
+    """
+    Compute Positive Pointwise Mutual Information matrix.
+
+    PPMI(i,j) = max(0, log2(P(i,j) / (P(i) * P(j)^alpha)))
+
+    Context distribution smoothing (alpha < 1) reduces bias against
+    rare words, critical for small corpora.
+    """
+    total = cooccurrence.sum()
+    if total < 1e-10:
+        return np.zeros_like(cooccurrence)
+
+    row_sums = cooccurrence.sum(axis=1)            # P(i) marginal
+    col_sums = cooccurrence.sum(axis=0)            # P(j) marginal
+
+    # Context smoothing: raise context frequencies to alpha, renormalize
+    col_smooth = col_sums ** alpha
+    col_smooth_sum = col_smooth.sum()
+
+    n = cooccurrence.shape[0]
+    result = np.zeros_like(cooccurrence)
+    for i in range(n):
+        if row_sums[i] < 1e-10:
+            continue
+        for j in range(n):
+            if cooccurrence[i, j] < 1e-10 or col_smooth[j] < 1e-10:
+                continue
+            p_ij = cooccurrence[i, j] / total
+            p_i = row_sums[i] / total
+            p_j_smooth = col_smooth[j] / col_smooth_sum
+            pmi = math.log2(p_ij / (p_i * p_j_smooth))
+            if pmi > 0:
+                result[i, j] = pmi
+    return result
+
+
+def truncated_svd(
+    matrix: np.ndarray,
+    n_components: int = 50,
+) -> np.ndarray:
+    """
+    Truncated SVD dimensionality reduction.
+
+    Returns U[:, :k] * sqrt(S[:k]) — the standard word embedding matrix.
+    Clamps n_components to min(matrix.shape) - 1 if needed.
+    """
+    k = min(n_components, min(matrix.shape) - 1)
+    if k < 1:
+        return np.zeros((matrix.shape[0], 1))
+    U, S, _ = np.linalg.svd(matrix, full_matrices=False)
+    return U[:, :k] * np.sqrt(S[:k])
+
+
+def procrustes_alignment(
+    source: np.ndarray,
+    target: np.ndarray,
+    src_idx: np.ndarray,
+    tgt_idx: np.ndarray,
+) -> Tuple[np.ndarray, float]:
+    """
+    Orthogonal Procrustes alignment between two embedding spaces.
+
+    Finds rotation R minimizing ||source[src_idx] @ R - target[tgt_idx]||_F
+    using scipy.linalg.orthogonal_procrustes.
+
+    Returns (source @ R, residual_frobenius_norm).
+    """
+    from scipy.linalg import orthogonal_procrustes as _oprocruste
+    src_idx = np.asarray(src_idx, dtype=int)
+    tgt_idx = np.asarray(tgt_idx, dtype=int)
+    A = source[src_idx]
+    B = target[tgt_idx]
+    R, scale = _oprocruste(A, B)
+    aligned = source @ R
+    residual = float(np.linalg.norm(aligned[src_idx] - B))
+    return aligned, residual
+
+
+def gromov_wasserstein_distance(
+    dist_a: np.ndarray,
+    dist_b: np.ndarray,
+    p: Optional[np.ndarray] = None,
+    q: Optional[np.ndarray] = None,
+    epsilon: float = 0.1,
+    n_iter: int = 100,
+) -> float:
+    """
+    Approximate Gromov-Wasserstein distance between two metric spaces.
+
+    Compares internal distance structure without requiring point
+    correspondences. Uses entropic regularization with Sinkhorn-like
+    projection for tractability.
+
+    Args:
+        dist_a: (n × n) pairwise distance matrix for space A
+        dist_b: (m × m) pairwise distance matrix for space B
+        p: Weight vector for space A (uniform if None)
+        q: Weight vector for space B (uniform if None)
+        epsilon: Entropic regularization strength
+        n_iter: Number of projection iterations
+    """
+    n = dist_a.shape[0]
+    m = dist_b.shape[0]
+    if p is None:
+        p = np.ones(n) / n
+    if q is None:
+        q = np.ones(m) / m
+
+    # Initialize transport plan as outer product of marginals
+    T = np.outer(p, q)
+
+    for _ in range(n_iter):
+        # Cost matrix: C(i,j) = sum_{i',j'} (D_a(i,i') - D_b(j,j'))^2 * T(i',j')
+        # Efficient: C = Da^2 p 1^T + 1 p^T Db^2 - 2 Da T Db
+        da2 = dist_a ** 2
+        db2 = dist_b ** 2
+        term1 = da2 @ T @ np.ones((m, m))
+        term2 = np.ones((n, n)) @ T @ db2
+        term3 = 2.0 * dist_a @ T @ dist_b
+        C = term1 + term2 - term3
+
+        # Sinkhorn step with entropic regularization
+        K = np.exp(-C / epsilon)
+        K = np.maximum(K, 1e-300)  # numerical stability
+
+        # Row normalization
+        for _ in range(10):
+            row_sum = K.sum(axis=1)
+            row_sum = np.maximum(row_sum, 1e-300)
+            K = K * (p / row_sum)[:, None]
+            col_sum = K.sum(axis=0)
+            col_sum = np.maximum(col_sum, 1e-300)
+            K = K * (q / col_sum)[None, :]
+
+        T = K
+
+    # Compute final GW objective
+    da2 = dist_a ** 2
+    db2 = dist_b ** 2
+    cost = (da2 @ T @ np.ones((m, m)) + np.ones((n, n)) @ T @ db2
+            - 2.0 * dist_a @ T @ dist_b)
+    gw = float(np.sum(cost * T))
+    return gw
+
+
+def cohens_kappa(
+    labels_a: np.ndarray,
+    labels_b: np.ndarray,
+) -> float:
+    """
+    Cohen's kappa inter-rater agreement coefficient.
+
+    kappa = (p_observed - p_expected) / (1 - p_expected)
+    Returns value in [-1, 1] where 1 = perfect agreement.
+    """
+    labels_a = np.asarray(labels_a, dtype=str)
+    labels_b = np.asarray(labels_b, dtype=str)
+    n = len(labels_a)
+    if n == 0:
+        return 0.0
+    categories = sorted(set(labels_a) | set(labels_b))
+    # Build confusion matrix
+    cat2idx = {c: i for i, c in enumerate(categories)}
+    k = len(categories)
+    conf = np.zeros((k, k), dtype=float)
+    for a, b in zip(labels_a, labels_b):
+        conf[cat2idx[a], cat2idx[b]] += 1.0
+    p_o = np.trace(conf) / n
+    row_sums = conf.sum(axis=1) / n
+    col_sums = conf.sum(axis=0) / n
+    p_e = float(np.sum(row_sums * col_sums))
+    if abs(1.0 - p_e) < 1e-10:
+        return 1.0 if abs(p_o - 1.0) < 1e-10 else 0.0
+    return float((p_o - p_e) / (1.0 - p_e))
+
+
+def adjusted_rand_index(
+    labels_a: np.ndarray,
+    labels_b: np.ndarray,
+) -> float:
+    """
+    Adjusted Rand Index for comparing two clusterings.
+
+    ARI = (RI - expected_RI) / (max_RI - expected_RI)
+    Returns value in [-1, 1] where 1 = perfect agreement.
+    """
+    labels_a = np.asarray(labels_a, dtype=str)
+    labels_b = np.asarray(labels_b, dtype=str)
+    n = len(labels_a)
+    if n < 2:
+        return 0.0
+    classes_a = sorted(set(labels_a))
+    classes_b = sorted(set(labels_b))
+    a2i = {c: i for i, c in enumerate(classes_a)}
+    b2i = {c: i for i, c in enumerate(classes_b)}
+    # Build contingency table
+    nij = np.zeros((len(classes_a), len(classes_b)), dtype=float)
+    for a, b in zip(labels_a, labels_b):
+        nij[a2i[a], b2i[b]] += 1.0
+
+    def comb2(x):
+        return x * (x - 1) / 2.0
+
+    sum_comb_nij = sum(comb2(nij[i, j]) for i in range(nij.shape[0])
+                       for j in range(nij.shape[1]))
+    sum_comb_a = sum(comb2(nij[i, :].sum()) for i in range(nij.shape[0]))
+    sum_comb_b = sum(comb2(nij[:, j].sum()) for j in range(nij.shape[1]))
+    comb_n = comb2(n)
+    if comb_n < 1e-10:
+        return 0.0
+    expected = sum_comb_a * sum_comb_b / comb_n
+    max_idx = 0.5 * (sum_comb_a + sum_comb_b)
+    denom = max_idx - expected
+    if abs(denom) < 1e-10:
+        return 1.0 if abs(sum_comb_nij - expected) < 1e-10 else 0.0
+    return float((sum_comb_nij - expected) / denom)

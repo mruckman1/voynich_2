@@ -731,3 +731,191 @@ def extract_latin_stem(nominative: str, declension: str) -> str:
     elif declension == 'noun_4th' and word.endswith('us'):
         return word[:-2]
     return word
+
+
+# ---------------------------------------------------------------------------
+# Latin Recipe Structure (Phase 7 / Approach 9)
+# ---------------------------------------------------------------------------
+
+LATIN_RECIPE_VERBS = [
+    'recipe', 'accipe', 'misce', 'contere', 'coque', 'cola',
+    'decoque', 'adde', 'tere', 'pone', 'fac', 'bibat',
+    'detur', 'fiat', 'ponatur', 'lavetur', 'superponatur',
+    'misceantur', 'terantur', 'coquantur', 'coletur',
+    'teratur', 'decoquantur', 'iniiciatur', 'illiniatur',
+    'instillatus', 'conficiatur', 'tritum',
+]
+
+LATIN_RECIPE_CONNECTORS = [
+    'et', 'cum', 'in', 'de', 'ad', 'per', 'vel', 'sive',
+    'aut', 'super', 'contra', 'idest', 'ex', 'ab', 'pro',
+    'inde', 'si', 'ut', 'sic', 'quod', 'sicut',
+]
+
+# All known Latin suffix endings, flattened for heuristic stemming
+_ALL_LATIN_SUFFIXES = sorted(set(
+    s for group in LATIN_DECLENSION_SUFFIXES.values() for s in group
+), key=lambda x: -len(x))
+
+
+def stem_latin_token(token: str) -> str:
+    """
+    Heuristic Latin stemmer: strip longest matching inflectional suffix.
+
+    Accepts the result only if the remaining stem is >= 3 characters.
+    Falls back to the original token otherwise.
+    """
+    word = token.lower().strip()
+    for suffix in _ALL_LATIN_SUFFIXES:
+        if word.endswith(suffix) and len(word) - len(suffix) >= 3:
+            return word[:-len(suffix)]
+    return word
+
+
+@dataclass
+class RecipeSegment:
+    """One segmented recipe/instruction from a Latin herbal text."""
+    entry_name: str
+    tokens: List[str]
+    n_tokens: int
+    word_classes: List[str]
+
+
+@dataclass
+class SlotProfile:
+    """Positional slot statistics for a corpus of recipes."""
+    n_recipes: int
+    mean_recipe_length: float
+    max_position_analyzed: int
+    position_class_probs: Dict[int, Dict[str, float]]
+    slot_entropy_by_position: List[float]
+    verb_initial_ratio: float
+
+
+def label_word_class(token: str) -> str:
+    """
+    Label a Latin token as 'verb', 'connector', or 'other'.
+
+    Uses the closed-class verb and connector lists. Tokens not matching
+    either list are labeled 'other' (nouns, adjectives, quantities, etc.).
+    """
+    t = token.lower().strip()
+    if t in LATIN_RECIPE_VERBS:
+        return 'verb'
+    if t in LATIN_RECIPE_CONNECTORS:
+        return 'connector'
+    # Heuristic: common imperative/subjunctive endings
+    if t.endswith('atur') or t.endswith('antur') or t.endswith('etur'):
+        return 'verb'
+    return 'other'
+
+
+def segment_latin_recipes(
+    corpus: 'ReferenceCorpus',
+    language: str = 'latin',
+    min_tokens: int = 3,
+    max_segment: int = 30,
+) -> List[RecipeSegment]:
+    """
+    Segment Latin reference text into recipe/instruction units.
+
+    Since the cleaned reference text is a flat token stream (all structure
+    removed by clean_reference_text), segments at recipe-initial markers:
+    imperative verbs, 'contra', 'ad' + body part patterns, 'item', 'confert'.
+
+    Each segment runs from one marker to the next.
+    """
+    tokens = corpus.get_combined_tokens(language)
+    if not tokens:
+        return []
+
+    # Recipe-initial words that start new segments
+    segment_starters = set(LATIN_RECIPE_VERBS) | {
+        'contra', 'confert', 'item', 'solvit', 'mundificat',
+        'reducit', 'provocat', 'confortat', 'sanat', 'curat',
+    }
+
+    # Find segment boundaries
+    boundaries = [0]
+    for i, tok in enumerate(tokens):
+        if i == 0:
+            continue
+        if tok in segment_starters:
+            boundaries.append(i)
+    boundaries.append(len(tokens))
+
+    # Build segments
+    segments = []
+    for start, end in zip(boundaries, boundaries[1:]):
+        seg_tokens = tokens[start:end]
+        # Cap segment length to avoid giant non-recipe blocks
+        if len(seg_tokens) > max_segment:
+            seg_tokens = seg_tokens[:max_segment]
+        if len(seg_tokens) < min_tokens:
+            continue
+        classes = [label_word_class(t) for t in seg_tokens]
+        segments.append(RecipeSegment(
+            entry_name='',
+            tokens=seg_tokens,
+            n_tokens=len(seg_tokens),
+            word_classes=classes,
+        ))
+
+    return segments
+
+
+def compute_slot_profile(
+    recipes: List[RecipeSegment],
+    max_position: int = 10,
+) -> SlotProfile:
+    """
+    Compute positional word-class statistics across all recipe segments.
+
+    For each position k (0-indexed up to max_position), computes
+    P(word_class | position=k) and per-position entropy over classes.
+    """
+    import math as _math
+    if not recipes:
+        return SlotProfile(
+            n_recipes=0, mean_recipe_length=0.0, max_position_analyzed=0,
+            position_class_probs={}, slot_entropy_by_position=[],
+            verb_initial_ratio=0.0,
+        )
+
+    position_counts: Dict[int, Dict[str, int]] = {}
+    for pos in range(max_position):
+        position_counts[pos] = Counter()
+
+    n_verb_initial = 0
+    for recipe in recipes:
+        for pos in range(min(max_position, recipe.n_tokens)):
+            position_counts[pos][recipe.word_classes[pos]] += 1
+        if recipe.n_tokens > 0 and recipe.word_classes[0] == 'verb':
+            n_verb_initial += 1
+
+    # Compute probabilities and entropy per position
+    position_probs = {}
+    entropies = []
+    for pos in range(max_position):
+        counts = position_counts[pos]
+        total = sum(counts.values())
+        if total == 0:
+            position_probs[pos] = {}
+            entropies.append(0.0)
+            continue
+        probs = {cls: c / total for cls, c in counts.items()}
+        position_probs[pos] = probs
+        h = -sum(p * _math.log2(p) for p in probs.values() if p > 0)
+        entropies.append(h)
+
+    mean_len = sum(r.n_tokens for r in recipes) / len(recipes)
+    verb_init = n_verb_initial / len(recipes) if recipes else 0.0
+
+    return SlotProfile(
+        n_recipes=len(recipes),
+        mean_recipe_length=mean_len,
+        max_position_analyzed=max_position,
+        position_class_probs=position_probs,
+        slot_entropy_by_position=entropies,
+        verb_initial_ratio=verb_init,
+    )
