@@ -55,6 +55,10 @@ Usage:
     voynich glyph-grammar     # Phase 10.4: glyph construction grammar
     voynich hypothesis        # Phase 10.5: hypothesis integration & verdict
     voynich phase10           # Run all Phase 10 analyses
+    voynich csp-solve         # Phase 11.0: CSP solver sanity test
+    voynich csp-decode        # Phase 11.2: multi-language CSP decoding
+    voynich csp-validate      # Phase 11.3: CSP validation battery
+    voynich phase11           # Run all Phase 11 analyses
 """
 import sys
 import time
@@ -642,6 +646,39 @@ def cmd_phase10():
     cmd_hypothesis()
 
 
+def cmd_csp_solve():
+    """Run Phase 11.0: CSP solver sanity test."""
+    from voynich.phases.csp_solver import run_csp_solver_test
+    t0 = time.time()
+    run_csp_solver_test()
+    print(f"\nCSP solver test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_csp_decode():
+    """Run Phase 11.2: multi-language CSP phonetic decoding."""
+    from voynich.phases.csp_decode import run_csp_decode
+    t0 = time.time()
+    run_csp_decode()
+    print(f"\nCSP decode completed in {time.time() - t0:.1f}s")
+
+
+def cmd_csp_validate():
+    """Run Phase 11.3: CSP validation battery."""
+    from voynich.phases.csp_validate import run_csp_validation_phase
+    t0 = time.time()
+    run_csp_validation_phase()
+    print(f"\nCSP validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase11():
+    """Run full Phase 11: CSP phonetic decoding."""
+    cmd_csp_solve()
+    print("\n" + "=" * 70 + "\n")
+    cmd_csp_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_csp_validate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -704,6 +741,10 @@ def main():
         'glyph-grammar': cmd_glyph_grammar,
         'hypothesis': cmd_hypothesis,
         'phase10': cmd_phase10,
+        'csp-solve': cmd_csp_solve,
+        'csp-decode': cmd_csp_decode,
+        'csp-validate': cmd_csp_validate,
+        'phase11': cmd_phase11,
     }
 
     if len(sys.argv) < 2:

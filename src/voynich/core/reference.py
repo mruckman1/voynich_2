@@ -1238,4 +1238,162 @@ ROMANCE_PHONOTACTICS: Dict[str, Dict[str, Any]] = {
         ],
         'forbidden_onsets': {'dl', 'tl', 'sr'},
     },
+    'german': {
+        'onsets': [
+            '', 'b', 'd', 'f', 'g', 'h', 'k', 'l', 'm', 'n', 'p', 'r',
+            's', 'sch', 'sp', 'st', 'str', 't', 'v', 'w', 'z',
+            'bl', 'br', 'dr', 'fl', 'fr', 'gl', 'gr', 'kl', 'kn', 'kr',
+            'pf', 'pl', 'pr', 'tr', 'zw',
+        ],
+        'rimes': [
+            'a', 'e', 'i', 'o', 'u',
+            'an', 'ar', 'al', 'as', 'at',
+            'en', 'er', 'el', 'es', 'et',
+            'in', 'ir', 'il', 'is', 'it',
+            'on', 'or', 'ol',
+            'un', 'ur', 'us', 'ut',
+            'ach', 'ich', 'uch',
+        ],
+        'forbidden_onsets': {'dl', 'tl', 'sr'},
+    },
 }
+
+
+# ---------------------------------------------------------------------------
+# Phoneme Inventories and Syllable Frequency Tools  (Phase 11 CSP)
+# ---------------------------------------------------------------------------
+
+PHONEME_INVENTORIES: Dict[str, Dict[str, Any]] = {
+    'latin': {
+        'consonants': ['b', 'c', 'd', 'f', 'g', 'h', 'l', 'm', 'n',
+                        'p', 'r', 's', 't', 'v'],
+        'vowels': ['a', 'e', 'i', 'o', 'u'],
+        'word_final_legal': {'a', 'e', 'i', 'o', 'u', 'm', 'n', 'r',
+                             's', 't', 'x'},
+    },
+    'occitan': {
+        'consonants': ['b', 'c', 'd', 'f', 'g', 'h', 'l', 'm', 'n',
+                        'p', 'r', 's', 't', 'v', 'z'],
+        'vowels': ['a', 'e', 'i', 'o', 'u'],
+        'word_final_legal': {'a', 'e', 'i', 'o', 'u', 'l', 'n', 'r',
+                             's', 't', 'z'},
+    },
+    'italian': {
+        'consonants': ['b', 'c', 'd', 'f', 'g', 'l', 'm', 'n', 'p',
+                        'r', 's', 't', 'v', 'z'],
+        'vowels': ['a', 'e', 'i', 'o', 'u'],
+        'word_final_legal': {'a', 'e', 'i', 'o'},
+    },
+    'german': {
+        'consonants': ['b', 'd', 'f', 'g', 'h', 'k', 'l', 'm', 'n',
+                        'p', 'r', 's', 't', 'v', 'w', 'z'],
+        'vowels': ['a', 'e', 'i', 'o', 'u'],
+        'word_final_legal': {'a', 'e', 'i', 'o', 'u', 'b', 'd', 'f',
+                             'g', 'k', 'l', 'm', 'n', 'p', 'r', 's',
+                             't', 'z'},
+    },
+}
+
+
+def get_phoneme_inventory(language: str) -> Dict[str, Any]:
+    """Return phoneme inventory for a language, defaulting to Latin."""
+    return PHONEME_INVENTORIES.get(language, PHONEME_INVENTORIES['latin'])
+
+
+def build_cv_syllable_table(language: str) -> List[str]:
+    """Build all legal CV syllables for *language*.
+
+    Returns consonant+vowel combinations plus pure-vowel syllables.
+    """
+    inv = get_phoneme_inventory(language)
+    syllables: List[str] = []
+    for c in inv['consonants']:
+        for v in inv['vowels']:
+            syllables.append(c + v)
+    # Pure-vowel onsets
+    for v in inv['vowels']:
+        syllables.append(v)
+    return syllables
+
+
+def build_syllable_frequency_table(
+    language: str,
+    ref_corpus: Optional['ReferenceCorpus'] = None,
+    n_words: int = 10000,
+) -> Dict[str, float]:
+    """Compute CV syllable frequencies from reference corpus.
+
+    Syllabifies reference text words, maps each syllable to its
+    onset+nucleus (CV) pattern, and returns normalised frequencies.
+    Falls back to uniform distribution when no corpus is available.
+    """
+    from voynich.core.stats import syllabify_latin  # avoid circular import
+
+    cv_table = build_cv_syllable_table(language)
+    counts: Counter = Counter()
+
+    if ref_corpus is not None:
+        tokens = ref_corpus.get_combined_tokens(language)
+        if not tokens:
+            # Try any available language
+            for lang in ref_corpus.languages:
+                tokens = ref_corpus.get_combined_tokens(lang)
+                if tokens:
+                    break
+        for word in tokens[:n_words]:
+            syls = syllabify_latin(word)
+            for syl in syls:
+                # Normalise to lowercase and strip to CV skeleton
+                syl_lower = syl.lower()
+                # Find the best matching CV pattern
+                best_match = _match_cv_pattern(syl_lower, cv_table)
+                if best_match:
+                    counts[best_match] += 1
+
+    # Ensure every legal syllable has at least a small count
+    for syl in cv_table:
+        if syl not in counts:
+            counts[syl] = 1
+
+    total = sum(counts.values())
+    return {syl: cnt / total for syl, cnt in counts.items()}
+
+
+def _match_cv_pattern(syllable: str, cv_table: List[str]) -> Optional[str]:
+    """Find the best matching CV pattern for a syllable string.
+
+    Extracts onset (leading consonants) and nucleus (first vowel)
+    and returns the corresponding CV entry if it exists.
+    """
+    vowels = set('aeiou')
+    onset = ''
+    nucleus = ''
+    rest = syllable.lower()
+
+    # Extract onset consonants
+    while rest and rest[0] not in vowels:
+        onset += rest[0]
+        rest = rest[1:]
+
+    # Extract nucleus vowel
+    if rest and rest[0] in vowels:
+        nucleus = rest[0]
+
+    if not nucleus:
+        return None
+
+    candidate = onset + nucleus
+    if candidate in cv_table:
+        return candidate
+
+    # Try with simplified onset (just last consonant)
+    if len(onset) > 1:
+        candidate = onset[-1] + nucleus
+        if candidate in cv_table:
+            return candidate
+
+    # Try pure vowel
+    if nucleus in cv_table:
+        return nucleus
+
+    return None

@@ -1,14 +1,16 @@
 # Voynich Manuscript: Syllabary & Information-Theoretic Analysis
 
-A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, and hypothesis-discriminating tests. Fourteen complementary approaches across ten phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step.
+A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, and constraint satisfaction phonetic decoding. Fifteen complementary approaches across eleven phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step.
 
-**Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification). **Phase 10** tests the three surviving hypotheses — constructed script (H1), information dispersion (H2), and keyed cipher (H3) — through five discriminating analyses: token-level entropy curves, mutual information decay, folio-level encoding shifts, glyph construction grammar, and hypothesis integration.
+**Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification). **Phase 10** tests the three surviving hypotheses — constructed script (H1), information dispersion (H2), and keyed cipher (H3) — through five discriminating analyses: token-level entropy curves, mutual information decay, folio-level encoding shifts, glyph construction grammar, and hypothesis integration. **Phase 11** directly attacks the 14-variable phonetic mapping problem using constraint satisfaction: six constraint layers progressively prune each grid cell's candidate syllable set, AC-3 arc-consistency propagation removes inconsistencies, and beam search (MRV-ordered, width 50) finds the CE-optimal assignment across Latin, Occitan, Italian, and German.
 
 Key finding across all phases: the Voynich manuscript encodes a **Romance language** (Latin or Occitan, not separable) using a **morphological syllabary** with genuine affix+stem structure. Both Voynich Language A and B embedding spaces independently point to Latin as the closest structural match. Fisher's combined probability test across 5 independent evidence families yields p = 2.75×10⁻¹⁰, confirming that the aggregate signal is real even though the selectivity ceiling — where frequency priors dominate over genuine linguistic content — persists at the level of individual word identification. Phase 8's MDL decoder, tested against all four candidate languages (Latin, Occitan, Italian, German), cannot discriminate between them — German wins on raw CE due to corpus size, not linguistic affinity. The failed sanity check (4% cipher recovery) and lack of language discrimination confirm the compression gains are frequency-driven, not genuine decryption.
 
 Phase 9's fundamental reassessment rules out three specific encoding models: **no homophonic signal** (zero distributional clusters at cosine > 0.8, Voynich vocabulary is actually smaller than references), **no nomenclator-specific bimodality** (Voynich is bimodal but so are all reference languages), and **no position-dependent encoding** (positional JSD matches random shuffling). The four candidate languages remain statistically indistinguishable at matched corpus sizes (11K tokens, overlapping CIs). The text typology classifier identifies the Voynich as **encoded natural language** (confidence 1.0) — not glossolalia, not constructed — with an anomalously high entropy floor (0.978 bits/char vs 0.33–0.51 for reference languages), indicating the encoding preserves more redundancy than any tested plaintext.
 
-Phase 10 resolves the three-way ambiguity. **H1 (Constructed script) wins** with score 4.0, margin 2.5 over H2 (1.5) and H3 (1.0). The entropy curve for Voynich Language A shows a near-perfect parallel shift with Latin (r = 0.999), sections are consistent (herbal-pharma r = 0.9998), and the glyph grid matches Devanagari-class constructed scripts with a "construction" (not "morphology") diagnosis. H2 is partially supported by high MI decay τ (8.98× reference) but fails the phrase-level alignment test. H3 is largely rejected — no residual JSD after controlling for section, no quire boundary effects. The actionable next step is a 14-variable CSP mapping grid cells to phonemes/syllables, constrained by Romance phonotactics.
+Phase 10 resolves the three-way ambiguity. **H1 (Constructed script) wins** with score 4.0, margin 2.5 over H2 (1.5) and H3 (1.0). The entropy curve for Voynich Language A shows a near-perfect parallel shift with Latin (r = 0.999), sections are consistent (herbal-pharma r = 0.9998), and the glyph grid matches Devanagari-class constructed scripts with a "construction" (not "morphology") diagnosis. H2 is partially supported by high MI decay τ (8.98× reference) but fails the phrase-level alignment test. H3 is largely rejected — no residual JSD after controlling for section, no quire boundary effects.
+
+Phase 11 implements the CSP phonetic decoder predicted by Phase 10. **Latin wins** across all four languages (CE = 2.999, selectivity **1.92×** vs random baseline of 5.74). All seven validation tests pass: sanity check selectivity 1.47×, cross-validation CV = 0.013 (well below 0.10 threshold), section coherence confirmed, Language B CE ratio 1.02×, and prior-phase convergence 2/3 checks. The best Latin phonetic table maps the 14 grid cells to two-character CV syllables (si, co, ne, ca, ce, ba, bi, se, la, na); 11.1% of decoded tokens match Latin reference vocabulary (up from 9.4% at baseline), and 1/8 Rosetta folio anchors achieve edit distance ≤ 3. The decoding remains frequency-dominated: the CE gap is real and significant, but the recovered syllable table does not yet produce recognizable Latin words, consistent with the selectivity ceiling documented across all prior phases.
 
 ## Quick Start
 
@@ -75,6 +77,10 @@ voynich folio-shift       # Phase 10.3: folio-level encoding shifts (H3 test)
 voynich glyph-grammar     # Phase 10.4: glyph construction grammar (H1 test)
 voynich hypothesis        # Phase 10.5: hypothesis integration and verdict
 voynich phase10           # Run all Phase 10 analyses
+voynich csp-solve         # Phase 11.0: CSP solver sanity check (synthetic recovery)
+voynich csp-decode        # Phase 11.2: multi-language CSP phonetic decoding
+voynich csp-validate      # Phase 11.3: CSP validation battery (7 tests)
+voynich phase11           # Run full Phase 11 pipeline (solve → decode → validate)
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -142,7 +148,11 @@ voynich_2/
 │       ├── mutual_info_decay.py # Phase 10.2: MI decay analysis
 │       ├── folio_shift.py     # Phase 10.3: folio-level encoding shifts
 │       ├── glyph_grammar.py   # Phase 10.4: glyph construction grammar
-│       └── hypothesis_verdict.py # Phase 10.5: hypothesis integration
+│       ├── hypothesis_verdict.py # Phase 10.5: hypothesis integration
+│       ├── csp_constraints.py # Phase 11: six constraint layers (inventory, frequency, phonotactics, word validity, anchors, cross-entropy)
+│       ├── csp_solver.py      # Phase 11: CSP engine — AC-3 propagation, MRV beam search, sanity test
+│       ├── csp_decode.py      # Phase 11: multi-language pipeline (Latin/Occitan/Italian/German)
+│       └── csp_validate.py    # Phase 11: 7-test validation battery (V1–V7)
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
@@ -874,6 +884,79 @@ Compiles evidence from all Phase 10 sub-analyses into weighted scores.
 
 **Actionable next step:** The 14-variable CSP is the decoding path. Each grid cell maps to one phoneme or syllable. Phonotactic constraints of Romance languages prune the search space. Illustration constraints provide anchor values. Constraint propagation is estimated to reduce the search to ~10³–10⁶ candidates.
 
+## Phase 11: Constraint Satisfaction Phonetic Decoding
+
+Phase 10 confirmed H1 (Constructed Script): the Voynich script is a Devanagari-class abugida where each EVA character encodes one CV syllable and maps to one of 14 occupied cells in a 5×6 onset×nucleus grid. Phase 11 formulates this as a 14-variable Constraint Satisfaction Problem and searches for the phonetic assignment that minimises cross-entropy against a Romance language model.
+
+### Architecture
+
+Each grid cell is a CSP variable; its domain is the set of legal CV syllables in the target language. Six constraint layers progressively prune the search space before beam search explores remaining candidates.
+
+| Layer | Constraint | Implementation |
+|-------|------------|----------------|
+| L1 | Phoneme inventory | Restrict domains to syllables in the target language's legal CV table |
+| L2 | Frequency rank matching | Cells ranked by corpus frequency may only map to syllables at proportional reference-frequency rank ± slack |
+| L3 | Phonotactic legality | Remove syllables with forbidden onset clusters |
+| L4 | Word-structure validity | Score decoded tokens by vowel presence and word-final legality |
+| L5 | Illustration anchors | Rosetta folio stems expand cell domains with anchor-suggested syllables; beam search applies a 0.4-point bonus to anchor-aligned assignments |
+| L6 | Cross-entropy scoring | Decoded tokens scored against a character-level 3-gram LM built from the reference corpus |
+
+AC-3 arc consistency propagation further prunes domains: any cell with a singleton domain removes its value from all other cells. Beam search (width 50, MRV ordering — smallest domain first) then expands partial assignments, scoring every 3 steps via a fast partial cross-entropy estimator.
+
+### Step 11.0: CSP Solver Sanity Test
+
+| Sub-step | Description | Module |
+|----------|-------------|--------|
+| 11.0a | **Known-mapping encoding** — Assign 14 Latin CV syllables to the real 14 grid cells, encode 3,000 Latin words as EVA glyph sequences. | `phases/csp_solver.py` |
+| 11.0b | **Random baseline** — Score 100 random cell→syllable assignments; compute mean CE. | `phases/csp_solver.py` |
+| 11.0c | **Selectivity check** — Verify that the true mapping CE is below the random mean (selectivity ≥ 1.3×). | `phases/csp_solver.py` |
+
+**Result:** True mapping CE = 3.855 vs random mean CE = 5.649. **Selectivity = 1.47×**, confirming the pipeline can distinguish the true mapping from random. Direct cell recovery is 0/14 — the encoded corpus is dominated by the most frequent glyph (most Latin syllables fall back to the most common CV pattern), so the CSP cannot uniquely recover the mapping, but the true mapping is significantly better than chance.
+
+**Verdict:** `sanity_passed_selectivity_1.47x`. Gate **PASSED** (selectivity ≥ 1.3×).
+
+### Step 11.2: Multi-Language Phonetic Decoding
+
+| Sub-step | Description | Module |
+|----------|-------------|--------|
+| 11.2a | **Per-language pipeline** — For each language (Latin, Occitan, Italian, German): build CV inventory, build 3-gram LM from reference tokens, build anchor constraints from 8 Rosetta folios, initialise domains (Layers 1–3+5), run AC-3, run beam search (Layer 6). | `phases/csp_decode.py` |
+| 11.2b | **Language ranking** — Sort by best cross-entropy. | `phases/csp_decode.py` |
+| 11.2c | **Random baseline + selectivity gate** — 200 random assignments; gate: selectivity ≥ 1.5×. | `phases/csp_decode.py` |
+| 11.2d | **Anchor details** — For each Rosetta folio, decode the stem and compare to the plant name. | `phases/csp_decode.py` |
+
+**Result:**
+
+| Language | CE | Dict hit | Anchors | Time |
+|----------|----|----------|---------|------|
+| **Latin** | **2.999** | **11.1%** | **1/8** | 11s |
+| Occitan | 3.794 | 5.6% | 0/8 | 11s |
+| Italian | 4.191 | 9.2% | 1/8 | 11s |
+| German | 4.221 | 2.3% | 0/8 | 13s |
+
+Random baseline mean CE = 5.74. **Selectivity = 1.92×** (Latin best assignment vs random). Latin phonetic table: C1V1→si, C2V3→co, C3V4→co, C2V5→ne, C1V2→ca, C2V2→ca, C1V5→ne, C1V6→ne, C3V1→bi, C2V6→ce, C2V1→se, C4V3→ba, C5V4→ba, C3V6→ba. Decoded sample: "fachys"→"cosiconebi", "shol"→"coca", "cthres"→"cosisibi". Note: Phase 8 MDL ranked German first due to corpus-size effects; Phase 11 CSP ranks Latin first, consistent with all prior structural evidence.
+
+**Verdict:** `csp_decode_significant_selectivity_1.92x`. Gate **PASSED** (selectivity ≥ 1.5×).
+
+### Step 11.3: CSP Validation Battery
+
+| Test | Description | Result |
+|------|-------------|--------|
+| V1: Sanity Check | True mapping CE < 1.3× random mean on synthetic corpus | **PASS** — selectivity 1.47× |
+| V2: Random Baseline | CSP best CE vs 500 random assignments (selectivity ≥ 1.5×) | **PASS** — selectivity 1.90× |
+| V3: Cross-Validation | 5-fold folio split, CE coefficient of variation < 0.10 | **PASS** — CV = 0.013 |
+| V4: Section Coherence | Herbal decoded text has more plant keywords; pharma has more recipe keywords | **PASS** — score 1.0 |
+| V5: Illustration Match | Non-anchor herbal folios produce decodable stems | **PASS** — 5 decoded stems |
+| V6: Language B | Language B CE / Language A CE ratio < 2.0 | **PASS** — ratio 1.02× |
+| V7: Prior Convergence | Agreement with Phase 8/9/10: H1 verdict, language ranking, verb decoding | **PASS** — 2/3 checks |
+
+**Summary: 7/7 tests passed.**
+
+**Verdict:** `csp_validation_passed_7_of_7`. Gate **PASSED** (≥ 4/7 required).
+
+### Phase 11 Findings Summary
+
+The CSP phonetic decoder achieves a **1.92× selectivity** over random assignment — the strongest discrimination signal obtained for any phonetic mapping approach in this project. Latin consistently wins across CE, dict hit rate, and partial anchor matching. The decoded text is phonetically regular (100% word validity) but does not yet produce recognisable Latin — the 11.1% dictionary hit rate reflects short decoded tokens like "si", "ne", "ca" matching common Latin particles and prepositions, not substantive vocabulary. The selectivity ceiling documented across Phases 5–9 remains: the CSP finds a real CE minimum, but the minimum is shallow enough that many assignments score nearly as well. The remaining gap between the current result and genuine decoding requires either: (a) a larger and more consistent set of illustration anchors, or (b) relaxing the CV-only encoding model to allow CVC syllables or consonant clusters.
+
 ## Integration
 
 The approaches cross-validate across all phases:
@@ -899,6 +982,13 @@ The approaches cross-validate across all phases:
 | Phase 10.1 finds | Phase 10.2 finds | Phase 10.3 finds | Phase 10.4 finds | Phase 10.5 verdict | Interpretation |
 |---|---|---|---|---|---|
 | Entropy curve r=0.999 with Latin; sections consistent (herbal-pharma r=0.9998); Language B curve flatter with higher floor (3.25 vs 2.55) | τ_voynich = 4,285 >> τ_latin = 477 (ratio 8.98×); but section τ inconsistent and phrase alignment shows no improvement | 63 folios, within-section JSD not significant vs null; function-word CV inflated (0.73 vs 0.35–0.52); no quire boundary effect | Closest to Devanagari (0.47 similarity); diagnosis = "construction" (onset/nucleus independent of position, p < 10⁻⁶) | **H1 wins** (score 4.0, margin 2.5). H2 = 1.5, H3 = 1.0. Gate passed. | **Constructed script confirmed.** Glyph strokes encode phonetic values via script-specific construction logic; the grid is a syllabary blueprint, not a morphological accident. The 14-variable CSP is the decoding path. |
+
+**Phase 11 cross-validation (CSP phonetic decoding):**
+
+| CSP decode finds | CSP validate finds | Interpretation |
+|---|---|---|
+| Latin wins: CE 2.999 vs Occitan 3.794, Italian 4.191, German 4.221. Selectivity 1.92× (random mean 5.74). Dict hit 11.1% (Latin reference words in decoded text). 1/8 Rosetta anchors at edit distance ≤ 3. | 7/7 validation tests pass: sanity selectivity 1.47×, V3 CV=0.013, V4 section coherence confirmed, V6 Language B ratio 1.02×, V7 prior convergence 2/3. | **Latin phonetic assignment is statistically discriminated from random** — the strongest signal achieved for any phonetic mapping approach. The decoded text is phonetically legal (100% word validity) but sub-lexical: decoded tokens match Latin particles ("si", "ne", "ca") at 11.1% rate, not substantive vocabulary. Selectivity ceiling persists: the CSP finds a real CE minimum but it is shallow. Next step: larger anchor set or CVC syllable extension. |
+| Latin CE lower than all three other languages across all 20 beam-search solutions (no overlap). Phase 8 MDL ranked German first (corpus-size artifact); CSP ranks Latin first, consistent with Phases 3–7 structural evidence. | Cross-validation CV = 0.013: CE is stable across random 5-fold folio splits, confirming the signal is corpus-wide not folio-specific. Language B CE ratio 1.02× (essentially equal to Language A with the Latin table) — consistent with A and B sharing the same phonetic encoding. | **CSP result converges with all prior structural evidence** pointing to Latin. The CE advantage over Occitan (0.79 nats), Italian (1.19 nats), and German (1.22 nats) is consistent and reproduced across all beam-search solutions. Language B sharing the Latin table supports a single encoder for both sections. |
 
 ## Data
 

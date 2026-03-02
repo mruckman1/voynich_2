@@ -543,3 +543,46 @@ def load_corpus(data_dir: str = None, verbose: bool = True) -> VoynichCorpus:
         f"No IVTFF files found in {data_dir}. "
         f"Copy ZL3b-n.txt into {data_dir}/"
     )
+
+
+# ---------------------------------------------------------------------------
+# Grid-cell decomposition helpers  (Phase 11 CSP)
+# ---------------------------------------------------------------------------
+
+def build_eva_to_cell_lookup(
+    cv_labels: Dict[str, Dict],
+) -> Dict[str, str]:
+    """Build reverse lookup: EVA glyph -> grid cell key.
+
+    *cv_labels* is the dict loaded from ``results/cv_labels.json`` where
+    each key is a cell key (e.g. ``"loop,loop+sigmoid+tail"``) and the
+    value contains a ``"glyphs"`` list.
+
+    Returns e.g. ``{"a": "loop,loop+sigmoid+tail", ...}``.
+    """
+    lookup: Dict[str, str] = {}
+    for cell_key, info in cv_labels.items():
+        for glyph in info.get('glyphs', []):
+            lookup[glyph] = cell_key
+    return lookup
+
+
+def token_to_grid_cells(
+    token: str,
+    eva_to_cell: Dict[str, str],
+) -> List[str]:
+    """Decompose a Voynich token into a sequence of grid cell keys.
+
+    1. ``tokenize_eva_chars(token)`` -> list of EVA characters
+    2. Each EVA char is mapped through *eva_to_cell*.
+    3. Unknown chars (not in the lookup) are silently skipped.
+
+    Returns a list of cell keys, one per recognised EVA character.
+    """
+    chars = tokenize_eva_chars(token)
+    cells: List[str] = []
+    for ch in chars:
+        cell = eva_to_cell.get(ch)
+        if cell is not None:
+            cells.append(cell)
+    return cells
