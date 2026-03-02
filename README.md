@@ -1,6 +1,6 @@
 # Voynich Manuscript: Syllabary & Information-Theoretic Analysis
 
-A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, and constraint satisfaction phonetic decoding. Fifteen complementary approaches across eleven phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step.
+A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, and context-dependent rule analysis. Fifteen complementary approaches across thirteen phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step.
 
 **Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification). **Phase 10** tests the three surviving hypotheses — constructed script (H1), information dispersion (H2), and keyed cipher (H3) — through five discriminating analyses: token-level entropy curves, mutual information decay, folio-level encoding shifts, glyph construction grammar, and hypothesis integration. **Phase 11** directly attacks the 14-variable phonetic mapping problem using constraint satisfaction: six constraint layers progressively prune each grid cell's candidate syllable set, AC-3 arc-consistency propagation removes inconsistencies, and beam search (MRV-ordered, width 50) finds the CE-optimal assignment across Latin, Occitan, Italian, and German. **Phase 11.5** runs five sequential refinement steps to push past the 11.1% dictionary hit rate: failure diagnosis (NEAR_MISS dominant, 13/14 high-error cells), inherent vowel and CVC/CCV relaxation sweeps (relaxation degrades selectivity — strict CV remains optimal), verb constraint integration from Phase 9 (1 soft constraint), iterative anchor bootstrapping (converges immediately at 7.2% dict hit), and a full V1–V9 validation battery confirming 8/9 tests pass with selectivity 1.85×. Verdict: the CSP framework is correct; the bottleneck is grid precision, not the language or encoding model.
 
@@ -15,6 +15,8 @@ Phase 11 implements the CSP phonetic decoder predicted by Phase 10. **Latin wins
 Phase 11.5 runs five sequential diagnostic and refinement passes. Failure diagnosis identifies 13/14 grid cells with error rates above 60% and classifies 48.5% of decoded tokens as HIT or NEAR_MISS — well above the 15% gate. The relaxation sweep (strict CV → CVC → CCV, levels 0–5) finds that adding syllable types consistently drops selectivity below the 1.5× gate; level 0 (strict CV, 75 syllables) remains the best configuration. Verb constraint integration (Phase 9 assignments) yields only 1 soft constraint due to length-mismatch between Voynich stems and Latin syllabifications; the iterative anchor bootstrapping loop converges on iteration 1 with no improvement. Despite these stalled quantitative metrics, the final V1–V9 battery passes **8/9 tests** (only V9 MCMC fails on dict-hit z-score): Latin remains the top language, selectivity holds at 1.85×, section coherence is confirmed, cross-validation CV = 0.015, V8 readability shows 100% phonotactically plausible endings. The bottleneck is diagnosed as grid precision — the current 14-cell decomposition is correct in structure but insufficiently granular for syllable-level word recovery.
 
 Phase 12 attacks this grid-precision diagnosis directly by working backward from the Phase 11.5.1 correction vectors to test whether EVA character misplacements can be identified and fixed. Four complementary sub-analyses are run: grid recalibration (bias detection + stroke-compatibility-based character move proposal), stroke-alignment audit of all 44 EVA glyphs against the original Phase 3 construction grammar, token decomposition sweep (6 variants testing ligature re-splits such as sh→C3V1 and aiin_collapse), and iterative CSP re-solve on each recalibrated grid. The main finding is **negative but definitive**: all 44 EVA glyphs are correctly placed by stroke analysis (0 misaligned), all 6 decomposition variants degrade performance, and the correction vector bias (60% pointing to "di") leaves no actionable moves after de-biasing. The CSP re-solve on the original grid achieves **dict_hit = 11.15%, selectivity 1.85×** — a marginal +0.05% gain over Phase 11 — with V1–V8 all passing (8/9 tests). The conclusion is that the 11.1% ceiling is not caused by grid misplacements but is structurally inherent to the CV phonotactic model at 14 cells: the grid is correct, and further gains will require a finer-grained phonological representation.
+
+Phase 13 tests whether the 11.1% ceiling can be broken by context-dependent reading rules — analogous to inherent vowel suppression in Devanagari or final devoicing in Latin/Occitan — without changing the grid. The approach proceeds in six steps: error pattern analysis (MI gate), null hypothesis testing, rule extraction, context-aware CSP (Version A rule-constrained, Version B free search), cross-validation, and full-corpus decoding with V1–V11 battery. **The MI gate passes at an extraordinary 20.11× selectivity** (threshold 1.5×), confirming that near-miss errors are not random — they are strongly structured by word position and phonetic context (5/14 cells, chi-squared p < 0.0001). Null hypothesis testing rules out both alternative explanations: grid conflation is moderate (7/14 cells need >2 phonemes) but not severe, and dictionary gaps account for only 6% of near-misses. Eight context rules are extracted (all word-final devoicing and pre-vowel nasal assimilation patterns), but their combined dict_hit improvement (+2%) falls short of the 15% gate. The Version B free-search CSP finds **38.5% dict_hit** by optimizing context values unconstrained, but cross-validation shows this is pure overfitting — applying the learned rules to a held-out half of the corpus *decreases* dict_hit. **0/8 rules pass all three validation gates** (cross-validation transfer, selectivity > 1.5×, phonological plausibility). Final result: **11.43% dict_hit, 1.86× selectivity**, a marginal +0.3% over Phase 12. The 11.1% ceiling is confirmed as structural: it is not addressable by context rules, grid moves, decomposition variants, or syllable-type relaxation. Breaking it requires a fundamentally finer phonological representation — either more grid cells or a true abugida/featural model.
 
 ## Quick Start
 
@@ -96,6 +98,13 @@ voynich grid-alt          # Phase 12.4: stroke-alignment audit of all 44 EVA gly
 voynich token-decomp      # Phase 12.5: digraph/ligature decomposition variant sweep (6 variants)
 voynich recal-csp         # Phase 12.3+12.6: iterative CSP re-solve on recalibrated grid + V1-V10 validation
 voynich phase12           # Run full Phase 12 pipeline (grid-recal → grid-alt → token-decomp → recal-csp)
+voynich error-patterns    # Phase 13.1: near-miss error catalog, NW alignment, MI gate (selectivity 20.11×)
+voynich null-context      # Phase 13.6: cell conflation + dictionary expansion null tests
+voynich extract-rules     # Phase 13.2: context-dependent rule formalization + power ranking
+voynich context-csp       # Phase 13.3: context-aware CSP (Version A rule-constrained + Version B free search)
+voynich rule-validate     # Phase 13.4: cross-validation + per-rule selectivity + linguistic plausibility
+voynich context-decode    # Phase 13.5: full corpus decoding + V1-V11 validation battery
+voynich phase13           # Run full Phase 13 pipeline
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -176,7 +185,13 @@ voynich_2/
 │       ├── grid_recalibrate.py # Phase 12.1-12.2: bias detection, de-biasing, stroke-based character move proposal, co-occurrence validation
 │       ├── grid_alternatives.py # Phase 12.4: stroke-alignment audit of all 44 EVA glyphs; stroke-based and hybrid grid variants
 │       ├── token_decomposition.py # Phase 12.5: PMI analysis + 6 decomposition variants (sh, qo, aiin ligature re-splits)
-│       └── recalibrated_csp.py # Phase 12.3+12.6: iterative CSP re-solve across grid variants + V1–V10 validation battery
+│       ├── recalibrated_csp.py # Phase 12.3+12.6: iterative CSP re-solve across grid variants + V1–V10 validation battery
+│       ├── error_patterns.py  # Phase 13.1: NW alignment error catalog, position/adjacency chi-squared tests, MI gate
+│       ├── null_context.py    # Phase 13.6: cell conflation test, dictionary expansion test, null MI test
+│       ├── rule_extraction.py # Phase 13.2: rule formalization (context+cell+correction), power ranking, greedy accumulation
+│       ├── context_csp.py     # Phase 13.3: context-aware CSP solver — Version A (rule-constrained) + Version B (free search)
+│       ├── rule_validation.py # Phase 13.4: folio-split cross-validation, per-rule selectivity, linguistic plausibility
+│       └── context_decode.py  # Phase 13.5: full corpus decoding with validated rules + V1–V11 validation battery
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
@@ -1076,6 +1091,61 @@ The iterative loop extracts 14 new confirmed hit anchors (tokens that decode con
 
 Phase 11.5 confirms and sharpens the Phase 11 diagnosis. The CSP framework is working correctly (selectivity 1.85×, 8/9 validation tests pass). The failure mode is specific: the 14-cell grid decomposition maps each Voynich glyph to a CV syllable, but at this resolution the mapping cannot recover individual Latin words — it recovers phonetic neighborhoods. Adding more syllable types (CVC, CCV) to escape this ceiling consistently destroys selectivity by over-expanding the search space, confirming that the grid itself needs finer decomposition before the phonetic mapping can improve. The near-miss rate (38.6%) is a positive signal: the CSP is finding the right phonetic region, and systematic correction of the 13 high-error cells could unlock word-level recovery.
 
+## Phase 12: Grid Recalibration
+
+Phase 12 systematically tests all structural explanations for the 11.1% dict_hit ceiling.
+
+| Step | Description | Module |
+|------|-------------|--------|
+| 12.1–12.2 | Correction vector bias detection; stroke-based character move proposal; co-occurrence validation of proposed moves | `grid_recalibrate.py` |
+| 12.4 | Stroke-alignment audit of all 44 EVA glyphs; stroke-based and hybrid grid construction | `grid_alternatives.py` |
+| 12.5 | PMI-guided digraph/ligature decomposition; 6 variant sweep (sh, qo, aiin ligature re-splits) | `token_decomposition.py` |
+| 12.3+12.6 | Iterative CSP re-solve on all grid variants; V1–V10 validation battery including vocabulary catalog (V10) and progression tracking (V11) | `recalibrated_csp.py` |
+
+### Phase 12 Findings Summary
+
+Phase 12 returns a definitive negative result on three independent structural explanations: (1) stroke analysis shows all 44 EVA glyphs are correctly placed — 0 misaligned characters; (2) 6 token decomposition variants all degrade dict_hit; (3) the Phase 11.5 correction vector bias (60% pointing to "di") is a statistical artifact, not a genuine grid error. The CSP re-solve on the original grid with marginal recalibration reaches **dict_hit = 11.15%, selectivity 1.85×**. V1–V8 all pass. The 11.1% ceiling is confirmed as inherent to the 14-cell CV model, not an addressable grid error.
+
+## Phase 13: Context-Dependent Reading Rules
+
+Phase 13 tests whether the ceiling can be broken by context-sensitive phonetic rules — values that depend on word position or adjacent cells — without changing the grid itself.
+
+| Step | Description | Module |
+|------|-------------|--------|
+| 13.1 | Needleman-Wunsch alignment of near-miss tokens to nearest dict words; per-cell error catalog with position + adjacency tags; chi-squared tests; MI(correction, context) gate vs 100 shuffles | `error_patterns.py` |
+| 13.6 | Cell conflation analysis (how many phonemes each cell must encode); medieval Latin dictionary expansion test; null MI test (alternative explanations) | `null_context.py` |
+| 13.2 | Rule formalization from significant cell-context pairs; coverage and power scoring; greedy accumulation with cumulative dict_hit tracking | `rule_extraction.py` |
+| 13.3 | Context-aware CSP: Version A (only rule-extracted values) exhaustive search over 256 combinations; Version B (any inventory value) beam search with width 20 × 3 iterations | `context_csp.py` |
+| 13.4 | Folio-split cross-validation (odd/even halves); per-rule selectivity vs shuffled-token baseline; linguistic plausibility check against ROMANCE_PHONOLOGICAL_PROCESSES catalogue | `rule_validation.py` |
+| 13.5 | Full corpus decoding with validated rules; section text samples; Language B test; vocabulary catalog; V1–V11 validation battery with progression tracking | `context_decode.py` |
+
+### Phase 13 Key Results
+
+| Step | Metric | Value | Gate |
+|------|--------|-------|------|
+| 13.1 MI gate | MI selectivity (errors vs shuffled) | **20.11×** | PASS (≥ 1.5×) |
+| 13.1 Position tests | Cells with significant position dependence | 5/14 (p < 0.0001) | — |
+| 13.6 Null tests | Cell conflation severity | 7/14 cells need > 2 phonemes | MODERATE |
+| 13.6 Null tests | Near-misses fixed by dict expansion | 6% | MINOR |
+| 13.2 Rule extraction | Rules extracted | 8 | — |
+| 13.2 Rule extraction | Best single rule (C1V2 ca→t / word_final) | +2.0% dict_hit (9.9%→11.9%) | FAIL (< 15%) |
+| 13.3 Version A | Rule-constrained exhaustive (256 combos) | 12.4% dict_hit (+2.5%) | FAIL (< 15%) |
+| 13.3 Version B | Free-search beam (20-wide, 3 iterations) | **38.5% dict_hit (+28.6%)** | — |
+| 13.4 Cross-validation | Rules validated (all 3 checks) | **0/8** | FAIL |
+| 13.4 Cross-validation | Version B held-out performance | 5.5% (vs 9.5% baseline) — overfitting | — |
+| 13.5 Full corpus | dict_hit with validated rules | **11.43%** | — |
+| 13.5 Full corpus | Selectivity | 1.86× | — |
+| 13.5 Validation | V1–V9 battery | 7/9 pass | — |
+| 13.5 Progression | Phase 11 → 11.5 → 12 → 13 | 11.1% → 9.87% → 11.15% → **11.43%** | — |
+
+### Phase 13 Findings Summary
+
+Phase 13 produces two distinct conclusions. First, the positive: context-dependent error structure in the near-miss tokens is **real and extremely strong** (MI selectivity 20.11×, 5/14 cells significant by chi-squared). The errors are not random. Near-miss tokens fail in systematic ways that depend on word position — predominantly word-final devoicing (ca→t, si→c at word boundaries) and pre-vowel nasal assimilation (si→m, ci→m before vowels). This is exactly the class of variation predicted by Latin phonotactics.
+
+Second, the negative: none of these rules generalize. The cross-validation transfer rate is 100% (every rule recurs in both corpus halves), but 0/8 rules pass the selectivity gate — applying them to held-out data does not improve dict_hit and in some cases reduces it. The free-search CSP (Version B) achieves 38.5% on its training tokens, but this is the most extreme overfitting seen in any phase: 5 cells × 3 context slots × free inventory choices give enough degrees of freedom to memorize phonetic patterns rather than decode them.
+
+The combined interpretation is: the 14-cell grid does contain real phonetic context-dependence (the MI signal is genuine), but the grid is **too coarse to isolate it as addressable rules**. Each cell conflates too many phonemes (average 4–5 in high-error cells) for any single context rule to cover the majority of cases. The structural ceiling confirmed across Phases 11–13 requires a representation with more than 14 cells — either additional onset/nucleus splits (targeting a ~28–30 cell grid) or a featural/abugida model where position within the cell encodes phonetic context directly.
+
 ## Integration
 
 The approaches cross-validate across all phases:
@@ -1114,6 +1184,20 @@ The approaches cross-validate across all phases:
 | Phase 11.5 diagnose finds | Phase 11.5 refine + iterate finds | Phase 11.5 final (V1–V9) finds | Interpretation |
 |---|---|---|---|
 | 48.5% of tokens are HIT or NEAR_MISS (gate: 15%). 13/14 cells have error rates > 60%. Top correction vectors: `ba→de` (gain 1.0), `ca→di`, `ne→di`. Dominant error is NEAR_MISS across all high-error cells. | Relaxation sweep: levels 2–5 all drop below 1.5× selectivity gate. Strict CV (level 0) remains best. Inherent vowel (a/e/i) produces no differentiation. Verb constraints: 1 soft constraint from 10 Phase 9 assignments; dict hit drops from 9.87% → 7.15%. Iterative bootstrapping converges at iteration 1 (Δ = 0.0000). | 8/9 tests pass (only V9 MCMC fails on dict-hit z-score). V8 readability: 100% phonotactically plausible Latin endings. Language ranking stable: Latin > Occitan > German > Italian. Selectivity 1.85×. | **The CSP framework is correct; the bottleneck is grid precision.** Decoding is in the right phonetic neighborhood (38.6% near-misses) but the 14-cell grid is too coarse to recover individual words. CVC/CCV relaxation makes things worse, not better — expanding the syllable inventory without a finer grid adds noise faster than signal. The path forward is finer grid decomposition, not larger phoneme inventories. |
+
+**Phase 12 cross-validation (grid recalibration):**
+
+| Grid recalibration finds | Stroke audit finds | Decomposition sweep finds | Interpretation |
+|---|---|---|---|
+| Correction vector bias 60% toward "di". After de-biasing: 0 actionable character moves. Recalibrated grid unchanged from original. | 44/44 EVA glyphs correctly placed by stroke analysis. 0 misaligned characters. No hybrid grid outperforms original. | 6 decomposition variants tested (sh re-split, qo collapse, aiin ligature, etc.). All 6 degrade dict_hit. Best variant = original. | **The ceiling is not caused by structural errors in the grid.** The EVA character placement is correct. The bottleneck is the coarseness of the CV model at 14 cells, not any fixable character assignment. |
+| CSP re-solve on original: dict_hit = 11.15%, selectivity 1.85×, V1–V8 all pass. | V10 vocabulary catalog: 13 confirmed Latin hits, 7 function words. Progression: Phase 11 11.1% → Phase 12 11.15%. | V11 progression: marginal +0.05% improvement across 3 iterations of recalibration. | **The 11.1% ceiling is structural.** No grid manipulation approach can lift it. Phase 13 tests context-dependent reading rules as the final structural explanation. |
+
+**Phase 13 cross-validation (context-dependent reading rules):**
+
+| Error pattern analysis finds | Rule extraction + CSP finds | Cross-validation finds | Interpretation |
+|---|---|---|---|
+| MI selectivity 20.11× (threshold 1.5×). 5/14 cells with chi-squared p < 0.0001. Dominant patterns: word-final devoicing (ca→t, si→c), pre-vowel nasal assimilation (si→m, ci→m). | 8 rules extracted. Best single rule +2.0% (ca→t word-final). Version A (rule-constrained) reaches 12.4%. Version B free-search reaches 38.5%. | 0/8 rules pass all three gates (transfer, selectivity ≥ 1.5×, plausibility). Version B on held-out half: 5.5% (worse than baseline 9.5%). Transfer rate 100% but selectivity 1.00× — rules recur but do not improve held-out dict_hit. | **Context-dependence in the error signal is genuine (20.11× MI), but the grid is too coarse to isolate it as actionable rules.** The free-search CSP overfits with 5 × 3 free parameters. The ceiling requires finer grid resolution (≥ 28 cells or abugida model), not more context variables. |
+| Null hypothesis tests: cell conflation moderate (7/14 cells need > 2 phonemes, avg 4–5 phonemes/high-error cell), dictionary expansion explains only 6% of near-misses. | Full corpus: 11.43% dict_hit, 1.86× selectivity, 7/9 validation tests pass. Progression: 11.1% → 9.87% → 11.15% → **11.43%**. | V11 confirmed: all improvements since Phase 11 are within 0.5% — the ceiling is robust across all three post-Phase-11 approaches (relaxation, grid recalibration, context rules). | **The 11.1% ceiling is confirmed across three independent attack vectors.** It is structural, not incidental. Next steps require a fundamentally different phonological representation. |
 
 ## Data
 
@@ -1991,6 +2075,28 @@ Analysis outputs are saved as JSON to `results/` (57 files total):
 - `folio_shift.json` — 63 folios across sections; within-section pairwise bigram JSD with bootstrap null; function-word CV (20 stems, per-folio frequency, reference comparison); quire boundary within/between JSD; H3 verdict
 - `glyph_grammar.json` — Voynich grid stats (R values, occupancy, onset/nucleus types); comparison to 4 known constructed scripts (Devanagari, Hangul, Ethiopic, Linear B); construction vs morphology diagnosis (position correlation test); 14-variable CSP with phonotactic constraints; Language B consistency check; H1 verdict
 - `hypothesis_verdict.json` — Evidence compilation from 10.1–10.4; weighted scoring (H1=4.0, H2=1.5, H3=1.0); winning hypothesis, margin, gate status, actionable next step
+
+**Phase 11–12 — CSP Decoding, Refinement, Recalibration:**
+- `csp_solve.json` — Sanity test; synthetic recovery accuracy and selectivity
+- `csp_decode.json` — Per-language CE, dict_hit, selectivity; best assignment (14 cells); Language B CE ratio
+- `csp_validate.json` — V1–V7 test results with pass/fail and scores
+- `csp_diagnosis.json` — Per-token categories (HIT/NEAR_MISS/LONG/GIBBERISH); per-cell error profiles and correction vectors
+- `csp_refinement.json` — Relaxation sweep results (levels 0–5); inherent vowel comparison
+- `verb_constraints.json` — 10 verb assignments; constraint application; dict_hit before/after
+- `csp_iterate.json` — Iterative bootstrapping loop results; convergence condition
+- `csp_final.json` — Multi-language final comparison; V1–V9 battery; best assignment (Phase 11.5 best)
+- `grid_recalibration.json` — Correction vector bias analysis; de-biased move proposals; stroke-compatibility scores
+- `grid_alternatives.json` — 44-glyph stroke audit; stroke-based and hybrid grid variants; misalignment count (0)
+- `token_decomposition.json` — PMI analysis; 6 variant definitions and dict_hit scores; best variant = original
+- `recalibrated_csp.json` — Iterative re-solve on all variants; V1–V10 battery; V10 vocabulary catalog; V11 progression
+
+**Phase 13 — Context-Dependent Reading Rules:**
+- `error_patterns.json` — 571 character-level error records; 5 cells with position-dependent patterns (chi-squared p < 0.0001); MI selectivity 20.11× vs 100 shuffles; gate status PASS
+- `null_context.json` — Cell conflation analysis (7/14 cells moderate); dictionary expansion (6% conversion); null MI test; combined verdict CONTEXT_RULES_VIABLE
+- `rule_extraction.json` — 8 reading rules (cell, context, produced→corrected, coverage, power, plausibility); cumulative dict_hit curve; gate status FAIL (11.9% < 15%)
+- `context_csp.json` — Version A results (256 combinations, 12.4% dict_hit); Version B results (38.5% dict_hit, 3 iterations); selectivity 4.39×; gate status PASS
+- `rule_validation.json` — Per-rule cross-validation (transfer rate, selectivity ratio, plausibility); validated rules 0/8; gate status FAIL
+- `context_decode.json` — Full corpus (10,791 tokens) with validated rules; 11.43% dict_hit; 1.86× selectivity; vocabulary catalog; Language B test; V1–V11 battery; V11 progression (11.1% → 9.87% → 11.15% → 11.43%)
 
 ## Background
 

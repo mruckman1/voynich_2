@@ -70,6 +70,13 @@ Usage:
     voynich token-decomp      # Phase 12.5: token decomposition variant sweep
     voynich recal-csp         # Phase 12.3+12.6: recalibrated CSP + full validation
     voynich phase12           # Run full Phase 12 pipeline
+    voynich error-patterns    # Phase 13.1: near-miss error pattern analysis + MI gate
+    voynich null-context      # Phase 13.6: null hypothesis testing (run alongside 13.1)
+    voynich extract-rules     # Phase 13.2: context-dependent rule extraction
+    voynich context-csp       # Phase 13.3: context-aware CSP solver
+    voynich rule-validate     # Phase 13.4: cross-validation + per-rule selectivity
+    voynich context-decode    # Phase 13.5: full decoding + V1-V11 battery
+    voynich phase13           # Run full Phase 13 pipeline
 """
 import sys
 import time
@@ -789,6 +796,72 @@ def cmd_phase12():
     cmd_recal_csp()
 
 
+def cmd_error_patterns():
+    """Run Phase 13.1: near-miss error pattern analysis and MI gate."""
+    from voynich.phases.error_patterns import run_error_patterns
+    t0 = time.time()
+    run_error_patterns()
+    print(f"\nError pattern analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_null_context():
+    """Run Phase 13.6: null hypothesis testing (cell conflation + dict expansion)."""
+    from voynich.phases.null_context import run_null_context
+    t0 = time.time()
+    run_null_context()
+    print(f"\nNull context analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_extract_rules():
+    """Run Phase 13.2: context-dependent rule extraction and power ranking."""
+    from voynich.phases.rule_extraction import run_rule_extraction
+    t0 = time.time()
+    run_rule_extraction()
+    print(f"\nRule extraction completed in {time.time() - t0:.1f}s")
+
+
+def cmd_context_csp():
+    """Run Phase 13.3: context-aware CSP solver (Version A + B)."""
+    from voynich.phases.context_csp import run_context_csp
+    t0 = time.time()
+    run_context_csp()
+    print(f"\nContext CSP completed in {time.time() - t0:.1f}s")
+
+
+def cmd_rule_validate():
+    """Run Phase 13.4: cross-validation + per-rule selectivity + plausibility."""
+    from voynich.phases.rule_validation import run_rule_validation
+    t0 = time.time()
+    run_rule_validation()
+    print(f"\nRule validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_context_decode():
+    """Run Phase 13.5: full corpus decoding with validated rules + V1-V11 battery."""
+    from voynich.phases.context_decode import run_context_decode
+    t0 = time.time()
+    run_context_decode()
+    print(f"\nContext decode completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase13():
+    """Run full Phase 13 pipeline: context-dependent reading rules."""
+    print("=" * 70)
+    print("PHASE 13: Context-Dependent Reading Rules")
+    print("=" * 70)
+    cmd_error_patterns()
+    print("\n" + "=" * 70 + "\n")
+    cmd_null_context()
+    print("\n" + "=" * 70 + "\n")
+    cmd_extract_rules()
+    print("\n" + "=" * 70 + "\n")
+    cmd_context_csp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_rule_validate()
+    print("\n" + "=" * 70 + "\n")
+    cmd_context_decode()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -866,6 +939,13 @@ def main():
         'token-decomp': cmd_token_decomp,
         'recal-csp': cmd_recal_csp,
         'phase12': cmd_phase12,
+        'error-patterns': cmd_error_patterns,
+        'null-context': cmd_null_context,
+        'extract-rules': cmd_extract_rules,
+        'context-csp': cmd_context_csp,
+        'rule-validate': cmd_rule_validate,
+        'context-decode': cmd_context_decode,
+        'phase13': cmd_phase13,
     }
 
     if len(sys.argv) < 2:

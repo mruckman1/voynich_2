@@ -281,16 +281,55 @@ def decode_token(
     token: str,
     assignment: Dict[str, str],
     eva_to_cell: Dict[str, str],
+    context_rules: Optional[Dict[str, Dict[str, str]]] = None,
 ) -> str:
-    """Decode a single EVA token to a phonetic string."""
+    """Decode a single EVA token to a phonetic string.
+
+    If context_rules is provided, applies position/adjacency-dependent reading
+    rules on top of the fixed assignment.  context_rules format:
+        {cell_key: {'word_initial': 'syl', 'word_final': 'syl', 'after_vowel': 'syl', ...}}
+    """
     chars = tokenize_eva_chars(token)
+    cells = [eva_to_cell.get(ch) for ch in chars]
+    n = len(cells)
     parts: List[str] = []
-    for ch in chars:
-        cell = eva_to_cell.get(ch)
-        if cell and cell in assignment:
-            parts.append(assignment[cell])
-        else:
+
+    for ci, cell in enumerate(cells):
+        if not cell:
             parts.append('?')
+            continue
+
+        syl = assignment.get(cell, '?')
+
+        if context_rules and cell in context_rules:
+            # Determine context for this cell position
+            if n == 1:
+                ctx = 'word_initial'
+            elif ci == 0:
+                ctx = 'word_initial'
+            elif ci == n - 1:
+                ctx = 'word_final'
+            else:
+                # Medial: check predecessor cell type
+                pred_cell = cells[ci - 1]
+                if pred_cell:
+                    # Classify predecessor as vowel-dominant or not
+                    pred_parts = pred_cell.split(',')
+                    nucleus = pred_parts[1] if len(pred_parts) > 1 else ''
+                    if 'loop' in nucleus or 'tail' in nucleus or 'descender' in nucleus:
+                        ctx = 'after_vowel'
+                    else:
+                        ctx = 'before_vowel'
+                else:
+                    ctx = 'default'
+
+            cell_ctx_rules = context_rules[cell]
+            if ctx in cell_ctx_rules:
+                syl = cell_ctx_rules[ctx]
+            elif 'default' in cell_ctx_rules:
+                syl = cell_ctx_rules['default']
+
+        parts.append(syl)
     return ''.join(parts)
 
 

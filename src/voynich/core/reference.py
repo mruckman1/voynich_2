@@ -1563,6 +1563,110 @@ def build_cvc_syllable_table(
 
 
 # ---------------------------------------------------------------------------
+# Romance Phonological Processes  (Phase 13)
+# ---------------------------------------------------------------------------
+# Catalogue of well-attested phonological rules in Latin and Romance languages,
+# used to assess the linguistic plausibility of extracted reading rules.
+# Format: produced_phoneme -> corrected_phoneme -> {process_name, languages, naturality}
+
+ROMANCE_PHONOLOGICAL_PROCESSES: Dict[str, Dict[str, Dict]] = {
+    # Final devoicing: voiced stops → voiceless word-finally
+    'b': {'p': {'process': 'final_devoicing', 'languages': ['occitan', 'german', 'italian'],
+                'naturality': 'high', 'description': 'Voiced stop /b/ devoiced to /p/ word-finally'}},
+    'd': {'t': {'process': 'final_devoicing', 'languages': ['occitan', 'german', 'latin'],
+                'naturality': 'high', 'description': 'Voiced stop /d/ devoiced to /t/ word-finally'}},
+    'g': {'c': {'process': 'final_devoicing', 'languages': ['occitan', 'german'],
+                'naturality': 'high', 'description': 'Voiced stop /g/ devoiced to /c/ word-finally'}},
+    # Intervocalic voicing: voiceless → voiced between vowels
+    'p': {'b': {'process': 'intervocalic_voicing', 'languages': ['occitan', 'italian', 'latin'],
+                'naturality': 'high', 'description': '/p/ voiced to /b/ between vowels'},
+          'v': {'process': 'intervocalic_spirantization', 'languages': ['occitan', 'italian'],
+                'naturality': 'moderate', 'description': '/p/ spirantized to /v/ between vowels'}},
+    't': {'d': {'process': 'intervocalic_voicing', 'languages': ['occitan', 'italian', 'latin'],
+                'naturality': 'high', 'description': '/t/ voiced to /d/ between vowels'}},
+    'c': {'g': {'process': 'intervocalic_voicing', 'languages': ['occitan', 'italian'],
+                'naturality': 'high', 'description': '/c/ voiced to /g/ between vowels'},
+          's': {'process': 'palatalization', 'languages': ['italian', 'occitan', 'latin'],
+                'naturality': 'high', 'description': '/c/ → /s/ before front vowels (palatalization)'}},
+    # Nasal assimilation
+    'n': {'m': {'process': 'nasal_assimilation', 'languages': ['latin', 'italian', 'occitan'],
+                'naturality': 'high', 'description': '/n/ assimilates to /m/ before labials (in/im, con/com)'}},
+    'm': {'n': {'process': 'nasal_assimilation', 'languages': ['latin', 'italian'],
+                'naturality': 'moderate', 'description': '/m/ assimilates to /n/ before dentals'}},
+    # Schwa/vowel reduction word-finally
+    'a': {'e': {'process': 'vowel_reduction', 'languages': ['occitan', 'latin'],
+                'naturality': 'moderate', 'description': 'Final /a/ reduces to /e/ in unstressed position'},
+          '': {'process': 'vowel_deletion', 'languages': ['italian', 'occitan'],
+               'naturality': 'moderate', 'description': 'Final /a/ deleted word-finally in some dialects'}},
+    'e': {'a': {'process': 'vowel_shift', 'languages': ['latin', 'occitan'],
+                'naturality': 'moderate', 'description': 'Final /e/ shifts to /a/ in some paradigms'},
+          '': {'process': 'schwa_deletion', 'languages': ['latin', 'occitan', 'italian'],
+               'naturality': 'high', 'description': 'Unstressed /e/ deleted (analogous to Devanagari schwa deletion)'}},
+    # Liquid alternation
+    'l': {'r': {'process': 'liquid_alternation', 'languages': ['latin', 'occitan'],
+                'naturality': 'moderate', 'description': '/l/→/r/ in certain consonant clusters (rhotacism)'}},
+    'r': {'l': {'process': 'liquid_alternation', 'languages': ['latin', 'italian'],
+                'naturality': 'moderate', 'description': '/r/→/l/ alternation in liquid clusters'}},
+    # Sibilant variation
+    's': {'z': {'process': 'sibilant_voicing', 'languages': ['italian', 'occitan'],
+                'naturality': 'moderate', 'description': '/s/ → /z/ intervocalically in Italian/Occitan'},
+          'c': {'process': 'sibilant_palatalization', 'languages': ['latin', 'italian'],
+                'naturality': 'moderate', 'description': '/s/ → /c/ before front vowels in some Latin dialects'}},
+    # Vowel harmony / back-front alternation
+    'o': {'u': {'process': 'vowel_raising', 'languages': ['latin', 'occitan'],
+                'naturality': 'moderate', 'description': '/o/ raises to /u/ in certain environments'},
+          'a': {'process': 'vowel_lowering', 'languages': ['occitan', 'italian'],
+                'naturality': 'moderate', 'description': '/o/ lowers to /a/ in pretonic position'}},
+    'i': {'e': {'process': 'vowel_lowering', 'languages': ['latin', 'occitan'],
+                'naturality': 'moderate', 'description': '/i/ lowers to /e/ in unstressed syllables'}},
+    # Fricative variation
+    'f': {'v': {'process': 'fricative_voicing', 'languages': ['italian', 'occitan'],
+                'naturality': 'moderate', 'description': '/f/ → /v/ word-initially in some dialects'},
+          'h': {'process': 'fricative_weakening', 'languages': ['italian'],
+                'naturality': 'moderate', 'description': '/f/ weakens to /h/ in some Italian dialects'}},
+    'v': {'b': {'process': 'betacism', 'languages': ['latin', 'occitan'],
+                'naturality': 'high', 'description': '/v/→/b/ merger (Latin betacism, Occitan/Spanish)'}},
+}
+
+# Medieval Latin spelling variants for dictionary expansion (Step 13.6)
+MEDIEVAL_LATIN_VARIANTS: Dict[str, str] = {
+    'ae': 'e',    # Classical ae → medieval e
+    'oe': 'e',    # Classical oe → medieval e
+    'ph': 'f',    # Greek phi → medieval f
+    'th': 't',    # Greek theta → medieval t
+    'ch': 'c',    # Greek chi → medieval c
+    'y': 'i',     # Greek upsilon → medieval i
+    'hy': 'i',    # Hyper-correction
+    'ci': 'ti',   # ti → ci before vowel (medieval spelling confusion)
+    'ti': 'ci',   # ci → ti
+    'qu': 'c',    # qu before non-u vowels
+    'x': 'cs',    # x → cs
+    'z': 's',     # z → s in some medieval texts
+}
+
+
+def expand_latin_word_set(word_set: set) -> set:
+    """Expand a Latin word set with medieval variant spellings.
+
+    For dictionary expansion testing in Phase 13.6.
+    Adds variant-spelled forms of all words in the input set.
+    """
+    expanded = set(word_set)
+    for word in list(word_set):
+        for classical, medieval in MEDIEVAL_LATIN_VARIANTS.items():
+            if classical in word:
+                expanded.add(word.replace(classical, medieval))
+        # Also add common abbreviation expansions
+        if word.endswith('us'):
+            expanded.add(word[:-2] + 'u')
+        if word.endswith('um'):
+            expanded.add(word[:-2] + 'u')
+        if word.endswith('ae'):
+            expanded.add(word[:-2] + 'e')
+    return expanded
+
+
+# ---------------------------------------------------------------------------
 # EVA Visual Component Table  (Phase 12)
 # ---------------------------------------------------------------------------
 # Derived from EVA_STROKE_TABLE in voynich.analysis.strokes.
