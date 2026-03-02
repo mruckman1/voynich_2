@@ -59,6 +59,12 @@ Usage:
     voynich csp-decode        # Phase 11.2: multi-language CSP decoding
     voynich csp-validate      # Phase 11.3: CSP validation battery
     voynich phase11           # Run all Phase 11 analyses
+    voynich csp-diagnose      # Phase 11.5.1: CSP failure diagnosis
+    voynich csp-refine        # Phase 11.5.2-3: inherent vowel + relaxation sweep
+    voynich verb-constrain    # Phase 11.5.4: verb-constrained CSP solving
+    voynich csp-iterate       # Phase 11.5.5: iterative CSP refinement
+    voynich csp-final         # Phase 11.5.6-7: final multi-language + V1-V9
+    voynich phase11-5         # Run full Phase 11.5 pipeline
 """
 import sys
 import time
@@ -679,6 +685,59 @@ def cmd_phase11():
     cmd_csp_validate()
 
 
+def cmd_csp_diagnose():
+    """Run Phase 11.5.1: CSP failure diagnosis."""
+    from voynich.phases.csp_diagnosis import run_csp_diagnosis
+    t0 = time.time()
+    run_csp_diagnosis()
+    print(f"\nCSP diagnosis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_csp_refine():
+    """Run Phase 11.5.2-3: inherent vowel + relaxation sweep."""
+    from voynich.phases.csp_refinement import run_csp_refinement
+    t0 = time.time()
+    run_csp_refinement()
+    print(f"\nCSP refinement completed in {time.time() - t0:.1f}s")
+
+
+def cmd_verb_constrain():
+    """Run Phase 11.5.4: verb-constrained CSP solving."""
+    from voynich.phases.verb_constraints import run_verb_constraints
+    t0 = time.time()
+    run_verb_constraints()
+    print(f"\nVerb-constrained CSP completed in {time.time() - t0:.1f}s")
+
+
+def cmd_csp_iterate():
+    """Run Phase 11.5.5: iterative CSP refinement loop."""
+    from voynich.phases.csp_iterate import run_csp_iterate
+    t0 = time.time()
+    run_csp_iterate()
+    print(f"\nCSP iterative refinement completed in {time.time() - t0:.1f}s")
+
+
+def cmd_csp_final():
+    """Run Phase 11.5.6-7: final multi-language comparison + V1-V9 validation."""
+    from voynich.phases.csp_final import run_csp_final
+    t0 = time.time()
+    run_csp_final()
+    print(f"\nCSP final validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase115():
+    """Run full Phase 11.5: CSP refinement pipeline."""
+    cmd_csp_diagnose()
+    print("\n" + "=" * 70 + "\n")
+    cmd_csp_refine()
+    print("\n" + "=" * 70 + "\n")
+    cmd_verb_constrain()
+    print("\n" + "=" * 70 + "\n")
+    cmd_csp_iterate()
+    print("\n" + "=" * 70 + "\n")
+    cmd_csp_final()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -745,6 +804,12 @@ def main():
         'csp-decode': cmd_csp_decode,
         'csp-validate': cmd_csp_validate,
         'phase11': cmd_phase11,
+        'csp-diagnose': cmd_csp_diagnose,
+        'csp-refine': cmd_csp_refine,
+        'verb-constrain': cmd_verb_constrain,
+        'csp-iterate': cmd_csp_iterate,
+        'csp-final': cmd_csp_final,
+        'phase11-5': cmd_phase115,
     }
 
     if len(sys.argv) < 2:

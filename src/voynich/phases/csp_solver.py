@@ -28,6 +28,7 @@ from voynich.core.reference import (
 
 from voynich.phases.csp_constraints import (
     AnchorConstraint,
+    VerbConstraint,
     PhonemeInventory,
     build_anchor_constraints,
     build_phoneme_inventory,
@@ -38,6 +39,7 @@ from voynich.phases.csp_constraints import (
     prune_by_phonotactics,
     score_anchor_match,
     score_cross_entropy,
+    score_verb_consistency,
     score_word_validity,
 )
 
@@ -66,6 +68,9 @@ class CSPAssignment:
     dict_hit_rate: float = 0.0
     anchor_penalty: float = 0.0
     anchor_match_count: int = 0
+    verb_penalty: float = 0.0
+    verb_match_count: int = 0
+    relaxation_level: int = 0
     decoded_sample: List[Any] = field(default_factory=list)
 
 
@@ -314,6 +319,8 @@ def score_assignment_full(
     anchors: List[AnchorConstraint],
     inventory: PhonemeInventory,
     ref_word_set: Optional[set] = None,
+    verb_constraints: Optional[List[VerbConstraint]] = None,
+    relaxation_level: int = 0,
     max_tokens: int = 2000,
 ) -> CSPAssignment:
     """Fully score a complete assignment."""
@@ -341,9 +348,22 @@ def score_assignment_full(
     # Anchor match (Layer 5)
     anchor_pen, anchor_n = score_anchor_match(assignment, anchors, eva_to_cell)
 
+    # Verb consistency (Layer 7)
+    verb_pen = 0.0
+    verb_n = 0
+    if verb_constraints:
+        verb_pen, verb_n = score_verb_consistency(assignment, verb_constraints, eva_to_cell)
+
+    # Diversity: count distinct syllables assigned
+    n_distinct = len(set(assignment.values()))
+    n_cells = len(assignment)
+
     # Composite — dict hit rate improves the score
     score = composite_score(
         ce, validity, anchor_pen, anchor_n, len(anchors),
+        verb_penalty=verb_pen,
+        n_distinct_syllables=n_distinct,
+        n_cells=n_cells,
     ) - dict_hit  # lower score is better; more dict hits = lower score
 
     # Decoded sample (first 20)
@@ -357,6 +377,9 @@ def score_assignment_full(
         dict_hit_rate=dict_hit,
         anchor_penalty=anchor_pen,
         anchor_match_count=anchor_n,
+        verb_penalty=verb_pen,
+        verb_match_count=verb_n,
+        relaxation_level=relaxation_level,
         decoded_sample=sample,
     )
 
@@ -410,6 +433,8 @@ def beam_search(
     anchors: List[AnchorConstraint],
     inventory: PhonemeInventory,
     ref_word_set: Optional[set] = None,
+    verb_constraints: Optional[List[VerbConstraint]] = None,
+    relaxation_level: int = 0,
     beam_width: int = 50,
     max_solutions: int = 20,
     seed: int = 42,
@@ -417,11 +442,12 @@ def beam_search(
     """Beam search over CSP variable assignments.
 
     Variables are ordered by MRV (minimum remaining values = smallest
-    domain first).  At each step, the *beam_width* best partial
-    assignments are kept.
+    domain first), unless *verb_constraints* are present in which case
+    verb-constrained cells are prioritised first.
 
     Anchor hints (length-matched Rosetta folios) add a score bonus so
     anchor-consistent assignments are not pruned before final scoring.
+    Verb-aligned assignments get an additional VERB_BONUS discount.
     """
     rng = random.Random(seed)
 
@@ -431,10 +457,29 @@ def beam_search(
         for cell_key, hint_syls in _anchor_hints(anchors, inventory).items():
             anchor_hint_set[cell_key] = set(hint_syls)
 
-    ANCHOR_BONUS = 0.4  # score reduction per anchor-aligned cell assignment
+    # Pre-compute verb hints: cell_key -> set of target syllables
+    verb_hint_set: Dict[str, set] = {}
+    if verb_constraints:
+        for vc in verb_constraints:
+            for cell_key, target_syl in zip(vc.voynich_cells, vc.latin_syllables):
+                if cell_key not in verb_hint_set:
+                    verb_hint_set[cell_key] = set()
+                verb_hint_set[cell_key].add(target_syl)
 
-    # Order variables: smallest domain first (MRV heuristic)
-    ordered = sorted(variables, key=lambda v: len(v.domain))
+    ANCHOR_BONUS = 0.4  # score reduction per anchor-aligned cell assignment
+    VERB_BONUS = 0.5    # score reduction per verb-aligned cell assignment
+
+    # Order variables: verb-constrained cells first, then MRV
+    verb_cell_keys = set(verb_hint_set.keys())
+    verb_vars = sorted(
+        [v for v in variables if v.cell_key in verb_cell_keys],
+        key=lambda v: len(v.domain),
+    )
+    other_vars = sorted(
+        [v for v in variables if v.cell_key not in verb_cell_keys],
+        key=lambda v: len(v.domain),
+    )
+    ordered = verb_vars + other_vars
 
     # Initialise beam with empty assignment
     beam: List[Tuple[Dict[str, str], float]] = [({}, 10.0)]
@@ -470,6 +515,10 @@ def beam_search(
                 if var.cell_key in anchor_hint_set and value in anchor_hint_set[var.cell_key]:
                     sc -= ANCHOR_BONUS
 
+                # Verb hint bonus
+                if var.cell_key in verb_hint_set and value in verb_hint_set[var.cell_key]:
+                    sc -= VERB_BONUS
+
                 next_beam.append((new_partial, sc))
 
         # Prune to beam width
@@ -484,7 +533,10 @@ def beam_search(
     for mapping, _ in beam:
         result = score_assignment_full(
             mapping, lm, voynich_tokens, eva_to_cell,
-            anchors, inventory, ref_word_set=ref_word_set,
+            anchors, inventory,
+            ref_word_set=ref_word_set,
+            verb_constraints=verb_constraints,
+            relaxation_level=relaxation_level,
         )
         results.append(result)
 

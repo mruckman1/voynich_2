@@ -1397,3 +1397,166 @@ def _match_cv_pattern(syllable: str, cv_table: List[str]) -> Optional[str]:
         return nucleus
 
     return None
+
+
+# ---------------------------------------------------------------------------
+# Phase 11.5: Extended syllable inventories (CVC, CCV, inherent vowel)
+# ---------------------------------------------------------------------------
+
+# Closed syllables (CVC) for each language, drawn from frequent medieval
+# pharmaceutical patterns.
+CVC_EXTENSIONS: Dict[str, List[str]] = {
+    'latin': [
+        'al', 'ar', 'an', 'as', 'at',
+        'el', 'er', 'en', 'es', 'et',
+        'il', 'ir', 'in', 'is', 'it',
+        'ol', 'or', 'on', 'os',
+        'ul', 'ur', 'un', 'us', 'ut',
+        'cal', 'car', 'can', 'cas', 'cat',
+        'tem', 'ter', 'ten', 'tes',
+        'men', 'mer', 'mel',
+        'nal', 'nar', 'nan',
+        'sal', 'sar', 'san', 'sol', 'son',
+        'pal', 'par', 'pan', 'pos', 'pon',
+        'ram', 'ren', 'rin', 'ron',
+        'mis', 'con', 'dis', 'ap', 'ad',
+        'bis', 'bit', 'bin',
+        'dis', 'dit', 'din',
+        'lat', 'las', 'lar',
+        'vat', 'vas', 'val',
+        'til', 'col',
+    ],
+    'occitan': [
+        'al', 'ar', 'an', 'as', 'at',
+        'el', 'er', 'en', 'es', 'et',
+        'il', 'ir', 'in', 'is', 'it',
+        'ol', 'or', 'on', 'ul', 'ur',
+        'ral', 'ran', 'ron',
+        'cal', 'can', 'ten', 'men', 'nal', 'sol',
+        'mis', 'con', 'dis',
+    ],
+    'italian': [
+        'al', 'ar', 'an', 'el', 'er', 'en',
+        'il', 'ir', 'in', 'ol', 'or', 'on',
+        'ul', 'ur', 'un',
+        'cal', 'car', 'can', 'ten', 'men', 'sol', 'sal', 'par',
+        'con', 'dis',
+    ],
+    'german': [
+        'al', 'an', 'ar', 'el', 'en', 'er',
+        'in', 'un', 'ul',
+        'ach', 'ich', 'uch',
+        'kal', 'ken', 'hal', 'ren', 'sen',
+        'con', 'dis',
+    ],
+}
+
+# Complex onsets (CCV) — consonant cluster + vowel.
+CCV_EXTENSIONS: Dict[str, List[str]] = {
+    'latin': [
+        'bra', 'bre', 'bri', 'bro', 'bru',
+        'cla', 'cle', 'cli', 'clo', 'clu',
+        'cra', 'cre', 'cri', 'cro', 'cru',
+        'dra', 'dre', 'dri', 'dro', 'dru',
+        'fla', 'fle', 'fli', 'flo', 'flu',
+        'fra', 'fre', 'fri', 'fro', 'fru',
+        'gla', 'gle', 'gli', 'glo', 'glu',
+        'gra', 'gre', 'gri', 'gro', 'gru',
+        'pla', 'ple', 'pli', 'plo', 'plu',
+        'pra', 'pre', 'pri', 'pro', 'pru',
+        'tra', 'tre', 'tri', 'tro', 'tru',
+        'sta', 'ste', 'sti', 'sto', 'stu',
+        'spa', 'spe', 'spi', 'spo', 'spu',
+        'sca', 'sce', 'sci', 'sco', 'scu',
+    ],
+    'occitan': [
+        'bra', 'bre', 'cla', 'cle', 'cra', 'cre',
+        'dra', 'dre', 'fla', 'fle', 'fra', 'fre',
+        'gla', 'gle', 'gra', 'gre', 'pla', 'ple',
+        'pra', 'pre', 'tra', 'tre', 'sta', 'ste', 'spa',
+    ],
+    'italian': [
+        'bra', 'bre', 'cla', 'cle', 'cra', 'cre',
+        'dra', 'dre', 'fla', 'fle', 'fra', 'fre',
+        'gla', 'gle', 'gra', 'gre', 'pla', 'ple',
+        'pra', 'pre', 'tra', 'tre', 'sta', 'ste', 'spa', 'sca',
+    ],
+    'german': [
+        'bra', 'bre', 'dra', 'dre', 'fra', 'fre',
+        'gra', 'gre', 'kla', 'kle', 'kra', 'kre',
+        'pla', 'ple', 'pra', 'pre', 'tra', 'tre',
+        'sta', 'ste', 'scha', 'sche',
+    ],
+}
+
+# Candidate inherent vowels (abugida model: onset-only cell carries this vowel)
+INHERENT_VOWEL_CANDIDATES: List[str] = ['a', 'e', 'i']
+
+# Phonological syllabification of the 10 Latin pharmaceutical imperatives.
+# CVC syllables like 'mis', 'con', 'dis', 'ap', 'ad' require CVC_EXTENSIONS
+# to be in the inventory (relaxation_level >= 2).
+LATIN_IMPERATIVE_SYLLABIFICATIONS: Dict[str, List[str]] = {
+    'recipe':   ['re', 'ci', 'pe'],
+    'accipe':   ['ac', 'ci', 'pe'],
+    'misce':    ['mis', 'ce'],
+    'contere':  ['con', 'te', 're'],
+    'coque':    ['co', 'que'],
+    'distilla': ['dis', 'til', 'la'],
+    'pone':     ['po', 'ne'],
+    'applica':  ['ap', 'pli', 'ca'],
+    'adde':     ['ad', 'de'],
+    'cola':     ['co', 'la'],
+}
+
+
+def build_cvc_syllable_table(
+    language: str,
+    relaxation_level: int = 0,
+    inherent_vowel: Optional[str] = None,
+) -> List[str]:
+    """Build an expanded syllable inventory for the given relaxation level.
+
+    Level 0: CV only (same as :func:`build_cv_syllable_table`).
+    Level 1: CV + consonant-only singletons with *inherent_vowel* appended.
+    Level 2: CV + top-25 CVC entries from :data:`CVC_EXTENSIONS`.
+    Level 3: CV + full :data:`CVC_EXTENSIONS`.
+    Level 4: CV + CVC + top-25 CCV entries from :data:`CCV_EXTENSIONS`.
+    Level 5: CV + full CVC + full CCV (~190 syllables for Latin).
+    """
+    base = build_cv_syllable_table(language)
+    if relaxation_level == 0:
+        return base
+
+    result = list(base)
+    seen = set(result)
+
+    inv = get_phoneme_inventory(language)
+
+    if relaxation_level >= 1 and inherent_vowel:
+        # Add C+inherent_vowel for each consonant not already in base
+        for c in inv['consonants']:
+            syl = c + inherent_vowel
+            if syl not in seen:
+                result.append(syl)
+                seen.add(syl)
+
+    cvc = CVC_EXTENSIONS.get(language, CVC_EXTENSIONS.get('latin', []))
+    ccv = CCV_EXTENSIONS.get(language, CCV_EXTENSIONS.get('latin', []))
+
+    if relaxation_level == 2:
+        additions = cvc[:25]
+    elif relaxation_level == 3:
+        additions = cvc
+    elif relaxation_level == 4:
+        additions = cvc + ccv[:25]
+    elif relaxation_level >= 5:
+        additions = cvc + ccv
+    else:
+        additions = []
+
+    for syl in additions:
+        if syl not in seen:
+            result.append(syl)
+            seen.add(syl)
+
+    return result

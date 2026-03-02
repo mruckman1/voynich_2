@@ -24,8 +24,10 @@ from voynich.core.reference import (
     PHONEME_INVENTORIES,
     ROMANCE_PHONOTACTICS,
     build_cv_syllable_table,
+    build_cvc_syllable_table,
     build_syllable_frequency_table,
     get_phoneme_inventory,
+    LATIN_IMPERATIVE_SYLLABIFICATIONS,
 )
 
 
@@ -47,6 +49,17 @@ class PhonemeInventory:
 
 
 @dataclass
+class VerbConstraint:
+    """Hard/soft constraint derived from Phase 9 verb-to-imperative assignments."""
+    voynich_stem: str
+    latin_verb: str
+    latin_syllables: List[str]   # from LATIN_IMPERATIVE_SYLLABIFICATIONS
+    voynich_cells: List[str]     # grid cell keys for each EVA char in stem
+    confidence: float
+    is_hard: bool                # True when confidence >= 0.65 AND length-matched
+
+
+@dataclass
 class AnchorConstraint:
     """One illustration-anchor mapping between a Voynich stem and a plant."""
     folio: str
@@ -64,14 +77,30 @@ class AnchorConstraint:
 def build_phoneme_inventory(
     language: str,
     ref_corpus: Optional[Any] = None,
+    relaxation_level: int = 0,
+    inherent_vowel: Optional[str] = None,
 ) -> PhonemeInventory:
     """Build a :class:`PhonemeInventory` for *language*.
 
-    Generates all legal CV syllables and ranks them by frequency in the
-    reference corpus (falls back to uniform if no corpus is available).
+    Generates all legal CV (and optionally CVC/CCV) syllables and ranks them
+    by frequency in the reference corpus (falls back to uniform if none).
+
+    Parameters
+    ----------
+    relaxation_level:
+        0 = strict CV only; 1–5 = progressively expanded inventory
+        (see :func:`~voynich.core.reference.build_cvc_syllable_table`).
+    inherent_vowel:
+        Vowel appended to consonant singletons at relaxation level 1+.
     """
     inv = get_phoneme_inventory(language)
-    cv_syllables = build_cv_syllable_table(language)
+    if relaxation_level > 0:
+        cv_syllables = build_cvc_syllable_table(
+            language, relaxation_level=relaxation_level,
+            inherent_vowel=inherent_vowel,
+        )
+    else:
+        cv_syllables = build_cv_syllable_table(language)
     freq_table = build_syllable_frequency_table(language, ref_corpus)
 
     # Rank syllables by frequency descending
@@ -443,13 +472,212 @@ def composite_score(
     alpha: float = 1.0,
     beta: float = 2.0,
     gamma: float = 1.5,
+    verb_penalty: float = 0.0,
+    gamma_verb: float = 1.0,
+    n_distinct_syllables: int = 0,
+    n_cells: int = 14,
 ) -> float:
     """Compute a combined score (lower is better).
 
-    ``score = α·CE + β·(1 - validity) + γ·anchor_penalty``
+    ``score = α·CE + β·(1-validity) + γ·anchor_penalty + γv·verb_penalty``
+
+    A soft diversity reward discourages degenerate solutions where many
+    cells collapse to the same syllable:
+    ``score -= 0.2 * (n_distinct_syllables / n_cells)``
     """
-    return (
+    base = (
         alpha * cross_entropy
         + beta * (1.0 - word_validity)
         + gamma * anchor_penalty
+        + gamma_verb * verb_penalty
     )
+    if n_cells > 0 and n_distinct_syllables > 0:
+        base -= 0.2 * (n_distinct_syllables / n_cells)
+    return base
+
+
+# ---------------------------------------------------------------------------
+# Phase 11.5 – Verb constraint layer (Layer 7)
+# ---------------------------------------------------------------------------
+
+def build_verb_constraints(
+    verb_data: Dict,
+    cv_labels: Dict,
+    eva_to_cell: Dict[str, str],
+) -> List[VerbConstraint]:
+    """Build verb constraints from Phase 9 results.
+
+    For each confident assignment (score >= 0.5), decompose the Voynich
+    stem into grid cells.  Only create a constraint when the cell count
+    exactly matches the syllable count from
+    :data:`~voynich.core.reference.LATIN_IMPERATIVE_SYLLABIFICATIONS`.
+
+    In practice only 1–3 stems will be length-matched.
+    """
+    constraints: List[VerbConstraint] = []
+    assignments = verb_data.get('assignments', [])
+
+    for asgn in assignments:
+        voynich_stem = asgn.get('voynich_stem', '')
+        latin_verb = asgn.get('latin_verb', '')
+        confidence = float(asgn.get('total_score', 0.0))
+
+        if confidence < 0.5 or not voynich_stem or not latin_verb:
+            continue
+
+        latin_syls = LATIN_IMPERATIVE_SYLLABIFICATIONS.get(latin_verb)
+        if not latin_syls:
+            continue
+
+        # Decompose stem into grid cells
+        cells = token_to_grid_cells(voynich_stem, eva_to_cell)
+
+        # Only use when cell count matches syllable count (direct alignment)
+        if len(cells) != len(latin_syls):
+            continue
+
+        constraints.append(VerbConstraint(
+            voynich_stem=voynich_stem,
+            latin_verb=latin_verb,
+            latin_syllables=list(latin_syls),
+            voynich_cells=cells,
+            confidence=confidence,
+            is_hard=(confidence >= 0.65),
+        ))
+
+    return constraints
+
+
+def apply_verb_constraints(
+    cell_domains: Dict[str, List[str]],
+    verb_constraints: List[VerbConstraint],
+    inventory: PhonemeInventory,
+) -> Dict[str, List[str]]:
+    """Narrow domains for cells with hard verb constraints.
+
+    For each hard constraint (confidence >= 0.65), if the target syllable
+    is in the inventory, the cell's domain is narrowed to just that value.
+    If the target syllable is NOT in the inventory (e.g. a CVC form not
+    yet included), it is added to the domain without narrowing (soft mode).
+    """
+    legal_set = set(inventory.cv_syllables)
+    result = {k: list(v) for k, v in cell_domains.items()}
+
+    for vc in verb_constraints:
+        if not vc.is_hard:
+            continue
+        for cell_key, target_syl in zip(vc.voynich_cells, vc.latin_syllables):
+            if cell_key not in result:
+                continue
+            if target_syl in legal_set:
+                result[cell_key] = [target_syl]
+            else:
+                # Add as soft option — don't narrow
+                existing = set(result[cell_key])
+                existing.add(target_syl)
+                result[cell_key] = list(existing)
+
+    return result
+
+
+def score_verb_consistency(
+    assignment: Dict[str, str],
+    verb_constraints: List[VerbConstraint],
+    eva_to_cell: Dict[str, str],
+) -> Tuple[float, int]:
+    """Score how well an assignment matches verb constraints.
+
+    Mirrors :func:`score_anchor_match`:  for each verb constraint, decode
+    the Voynich stem and compare edit distance to the full Latin verb string.
+
+    Returns (total_penalty, n_matched) where n_matched counts constraints
+    with edit distance <= 2.
+    """
+    total_penalty = 0.0
+    n_matched = 0
+
+    for vc in verb_constraints:
+        decoded_parts: List[str] = []
+        for cell_key in vc.voynich_cells:
+            syl = assignment.get(cell_key, '?')
+            decoded_parts.append(syl)
+        decoded = ''.join(decoded_parts)
+        target = ''.join(vc.latin_syllables)
+        dist = _edit_distance(decoded.lower(), target.lower())
+        norm_dist = dist / max(len(target), 1)
+        total_penalty += norm_dist * vc.confidence
+        if dist <= 2:
+            n_matched += 1
+
+    return total_penalty, n_matched
+
+
+def extract_confirmed_hits(
+    assignment: Dict[str, str],
+    voynich_tokens: List[str],
+    eva_to_cell: Dict[str, str],
+    ref_word_set: set,
+    min_frequency: int = 3,
+) -> List[AnchorConstraint]:
+    """Extract high-confidence decoded tokens as new anchor constraints.
+
+    A token qualifies when:
+    1. It always decodes to the same string (consistency).
+    2. That string is an exact hit in *ref_word_set*.
+    3. The token appears >= *min_frequency* times in *voynich_tokens*.
+
+    Returns a list of :class:`AnchorConstraint` objects with
+    ``folio='confirmed_hit'`` so they are distinguishable from
+    illustration anchors.
+    """
+    # Count token frequencies and collect unique decodings per token
+    freq: Counter = Counter(voynich_tokens)
+    token_decoded: Dict[str, set] = {}
+
+    for token in set(voynich_tokens):
+        chars = tokenize_eva_chars(token)
+        parts: List[str] = []
+        for ch in chars:
+            cell = eva_to_cell.get(ch)
+            if cell and cell in assignment:
+                parts.append(assignment[cell])
+        if parts:
+            decoded = ''.join(parts)
+            token_decoded[token] = {decoded}
+
+    confirmed: List[AnchorConstraint] = []
+    for token, decoded_set in token_decoded.items():
+        if len(decoded_set) != 1:
+            continue
+        decoded_str = next(iter(decoded_set))
+        if decoded_str not in ref_word_set:
+            continue
+        if freq[token] < min_frequency:
+            continue
+
+        # Build cells for this token
+        cells = token_to_grid_cells(token, eva_to_cell)
+        # Syllabify decoded_str (treat as one unit per cell for simplicity)
+        n_cells = len(cells)
+        if n_cells == 0:
+            continue
+        chunk = max(1, len(decoded_str) // n_cells)
+        target_syls = [
+            decoded_str[i * chunk:(i + 1) * chunk]
+            for i in range(n_cells)
+        ]
+        # Pad or truncate
+        while len(target_syls) < n_cells:
+            target_syls.append(target_syls[-1])
+        target_syls = target_syls[:n_cells]
+
+        confirmed.append(AnchorConstraint(
+            folio='confirmed_hit',
+            voynich_stem=token,
+            voynich_cells=cells,
+            target_word=decoded_str,
+            target_syllables=target_syls,
+            weight=0.8,  # slightly lower weight than illustration anchors
+        ))
+
+    return confirmed
