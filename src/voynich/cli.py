@@ -438,6 +438,59 @@ def cmd_phase7():
     print(f"\nApproach integration completed in {time.time() - t0:.1f}s")
 
 
+def cmd_combined_embed():
+    """Run Phase 7.5 Step 1: combined A+B corpus embeddings."""
+    from voynich.phases.distributional import run_combined_distributional
+    t0 = time.time()
+    run_combined_distributional()
+    print(f"\nCombined embeddings completed in {time.time() - t0:.1f}s")
+
+
+def cmd_noun_clusters():
+    """Run Phase 7.5 Step 2: noun subcluster analysis."""
+    from voynich.phases.noun_subclusters import run_noun_subclusters
+    t0 = time.time()
+    run_noun_subclusters()
+    print(f"\nNoun subcluster analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_verb_id():
+    """Run Phase 7.5 Step 3: verb identification."""
+    from voynich.phases.verb_identification import run_verb_identification
+    t0 = time.time()
+    run_verb_identification()
+    print(f"\nVerb identification completed in {time.time() - t0:.1f}s")
+
+
+def cmd_embed_bridge():
+    """Run Phase 7.5 Step 4: illustration-embedding bridge."""
+    from voynich.phases.embedding_bridge import run_embedding_bridge
+    t0 = time.time()
+    run_embedding_bridge()
+    print(f"\nEmbedding bridge completed in {time.time() - t0:.1f}s")
+
+
+def cmd_convergence():
+    """Run Phase 7.5 Step 5: convergence scoring."""
+    from voynich.phases.convergence_score import run_convergence_score
+    t0 = time.time()
+    run_convergence_score()
+    print(f"\nConvergence scoring completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase75():
+    """Run full Phase 7.5: Exploiting the Noun Coherence Bridge."""
+    cmd_combined_embed()
+    print("\n" + "=" * 70 + "\n")
+    cmd_noun_clusters()
+    print("\n" + "=" * 70 + "\n")
+    cmd_verb_id()
+    print("\n" + "=" * 70 + "\n")
+    cmd_embed_bridge()
+    print("\n" + "=" * 70 + "\n")
+    cmd_convergence()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -478,6 +531,12 @@ def main():
         'embeddings': cmd_embeddings,
         'slots': cmd_slots,
         'phase7': cmd_phase7,
+        'combined-embed': cmd_combined_embed,
+        'noun-clusters': cmd_noun_clusters,
+        'verb-id': cmd_verb_id,
+        'embed-bridge': cmd_embed_bridge,
+        'convergence': cmd_convergence,
+        'phase7-5': cmd_phase75,
     }
 
     if len(sys.argv) < 2:

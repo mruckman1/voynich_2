@@ -1036,3 +1036,386 @@ def run_distributional() -> Dict:
     print(f"\nResults saved to {out_path}")
 
     return out
+
+
+# ---------------------------------------------------------------------------
+# Phase 7.5 Step 1: Combined A+B Corpus Embeddings
+# ---------------------------------------------------------------------------
+
+@dataclass
+class CombinedEmbeddingResult:
+    """Result of combined A+B embedding construction."""
+    combined_vocab_size: int
+    combined_n_dim: int
+    combined_total_tokens: int
+    a_only_stems: int
+    b_only_stems: int
+    shared_stems: int
+    shared_stem_fraction: float
+    # Embedding quality
+    section_ari: float
+    section_ari_null: float
+    # Dimension sweep
+    best_n_dim: int
+    dim_sweep: List[Dict]
+    # Alignment with references
+    alignment_summaries: List[Dict]
+    best_procrustes_language: str
+    best_gw_language: str
+    best_procrustes_residual: float
+    best_gw_distance: float
+    # Null tests
+    null_procrustes_mean: float
+    null_procrustes_std: float
+    procrustes_selectivity: float
+    null_gw_mean: float
+    null_gw_std: float
+    gw_selectivity: float
+    # Register structure
+    register_ari: float
+    register_separation: float
+    register_shared_stems: List[str]
+    # Comparison to A-only
+    a_only_ari: float
+    selectivity_improvement: float
+    # Gates
+    embedding_quality_gate: bool
+    procrustes_gate: bool
+    gw_gate: bool
+    gate_passed: bool
+    verdict: str
+
+
+def build_combined_embedding_space(
+    corpus: VoynichCorpus,
+    window: int = 2,
+    n_dim: int = 50,
+    min_count: int = 3,
+) -> Tuple[Optional[EmbeddingSpace], Dict[str, str]]:
+    """
+    Build embedding space from combined Language A + Language B tokens.
+
+    Returns (embedding_space, stem_language_map) where stem_language_map
+    records the majority source language for each stem ('A', 'B', or 'AB').
+    """
+    tokens_a = corpus.get_tokens(language='A', paragraph_only=True)
+    tokens_b = corpus.get_tokens(language='B', paragraph_only=True)
+
+    # Track stem provenance
+    stem_lang_counts: Dict[str, Counter] = defaultdict(Counter)
+    for tok in tokens_a:
+        d = decompose_token_morphemes(tok)
+        stem = d.stem if d.stem else tok
+        stem_lang_counts[stem]['A'] += 1
+    for tok in tokens_b:
+        d = decompose_token_morphemes(tok)
+        stem = d.stem if d.stem else tok
+        stem_lang_counts[stem]['B'] += 1
+
+    # Build combined token list (A then B, preserving internal order)
+    all_tokens = tokens_a + tokens_b
+    space = build_embedding_space(all_tokens, 'voynich_combined', window, n_dim, min_count)
+
+    # Map each stem to its majority language
+    stem_language_map: Dict[str, str] = {}
+    for stem, counts in stem_lang_counts.items():
+        a_ct = counts.get('A', 0)
+        b_ct = counts.get('B', 0)
+        if a_ct > 0 and b_ct > 0:
+            stem_language_map[stem] = 'AB'
+        elif a_ct > 0:
+            stem_language_map[stem] = 'A'
+        else:
+            stem_language_map[stem] = 'B'
+
+    return space, stem_language_map
+
+
+def test_register_structure(
+    space: EmbeddingSpace,
+    stem_language_map: Dict[str, str],
+    n_clusters: int = 5,
+) -> Tuple[float, float, List[str]]:
+    """
+    Test whether the A/B register distinction is visible in embedding space.
+
+    Returns (register_ari, register_separation, shared_stems).
+    """
+    from scipy.cluster.vq import kmeans2
+
+    # Assign binary A/B labels (shared stems labelled by majority)
+    stem_labels = []
+    for stem in space.vocab:
+        lang = stem_language_map.get(stem, 'B')
+        if lang == 'AB':
+            stem_labels.append('AB')
+        else:
+            stem_labels.append(lang)
+
+    # K-means clustering
+    k = min(n_clusters, space.n_vocab)
+    _, cluster_labels = kmeans2(space.embeddings, k, minit='points', seed=42)
+
+    # Simplify labels to A vs B for ARI (merge AB with most common)
+    binary_labels = []
+    for lbl in stem_labels:
+        if lbl == 'AB':
+            binary_labels.append('A')  # shared stems count as A for this test
+        else:
+            binary_labels.append(lbl)
+
+    register_ari = adjusted_rand_index(
+        cluster_labels, np.array(binary_labels),
+    )
+
+    # Mean cosine distance between A-centroid and B-centroid
+    a_indices = [i for i, s in enumerate(space.vocab)
+                 if stem_language_map.get(s, 'B') in ('A', 'AB')]
+    b_indices = [i for i, s in enumerate(space.vocab)
+                 if stem_language_map.get(s, 'B') == 'B']
+
+    if a_indices and b_indices:
+        a_centroid = space.embeddings[a_indices].mean(axis=0, keepdims=True)
+        b_centroid = space.embeddings[b_indices].mean(axis=0, keepdims=True)
+        separation = float(cdist(a_centroid, b_centroid, metric='cosine')[0, 0])
+    else:
+        separation = 0.0
+
+    shared_stems = [s for s in space.vocab if stem_language_map.get(s) == 'AB']
+
+    return register_ari, separation, shared_stems
+
+
+def run_combined_distributional() -> Dict:
+    """
+    Phase 7.5 Step 1: Combined A+B Corpus Embeddings.
+
+    Merges Language A and B tokens, builds PPMI+SVD embeddings on the
+    combined corpus, aligns with Latin/Occitan, and tests register structure.
+    """
+    print("Phase 7.5 Step 1: Combined A+B Corpus Embeddings")
+    print("=" * 70)
+
+    corpus = load_corpus(verbose=False)
+    ref_corpus = load_reference_corpus(verbose=False)
+
+    # Dimension sweep: try 50, 75, 100
+    print("\n  Building combined embeddings (dimension sweep)...")
+    dim_sweep = []
+    best_space = None
+    best_slm = None
+    best_ari = -1.0
+    best_dim = 50
+
+    for n_dim in (50, 75, 100):
+        space, slm = build_combined_embedding_space(
+            corpus, window=2, n_dim=n_dim, min_count=3,
+        )
+        if space is None:
+            dim_sweep.append({'n_dim': n_dim, 'ari': 0.0, 'vocab_size': 0})
+            continue
+
+        # Validate with section ARI (use both A and B pages)
+        ari, ari_null = validate_embedding_quality(
+            space, corpus.get_tokens(paragraph_only=True), corpus, 'A',
+            n_clusters=5,
+        )
+        print(f"    dim={n_dim}: vocab={space.n_vocab}, ARI={ari:.4f} (null={ari_null:.4f})")
+        dim_sweep.append({
+            'n_dim': n_dim, 'ari': float(ari), 'ari_null': float(ari_null),
+            'vocab_size': space.n_vocab,
+        })
+
+        if ari > best_ari:
+            best_ari = ari
+            best_space = space
+            best_slm = slm
+            best_dim = n_dim
+
+    if best_space is None:
+        print("  ERROR: Combined embedding space could not be built.")
+        result = CombinedEmbeddingResult(
+            combined_vocab_size=0, combined_n_dim=0, combined_total_tokens=0,
+            a_only_stems=0, b_only_stems=0, shared_stems=0, shared_stem_fraction=0.0,
+            section_ari=0.0, section_ari_null=0.0,
+            best_n_dim=0, dim_sweep=dim_sweep,
+            alignment_summaries=[], best_procrustes_language='none',
+            best_gw_language='none', best_procrustes_residual=float('inf'),
+            best_gw_distance=float('inf'),
+            null_procrustes_mean=0.0, null_procrustes_std=0.0,
+            procrustes_selectivity=0.0, null_gw_mean=0.0, null_gw_std=0.0,
+            gw_selectivity=0.0,
+            register_ari=0.0, register_separation=0.0, register_shared_stems=[],
+            a_only_ari=0.0, selectivity_improvement=0.0,
+            embedding_quality_gate=False, procrustes_gate=False, gw_gate=False,
+            gate_passed=False, verdict='combined_embedding_failed',
+        )
+        out = _convert(asdict(result))
+        out_path = _results_dir() / 'combined_distributional.json'
+        with open(out_path, 'w') as f:
+            json.dump(out, f, indent=2)
+        print(f"\nResults saved to {out_path}")
+        return out
+
+    print(f"\n  Best dimension: {best_dim} (ARI={best_ari:.4f})")
+
+    # Compute vocab statistics
+    a_only = sum(1 for s in best_space.vocab if best_slm.get(s) == 'A')
+    b_only = sum(1 for s in best_space.vocab if best_slm.get(s) == 'B')
+    shared = sum(1 for s in best_space.vocab if best_slm.get(s) == 'AB')
+    shared_frac = shared / best_space.n_vocab if best_space.n_vocab > 0 else 0.0
+
+    print(f"  Combined vocab: {best_space.n_vocab} stems "
+          f"(A-only={a_only}, B-only={b_only}, shared={shared}, "
+          f"shared_fraction={shared_frac:.2%})")
+
+    # Section ARI (using the best space)
+    best_sweep = [d for d in dim_sweep if d['n_dim'] == best_dim][0]
+    section_ari = best_sweep['ari']
+    section_ari_null = best_sweep.get('ari_null', 0.0)
+
+    # Register structure test
+    print("\n  Testing register structure...")
+    reg_ari, reg_sep, reg_shared = test_register_structure(
+        best_space, best_slm, n_clusters=5,
+    )
+    print(f"  Register ARI: {reg_ari:.4f}")
+    print(f"  Register separation: {reg_sep:.4f}")
+    print(f"  Shared stems: {len(reg_shared)}")
+
+    # Build reference embedding spaces
+    print("\n  Building reference embedding spaces...")
+    ref_spaces: Dict[str, EmbeddingSpace] = {}
+    for lang in ('latin', 'occitan'):
+        try:
+            ref_stem_seq, ref_vocab = _prepare_latin_stem_corpus(ref_corpus, lang, min_count=3)
+            if len(ref_vocab) < 20:
+                continue
+            ref_space = build_embedding_space(
+                ref_stem_seq, lang, window=2, n_dim=best_dim, min_count=1,
+            )
+            if ref_space:
+                ref_spaces[lang] = ref_space
+        except Exception as e:
+            print(f"    {lang}: error — {e}")
+
+    # Alignment
+    print("\n  Running alignment...")
+    seed_pairs = _load_seed_pairs()
+    print(f"  Loaded {len(seed_pairs)} seed pairs")
+
+    summaries = []
+    best_proc_lang = 'none'
+    best_proc_score = float('inf')
+    best_gw_lang = 'none'
+    best_gw_score = float('inf')
+
+    for lang, ref_space in ref_spaces.items():
+        print(f"    Aligning combined to {lang}...")
+        proc_result = align_procrustes(best_space, ref_space, seed_pairs)
+        gw_result = align_gw(best_space, ref_space, top_n=100)
+
+        summ = {
+            'language': lang,
+            'procrustes_residual': proc_result.score,
+            'gw_distance': gw_result.score,
+            'procrustes_nn_cosine': proc_result.mean_nn_cosine,
+            'n_seed_pairs': proc_result.n_seed_pairs,
+        }
+        summaries.append(summ)
+
+        if proc_result.score < best_proc_score:
+            best_proc_score = proc_result.score
+            best_proc_lang = lang
+        if gw_result.score < best_gw_score:
+            best_gw_score = gw_result.score
+            best_gw_lang = lang
+
+    # Null tests
+    null_proc_mean, null_proc_std, proc_sel = 0.0, 0.0, 0.0
+    null_gw_mean, null_gw_std, gw_sel = 0.0, 0.0, 0.0
+
+    if best_proc_lang in ref_spaces and best_proc_score < float('inf'):
+        print(f"    Procrustes null test (100 trials)...")
+        null_proc_mean, null_proc_std, proc_sel = null_test_procrustes(
+            best_space, ref_spaces[best_proc_lang], seed_pairs, best_proc_score,
+        )
+    if best_gw_lang in ref_spaces and best_gw_score < float('inf'):
+        print(f"    GW null test (20 trials)...")
+        null_gw_mean, null_gw_std, gw_sel = null_test_gw(
+            best_space, ref_spaces[best_gw_lang], best_gw_score,
+        )
+
+    # Load A-only ARI for comparison
+    a_only_ari = 0.0
+    dist_path = _results_dir() / 'distributional.json'
+    if dist_path.exists():
+        with open(dist_path) as f:
+            prior = json.load(f)
+        a_only_ari = prior.get('section_ari_a', 0.0)
+
+    sel_improvement = (section_ari / a_only_ari) if a_only_ari > 0.01 else 0.0
+
+    # Gates
+    emb_gate = section_ari > section_ari_null and section_ari > 0.01
+    proc_gate = proc_sel > 1.5
+    gw_g = gw_sel > 1.5
+    gate_passed = emb_gate
+
+    if gate_passed and (proc_gate or gw_g):
+        verdict = 'combined_improves_alignment'
+    elif gate_passed:
+        verdict = 'combined_valid_no_alignment_improvement'
+    else:
+        verdict = 'combined_embedding_quality_insufficient'
+
+    print(f"\n  Section ARI: {section_ari:.4f} (null: {section_ari_null:.4f})")
+    print(f"  A-only ARI:  {a_only_ari:.4f} → improvement: {sel_improvement:.2f}x")
+    print(f"  Procrustes selectivity: {proc_sel:.2f}x")
+    print(f"  GW selectivity:         {gw_sel:.2f}x")
+    print(f"  Embedding gate: {'PASS' if emb_gate else 'FAIL'}")
+    print(f"  Procrustes gate: {'PASS' if proc_gate else 'FAIL'}")
+    print(f"  GW gate:         {'PASS' if gw_g else 'FAIL'}")
+    print(f"  Verdict: {verdict}")
+
+    result = CombinedEmbeddingResult(
+        combined_vocab_size=best_space.n_vocab,
+        combined_n_dim=best_space.n_dim,
+        combined_total_tokens=best_space.total_tokens,
+        a_only_stems=a_only,
+        b_only_stems=b_only,
+        shared_stems=shared,
+        shared_stem_fraction=shared_frac,
+        section_ari=section_ari,
+        section_ari_null=section_ari_null,
+        best_n_dim=best_dim,
+        dim_sweep=dim_sweep,
+        alignment_summaries=summaries,
+        best_procrustes_language=best_proc_lang,
+        best_gw_language=best_gw_lang,
+        best_procrustes_residual=best_proc_score,
+        best_gw_distance=best_gw_score,
+        null_procrustes_mean=null_proc_mean,
+        null_procrustes_std=null_proc_std,
+        procrustes_selectivity=proc_sel,
+        null_gw_mean=null_gw_mean,
+        null_gw_std=null_gw_std,
+        gw_selectivity=gw_sel,
+        register_ari=reg_ari,
+        register_separation=reg_sep,
+        register_shared_stems=reg_shared[:50],  # cap for JSON size
+        a_only_ari=a_only_ari,
+        selectivity_improvement=sel_improvement,
+        embedding_quality_gate=emb_gate,
+        procrustes_gate=proc_gate,
+        gw_gate=gw_g,
+        gate_passed=gate_passed,
+        verdict=verdict,
+    )
+
+    out = _convert(asdict(result))
+    out_path = _results_dir() / 'combined_distributional.json'
+    with open(out_path, 'w') as f:
+        json.dump(out, f, indent=2)
+    print(f"\nResults saved to {out_path}")
+    return out

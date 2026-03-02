@@ -1205,3 +1205,98 @@ def adjusted_rand_index(
     if abs(denom) < 1e-10:
         return 1.0 if abs(sum_comb_nij - expected) < 1e-10 else 0.0
     return float((sum_comb_nij - expected) / denom)
+
+
+def silhouette_score(
+    embeddings: np.ndarray,
+    labels: np.ndarray,
+) -> float:
+    """
+    Compute mean silhouette coefficient for a clustering.
+
+    For each point i:
+      a(i) = mean distance to other points in same cluster
+      b(i) = min over other clusters of mean distance to that cluster
+      s(i) = (b(i) - a(i)) / max(a(i), b(i))
+
+    Returns mean s(i) over all points.  Value in [-1, 1].
+    """
+    from scipy.spatial.distance import cdist
+
+    labels = np.asarray(labels)
+    n = len(labels)
+    if n < 2:
+        return 0.0
+
+    unique_labels = np.unique(labels)
+    if len(unique_labels) < 2:
+        return 0.0
+
+    # Pairwise Euclidean distances
+    dists = cdist(embeddings, embeddings, metric='euclidean')
+
+    silhouettes = np.zeros(n)
+    for i in range(n):
+        same_mask = labels == labels[i]
+        same_mask[i] = False  # exclude self
+        n_same = same_mask.sum()
+        if n_same == 0:
+            silhouettes[i] = 0.0
+            continue
+        a_i = dists[i, same_mask].mean()
+
+        b_i = np.inf
+        for lbl in unique_labels:
+            if lbl == labels[i]:
+                continue
+            other_mask = labels == lbl
+            if other_mask.sum() == 0:
+                continue
+            mean_dist = dists[i, other_mask].mean()
+            if mean_dist < b_i:
+                b_i = mean_dist
+
+        denom = max(a_i, b_i)
+        silhouettes[i] = (b_i - a_i) / denom if denom > 0 else 0.0
+
+    return float(np.mean(silhouettes))
+
+
+def hungarian_assignment(
+    cost_matrix: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray, float]:
+    """
+    Optimal assignment maximizing total score.
+
+    Wraps scipy.optimize.linear_sum_assignment (which minimizes),
+    so we negate the matrix before solving.
+
+    Returns (row_indices, col_indices, total_score).
+    """
+    from scipy.optimize import linear_sum_assignment
+
+    row_ind, col_ind = linear_sum_assignment(-np.asarray(cost_matrix, dtype=float))
+    total = float(cost_matrix[row_ind, col_ind].sum())
+    return row_ind, col_ind, total
+
+
+def fisher_combined_probability(
+    p_values: List[float],
+) -> Tuple[float, int, float]:
+    """
+    Fisher's method for combining independent p-values.
+
+    chi2 = -2 * sum(ln(p_i))
+    Under H0: chi2 ~ chi-squared(2k) where k = number of p-values.
+
+    Returns (chi2_statistic, degrees_of_freedom, combined_p_value).
+    """
+    from scipy.stats import chi2 as chi2_dist
+
+    clamped = [max(p, 1e-300) for p in p_values if 0 < p <= 1]
+    if not clamped:
+        return 0.0, 0, 1.0
+    chi2_stat = -2.0 * sum(math.log(p) for p in clamped)
+    df = 2 * len(clamped)
+    combined_p = 1.0 - float(chi2_dist.cdf(chi2_stat, df))
+    return chi2_stat, df, combined_p

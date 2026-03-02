@@ -18,7 +18,7 @@ import unicodedata
 from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from voynich.core._paths import data_dir as _data_dir
 
@@ -574,6 +574,85 @@ LATIN_MEDICAL_VOCABULARY: List[Tuple[str, str, str]] = [
     ('sicca', 'adj', 'dry'),
     ('humida', 'adj', 'moist'),
 ]
+
+# Latin pharmaceutical imperative verbs — Phase 7.5 verb identification
+# Frequency ranking based on Circa Instans / De Viribus Herbarum recipe structure
+LATIN_PHARMACEUTICAL_IMPERATIVES: List[Dict[str, Any]] = [
+    {'verb': 'recipe',   'meaning': 'take',    'frequency_rank': 1,
+     'stem': 'recip',    'conjugation': 'verb_3rd', 'n_chars': 6,
+     'imperative_forms': ['recipe', 'recipite'],
+     'typical_objects': ['plant_names', 'plant_parts', 'preparations']},
+    {'verb': 'accipe',   'meaning': 'accept',  'frequency_rank': 2,
+     'stem': 'accip',    'conjugation': 'verb_3rd', 'n_chars': 6,
+     'imperative_forms': ['accipe', 'accipite'],
+     'typical_objects': ['plant_names', 'plant_parts', 'preparations']},
+    {'verb': 'misce',    'meaning': 'mix',     'frequency_rank': 3,
+     'stem': 'misc',     'conjugation': 'verb_2nd', 'n_chars': 5,
+     'imperative_forms': ['misce', 'miscete'],
+     'typical_objects': ['preparations', 'plant_parts']},
+    {'verb': 'contere',  'meaning': 'grind',   'frequency_rank': 4,
+     'stem': 'conter',   'conjugation': 'verb_3rd', 'n_chars': 7,
+     'imperative_forms': ['contere', 'conterite'],
+     'typical_objects': ['plant_parts', 'plant_names']},
+    {'verb': 'coque',    'meaning': 'cook',    'frequency_rank': 5,
+     'stem': 'coqu',     'conjugation': 'verb_3rd', 'n_chars': 5,
+     'imperative_forms': ['coque', 'coquite'],
+     'typical_objects': ['preparations']},
+    {'verb': 'distilla', 'meaning': 'distil',  'frequency_rank': 6,
+     'stem': 'distill',  'conjugation': 'verb_1st', 'n_chars': 8,
+     'imperative_forms': ['distilla', 'distillate'],
+     'typical_objects': ['preparations']},
+    {'verb': 'pone',     'meaning': 'place',   'frequency_rank': 7,
+     'stem': 'pon',      'conjugation': 'verb_3rd', 'n_chars': 4,
+     'imperative_forms': ['pone', 'ponite'],
+     'typical_objects': ['preparations', 'body_parts']},
+    {'verb': 'applica',  'meaning': 'apply',   'frequency_rank': 8,
+     'stem': 'applic',   'conjugation': 'verb_1st', 'n_chars': 7,
+     'imperative_forms': ['applica', 'applicate'],
+     'typical_objects': ['preparations', 'body_parts']},
+    {'verb': 'adde',     'meaning': 'add',     'frequency_rank': 9,
+     'stem': 'add',      'conjugation': 'verb_3rd', 'n_chars': 4,
+     'imperative_forms': ['adde', 'addite'],
+     'typical_objects': ['plant_names', 'plant_parts', 'preparations']},
+    {'verb': 'cola',     'meaning': 'strain',  'frequency_rank': 10,
+     'stem': 'col',      'conjugation': 'verb_1st', 'n_chars': 4,
+     'imperative_forms': ['cola', 'colate'],
+     'typical_objects': ['preparations']},
+]
+
+# Latin pharmaceutical noun semantic domains — Phase 7.5 subcluster matching
+LATIN_PHARMACEUTICAL_DOMAINS: Dict[str, List[Tuple[str, str, int]]] = {
+    'plant_names': [
+        ('rosa', 'rose', 1), ('viola', 'violet', 2), ('salvia', 'sage', 3),
+        ('malva', 'mallow', 4), ('absinthium', 'wormwood', 5),
+        ('cannabis', 'hemp', 6), ('papaver', 'poppy', 7),
+        ('rosmarinus', 'rosemary', 8), ('mentha', 'mint', 9),
+        ('chamomilla', 'chamomile', 10), ('artemisia', 'mugwort', 11),
+        ('urtica', 'nettle', 12), ('plantago', 'plantain', 13),
+        ('ruta', 'rue', 14), ('verbena', 'vervain', 15),
+    ],
+    'plant_parts': [
+        ('radix', 'root', 1), ('folium', 'leaf', 2), ('flos', 'flower', 3),
+        ('semen', 'seed', 4), ('cortex', 'bark', 5), ('fructus', 'fruit', 6),
+        ('succus', 'juice', 7), ('herba', 'herb/whole plant', 8),
+    ],
+    'preparations': [
+        ('aqua', 'water', 1), ('oleum', 'oil', 2), ('vinum', 'wine', 3),
+        ('mel', 'honey', 4), ('acetum', 'vinegar', 5),
+        ('pulvis', 'powder', 6), ('unguentum', 'ointment', 7),
+        ('emplastrum', 'plaster', 8), ('sirupus', 'syrup', 9),
+    ],
+    'body_parts': [
+        ('caput', 'head', 1), ('stomachus', 'stomach', 2),
+        ('oculus', 'eye', 3), ('dens', 'tooth', 4),
+        ('pectus', 'chest', 5), ('venter', 'belly', 6),
+        ('pes', 'foot', 7), ('manus', 'hand', 8),
+    ],
+    'qualities': [
+        ('calida', 'hot', 1), ('frigida', 'cold', 2),
+        ('sicca', 'dry', 3), ('humida', 'moist', 4),
+    ],
+}
 
 
 def compute_suffix_inventory(
