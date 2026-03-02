@@ -1,10 +1,12 @@
 # Voynich Manuscript: Syllabary & Information-Theoretic Analysis
 
-A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, and cipher-level decoding. Twelve complementary approaches across eight phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step.
+A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, and fundamental reassessment of encoding hypotheses. Twelve complementary approaches across nine phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step.
 
-**Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints.
+**Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification).
 
 Key finding across all phases: the Voynich manuscript encodes a **Romance language** (Latin or Occitan, not separable) using a **morphological syllabary** with genuine affix+stem structure. Both Voynich Language A and B embedding spaces independently point to Latin as the closest structural match. Fisher's combined probability test across 5 independent evidence families yields p = 2.75×10⁻¹⁰, confirming that the aggregate signal is real even though the selectivity ceiling — where frequency priors dominate over genuine linguistic content — persists at the level of individual word identification. Phase 8's MDL decoder, tested against all four candidate languages (Latin, Occitan, Italian, German), cannot discriminate between them — German wins on raw CE due to corpus size, not linguistic affinity. The failed sanity check (4% cipher recovery) and lack of language discrimination confirm the compression gains are frequency-driven, not genuine decryption.
+
+Phase 9's fundamental reassessment rules out three specific encoding models: **no homophonic signal** (zero distributional clusters at cosine > 0.8, Voynich vocabulary is actually smaller than references), **no nomenclator-specific bimodality** (Voynich is bimodal but so are all reference languages), and **no position-dependent encoding** (positional JSD matches random shuffling). The four candidate languages remain statistically indistinguishable at matched corpus sizes (11K tokens, overlapping CIs). The text typology classifier identifies the Voynich as **encoded natural language** (confidence 1.0) — not glossolalia, not constructed — with an anomalously high entropy floor (0.978 bits/char vs 0.33–0.51 for reference languages), indicating the encoding preserves more redundancy than any tested plaintext.
 
 ## Quick Start
 
@@ -59,6 +61,12 @@ voynich bigram-transfer   # Phase 8 / Approach 16: bigram transfer cryptanalysis
 voynich mdl-decode        # Phase 8 / Approach 18: MDL decoding
 voynich cipher-validate   # Phase 8 validation battery
 voynich phase8            # Run full Phase 8 (Approaches 16 + 18 + validation)
+voynich nomenclator       # Phase 9.2: bimodal frequency / nomenclator test
+voynich homophones        # Phase 9.1: homophonic substitution test
+voynich position-dep      # Phase 9.3: position-dependent encoding test
+voynich lang-compare      # Phase 9.4: expanded language comparison
+voynich typology          # Phase 9.5: text typology classification
+voynich phase9            # Run all Phase 9 analyses
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -76,7 +84,7 @@ voynich_2/
 │   ├── cli.py                   # Entry point — run analyses from the command line
 │   ├── core/                    # Foundation modules
 │   │   ├── corpus.py            # IVTFF parser, EVA tokenizer, corpus access
-│   │   ├── stats.py             # Entropy, Zipf, bigram matrices, MI, TTR, DTW, PPMI/SVD, Procrustes, GW, n-gram LM, SA
+│   │   ├── stats.py             # Entropy, Zipf (single + piecewise), AIC/BIC, bigram matrices, MI, TTR, DTW, PPMI/SVD, Procrustes, GW, n-gram LM, SA, entropy curves
 │   │   ├── ciphers.py           # Historical cipher implementations + encoding simulators
 │   │   ├── reference.py         # Reference corpus loading, RTF conversion, syllable stats, Latin recipe segmentation, phrase catalog
 │   │   └── _paths.py            # Centralized path resolution for data and results directories
@@ -116,12 +124,19 @@ voynich_2/
 │       ├── convergence_score.py # Phase 7.5 Step 5: convergence scoring
 │       ├── bigram_transfer.py # Phase 8 / Approach 16: bigram transfer cryptanalysis
 │       ├── mdl_decode.py      # Phase 8 / Approach 18: MDL decoding
-│       └── cipher_validate.py # Phase 8: cipher validation & integration
+│       ├── cipher_validate.py # Phase 8: cipher validation & integration
+│       ├── nomenclator_test.py # Phase 9.2: nomenclator / bimodal frequency test
+│       ├── homophone_test.py  # Phase 9.1: homophonic substitution test
+│       ├── position_dependent.py # Phase 9.3: position-dependent encoding test
+│       ├── language_comparison.py # Phase 9.4: expanded 4-language comparison
+│       └── text_typology.py   # Phase 9.5: text typology classification
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
 │       ├── latin/               # Circa Instans, De Viribus Herbarum
 │       ├── occitan/             # Régime du Corps
+│       ├── italian/             # Historical Italian medical texts
+│       ├── german/              # Buch der Natur (Konrad von Megenberg)
 │       └── voynich_plant/       # Plant ID concordance CSV + medieval Latin name mapping
 ├── results/                     # JSON output from analysis runs
 └── archive/                     # Previous codebase (consonant-skeleton approach — deprecated)
@@ -638,6 +653,132 @@ The **compression ratio** (random CE / best CE) normalizes for LM quality and te
 
 **Verdict:** `weak_evidence_single_approach_only`. When tested against all four candidate languages (Latin, Occitan, Italian, German), the MDL decoder ranks German first on raw CE — breaking the expected Romance-language pattern. But this reflects corpus size advantage, not linguistic affinity. The compression ratio ranking (Italian > German > Occitan > Latin) is similarly uninformative, driven by corpus size effects. The sanity check failure, zero cross-approach agreement, and zero prior-phase convergence all indicate this is frequency/structural matching, not genuine decryption. The Voynich manuscript is unlikely to be a simple stem-level substitution cipher over any of the four tested languages.
 
+## Phase 9: Fundamental Reassessment
+
+Eight phases. Thirty-two modules. Every structural finding replicates. Every decoding attempt fails. Phase 9 confronts this pattern by asking **why** decoding fails — testing three specific encoding models and two broader diagnostics without assuming the natural-language-cipher model.
+
+### Step 9.2: Nomenclator / Bimodal Frequency Test (Highest Priority)
+
+| Sub-step | Description | Module |
+|----------|-------------|--------|
+| 9.2a | **Single vs piecewise Zipf** — Fit single and two-segment power laws to the rank-frequency distribution, compare via AIC/BIC. | `phases/nomenclator_test.py` |
+| 9.2b | **Reference bimodality** — Same fit on Latin, Occitan, Italian, German. Is Voynich uniquely bimodal? | `phases/nomenclator_test.py` |
+| 9.2c | **Segment profiling** — Split vocabulary at breakpoint into high-freq (codebook) and low-freq (spelled-out) segments. Profile character types, morpheme regularity, coverage. | `phases/nomenclator_test.py` |
+| 9.2d | **Differential decoding** — Character-level MDL on the low-freq segment only (~20 char types). | `phases/nomenclator_test.py` |
+| Null | Markov-generated text bimodality comparison (50 trials). | `phases/nomenclator_test.py` |
+
+**Result:** Voynich IS bimodal (delta_AIC = **-9,991**, strong preference for piecewise model). Breakpoint at rank 1,001 splits into 1,001 high-frequency types (74.4% of corpus) and 2,761 low-frequency types (25.6%). The low-frequency segment has **24 character types** — classical cryptanalysis territory. Exponent gap = 0.914 (segment 1: 0.914, segment 2: 0.000).
+
+However, **all four reference languages are also bimodal** — Latin (delta_AIC = -34,731), Occitan (-20,051), German (-29,485), Italian (-2,981). Bimodality selectivity = **1.24×** vs Markov null. Gate: bimodality=True, selectivity=**FAIL** (1.24× < 1.5×).
+
+**Verdict:** `bimodal_but_not_unique`. The vocabulary does split into two frequency regimes, but this is a property of natural language frequency distributions, not evidence of nomenclator encoding. The 24-character low-frequency segment is interesting but not diagnostic.
+
+### Step 9.1: Homophonic Substitution Test
+
+| Sub-step | Description | Module |
+|----------|-------------|--------|
+| 9.1a | **Vocabulary inflation** — Compare Voynich stem types vs reference languages (matched for morphological decomposition). | `phases/homophone_test.py` |
+| 9.1b | **Distributional clustering** — Build PPMI+SVD embeddings for all Voynich stems, find cosine > 0.8 pairs, single-linkage cluster. | `phases/homophone_test.py` |
+| 9.1c | **Merged decoding comparison** — Replace clusters with representatives, compare SA/MDL baselines. | `phases/homophone_test.py` |
+| Null | Same clustering on Latin stems (how many false "homophone groups"?). | `phases/homophone_test.py` |
+
+**Result:** Voynich has only **412 stem types** (8,652 tokens, TTR=0.048). Far from inflated — Latin has 3,543 types, Occitan 1,808, German 3,212. Inflation ratios: 0.12–0.82× (Voynich vocabulary is *smaller* than every reference). **Zero pairs** above cosine 0.8 threshold. No distributional clusters found. Vocabulary reduction: 0.0%.
+
+Latin null: 12 clusters found, reduction ratio 0.893 — Latin shows *more* distributional merging than Voynich.
+
+**Verdict:** `no_homophonic_signal`. The Voynich vocabulary is not inflated by homophones. If anything, it is unusually compact relative to reference languages at comparable corpus sizes.
+
+### Step 9.3: Position-Dependent Encoding Test
+
+| Sub-step | Description | Module |
+|----------|-------------|--------|
+| 9.3a | **Position-split bigrams** — Split tokens by position within lines (initial/medial/final thirds), build word transition matrices, compute pairwise JSD. | `phases/position_dependent.py` |
+| 9.3b | **Token identity test** — For each high-frequency token, compare co-occurrence vectors at initial vs final positions. | `phases/position_dependent.py` |
+| 9.3c | **Reference comparison** — Same analysis on Latin, German, Occitan, Italian. | `phases/position_dependent.py` |
+| Null | Randomly shuffle token positions within each line (50 trials). | `phases/position_dependent.py` |
+
+**Result:** Voynich positional JSD is high (mean 0.842), and 84/100 top tokens show position-dependent behavior (cosine < 0.3). But the **null shuffled Voynich** has essentially identical JSD (0.847) — the position effect comes from vocabulary sparsity, not encoding structure. Reference languages show lower JSDs (Latin 0.495, German 0.238, Occitan 0.409, Italian 0.630). Voynich/reference ratio = 1.90 (below the 2.0 gate). Position selectivity = 0.993× (no signal above shuffled baseline).
+
+**Verdict:** `no_position_dependent_signal`. The high positional JSD is a sparsity artifact. The encoding is not polyalphabetic.
+
+### Step 9.4: Expanded Language Comparison
+
+| Sub-step | Description | Module |
+|----------|-------------|--------|
+| 9.4a | **Corpus normalization** — Subsample all corpora to 11K tokens (Italian bottleneck) using contiguous chunks. | `phases/language_comparison.py` |
+| 9.4b | **Metric matrix** — 6 metrics (H2, H3, Zipf exponent, word length, TTR, bigram JSD) × 4 languages at matched size. | `phases/language_comparison.py` |
+| 9.4c | **Language ranking with CIs** — Bootstrap 100 subsamples, compute composite distance to Voynich, rank with 95% CIs. | `phases/language_comparison.py` |
+| 9.4d | **Occitan vs Italian head-to-head** — Per-metric comparison with bootstrap CIs. | `phases/language_comparison.py` |
+
+**Result (ranking by composite distance to Voynich):**
+
+| Rank | Language | Distance | 95% CI | Closest on N metrics |
+|------|----------|----------|--------|---------------------|
+| 1 | Italian | 3.179 | [3.173, 3.186] | 2 (H2, H3) |
+| 2 | Occitan | 3.306 | [2.917, 3.456] | 1 (word length) |
+| 3 | German | 3.346 | [3.190, 3.440] | 1 (bigram JSD) |
+| 4 | Latin | 3.406 | [3.142, 3.827] | 2 (Zipf, TTR) |
+
+CIs overlap for all four languages. **Separation not significant.** Occitan vs Italian head-to-head: **3–3 tie** (Italian closer on H2, H3, bigram JSD; Occitan closer on Zipf, word length, TTR).
+
+**Verdict:** `languages_indistinguishable_at_this_sample_size`. At 11K tokens, none of the six metrics can separate the four candidate languages. The source language question remains open.
+
+### Step 9.5: Text Typology Classification
+
+| Sub-step | Description | Module |
+|----------|-------------|--------|
+| 9.5a | **Markov generation test** — Train char-level Markov (orders 1–3) on Voynich, generate 30 synthetic texts each, compare 6 metrics within 2σ. | `phases/text_typology.py` |
+| 9.5b | **Text type classification** — Rule-based classifier using H2/H1 ratio, TTR, Zipf R², indicators for glossolalia, constructed, natural, and encoded natural language. | `phases/text_typology.py` |
+| 9.5c | **Entropy curves** — Conditional entropy at context orders 0–6 for Voynich and all reference languages. DTW curve comparison, decay rates, asymptotic floors. | `phases/text_typology.py` |
+| Null | Classify word-shuffled Voynich (should classify as random/glossolalia). | `phases/text_typology.py` |
+
+**Markov generation results:**
+
+| Order | Metrics within 2σ | Sufficient? |
+|-------|-------------------|-------------|
+| 1 | 2/6 | No |
+| 2 | 4/6 | No |
+| 3 | 4/6 | No |
+
+No Markov order reproduces ≥5/6 Voynich metrics — the structure requires higher-order dependencies than character-level Markov can capture.
+
+**Classification:** H2/H1 = 0.622 (anomalously high — outside the natural language range of 0.3–0.6), Zipf R² = 0.889 (Zipfian), TTR = 0.349 (normal). All three encoded-natural indicators fire: anomalous H2/H1 + Zipfian + normal TTR. Classification: **encoded natural language** (confidence = 1.0).
+
+**Entropy curves:**
+
+| Order | Voynich | Latin | Occitan | Italian | German |
+|-------|---------|-------|---------|---------|--------|
+| H0 | 3.832 | 4.021 | 4.163 | 4.126 | 4.213 |
+| H1 | 2.385 | 3.479 | 3.605 | 3.320 | 3.369 |
+| H3 | 1.986 | 2.187 | 2.119 | 1.911 | 1.921 |
+| H6 | **0.978** | 0.386 | 0.328 | 0.476 | 0.510 |
+
+The Voynich entropy floor (0.978 bits/char at order 6) is **2–3× higher** than any reference language (0.33–0.51). Decay rate is shallower (-0.390 vs -0.624 to -0.691 for references). The encoding preserves more character-level redundancy than plaintext — consistent with a cipher that doesn't fully exploit the plaintext's predictability. Closest curve: German (DTW = 2.21).
+
+**Verdict:** `classified_as_encoded_natural`. Gate **PASSED** (classification confidence ≥ 0.7). The text is not glossolalia, not constructed language, not Markov-generated. It encodes natural language through a mechanism that preserves morphological structure but raises the character-level entropy floor above all tested natural languages.
+
+### Phase 9 Decision Tree Outcome
+
+```
+Day 1: Is the vocabulary bimodal?
+└── YES, but so are all reference languages → not nomenclator-specific
+
+Day 2: Are there distributional homophone groups?
+└── NO — zero clusters found, vocab is actually compact
+
+Day 3: Is the encoding position-dependent?
+└── NO — positional JSD matches random shuffling
+
+Day 4: Which language wins at matched corpus sizes?
+└── NONE — all four indistinguishable (CIs overlap)
+
+Day 5: What kind of thing is this?
+└── ENCODED NATURAL LANGUAGE — Markov insufficient (4/6 metrics),
+    anomalous H2/H1 ratio, entropy floor 2-3× above plaintext
+```
+
+**Bottom line:** The encoding is not homophonic, not nomenclator, not polyalphabetic, and the source language cannot be resolved with available corpus sizes. The text classifies as encoded natural language with an anomalously high entropy floor — the encoding mechanism preserves morphological and distributional structure but introduces character-level redundancy not seen in any tested plaintext. This is consistent with a cipher system that operates at a granularity between character-level and word-level substitution, or one that introduces systematic padding/expansion at the character level.
+
 ## Integration
 
 The approaches cross-validate across all phases:
@@ -648,6 +789,15 @@ The approaches cross-validate across all phases:
 | Strong positional constraints (MI=0.30) | Latin dominates top 5 | Grid 100% stable, sections diverge (Jaccard=0.14) | Currier A/B distinct (H2 diff significant, grid Jaccard=0.14); min sample ~10k tokens | A/B confirmed as distinct systems (JSD z=3.82, vocab overlap=14%) | Paradigm selectivity 1.47× (z=178) — just below 1.5× gate | Language A ARI=0.11 (embeddings capture section structure); Language B ARI=-0.003 (no section signal — consistent with notation hypothesis) | 65.6% shared stems between A/B; register ARI=0.038 (mostly merged); 9/10 verb assignments plausible but selectivity 0.92x | **Section divergence = genuine A/B split, not artifact; A has semantic structure, B does not; A/B share most vocabulary** |
 | 5x6 grid, 47% occupancy | No null insertion evidence | Gap pattern random, closest to Cypriot (8% diff) | R=0.39 (syllabary/abugida overlap); nucleus predicts onset more than reverse | R(affix\|stem)=0.61, R(stem\|affix)=0.39 — linguistically natural under morpheme relabeling | Occitan JSD=0.65 vs Latin JSD=0.71; not separable (ratio=0.92) | Prefix/suffix separation=0.90 in affix embedding space; verbs at position 1 in 60-100% of segments; verb freq rho=0.97 with Latin recipe verbs | 0/8 Rosetta plant stems land in plant_names cluster; subclusters capture frequency patterns not semantic content | **Anomalous reverse R explained** — stems constrain affixes; **Romance family confirmed; embedding subclusters are distributional, not semantic** |
 | — | Latin best across encodings | Latin best syllable match | Latin #1, Occitan #2, but CIs overlap on all metrics | qo- removal neutral (14.4% of corpus, distributed across grid, no metric improvement) | Random-word selectivity 0.99× — frequency priors dominate over morphological content; **phonetic decode blocked** | Procrustes selectivity 0.96-0.97x, GW selectivity 1.00x — both fail 1.5x gate; only 14 seed pairs available | Noun subcluster selectivity 1.29x, verb assignment selectivity 0.92x — both fail 1.5x gate; only 1/76 identifications has multi-method support | **Selectivity ceiling persists** at word identification level; individual assignments are frequency-dominated; **structural convergence is real but does not unlock vocabulary** |
+
+**Phase 9 cross-validation (encoding hypothesis tests):**
+
+| Phase 8 finds | Phase 9 finds | Interpretation |
+|---|---|---|
+| SA stability 2.5%, MDL sanity check 4% recovery — not genuine decryption | Not homophonic (0 clusters), not nomenclator (bimodal but not uniquely), not polyalphabetic (JSD matches shuffled) | **All three tested encoding models ruled out; decoding failure is not explained by a known cipher class** |
+| MDL ranks German first (corpus size artifact), compression 1.3–1.8× across all languages | 4 languages indistinguishable at matched 11K tokens; Italian/Occitan tie 3–3 on metrics | **Language question genuinely unresolved — not a methodological failure but a fundamental ambiguity** |
+| Fisher combined p = 0.90 (no significance), 1/100 cross-approach agreement | Classified as encoded natural language (conf=1.0); entropy floor 0.978 vs 0.33–0.51 for reference | **Text is definitively not random, glossolalia, or constructed; encoding preserves redundancy above plaintext levels** |
+| All compression ratios in frequency-matching range (1.3–1.8×) | Markov models match only 4/6 metrics; H2/H1 = 0.622 (outside natural range 0.3–0.6) | **Structure requires higher-order dependencies; the anomalous H2/H1 ratio is the cipher's signature** |
 
 ## Data
 
@@ -672,6 +822,12 @@ Real historical texts for fingerprint comparison live in `data/reference/<langua
 
 *Occitan (1 text, ~47,913 tokens):*
 - **Régime du Corps** — Aldebrandin of Siena's health regimen (~13th century)
+
+*Italian (~11,153 tokens):*
+- Historical Italian medical/herbal texts
+
+*German (~149,453 tokens):*
+- **Buch der Natur** — Konrad von Megenberg's natural history (~14th century)
 
 **To add a new corpus:** place a `.txt` file (plain text or RTF) in `data/reference/<language>/`. It will be automatically discovered, cleaned, and used by `analysis/fingerprint.py` on the next run. Languages without real corpora fall back to synthetic text from `core/ciphers.py`.
 
@@ -1505,6 +1661,13 @@ Analysis outputs are saved as JSON to `results/` (57 files total):
 - `bigram_transfer.json` — Voynich/Latin/Occitan bigram matrix stats, SA permutation results, mapping stability, null tests, cross-validation, gate status
 - `mdl_decode.json` — Language model stats, sanity check results, MCMC decoding for Latin and Occitan, compression ratio, word validity, decoded sample, null tests
 - `cipher_validate.json` — Cross-approach convergence, prior-phase convergence, seeded improvement test, Fisher combined assessment, overall gate status
+
+**Phase 9 — Encoding Hypothesis Tests:**
+- `nomenclator_test.json` — Single vs piecewise Zipf fit, AIC/BIC comparison, reference bimodality, segment profiling (high/low-freq types, morpheme regularity, character types), differential decoding, Markov null bimodality, gate status
+- `homophone_test.json` — Vocabulary inflation ratios vs 4 reference languages, distributional clustering (PPMI+SVD, cosine threshold, single-linkage), merged decoding comparison, Latin null clustering, gate status
+- `position_dependent.json` — Position-split bigram JSDs (initial/medial/final), token identity test (100 tokens, per-position co-occurrence cosines), reference language JSDs, shuffled null, gate status
+- `language_comparison.json` — Corpus normalization stats (11K tokens), 6-metric × 4-language distance matrix, bootstrap language ranking with CIs, Occitan vs Italian head-to-head, subsample variance, gate status
+- `text_typology.json` — Markov generation test (orders 1–3, 6 metrics × 30 trials), text type classification (glossolalia/constructed/natural/encoded indicators), entropy curves (orders 0–6, 4 reference languages), decay rates, floors, DTW curve distances, gate status
 
 ## Background
 

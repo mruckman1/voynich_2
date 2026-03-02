@@ -43,6 +43,12 @@ Usage:
     voynich embeddings        # Approach 8: morpheme distributional semantics
     voynich slots             # Approach 9: pharmaceutical positional slot analysis
     voynich phase7            # Run full Phase 7 (Approaches 8 + 9 + integration)
+    voynich nomenclator       # Phase 9.2: bimodal frequency / nomenclator test
+    voynich homophones        # Phase 9.1: homophonic substitution test
+    voynich position-dep      # Phase 9.3: position-dependent encoding test
+    voynich lang-compare      # Phase 9.4: expanded language comparison
+    voynich typology          # Phase 9.5: text typology classification
+    voynich phase9            # Run all Phase 9 analyses
 """
 import sys
 import time
@@ -524,6 +530,59 @@ def cmd_phase8():
     cmd_cipher_validate()
 
 
+def cmd_nomenclator():
+    """Run Phase 9.2: nomenclator / bimodal frequency test."""
+    from voynich.phases.nomenclator_test import run_nomenclator_test
+    t0 = time.time()
+    run_nomenclator_test()
+    print(f"\nNomenclator test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_homophones():
+    """Run Phase 9.1: homophonic substitution test."""
+    from voynich.phases.homophone_test import run_homophone_test
+    t0 = time.time()
+    run_homophone_test()
+    print(f"\nHomophone test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_position_dep():
+    """Run Phase 9.3: position-dependent encoding test."""
+    from voynich.phases.position_dependent import run_position_dependent
+    t0 = time.time()
+    run_position_dependent()
+    print(f"\nPosition-dependent test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_lang_compare():
+    """Run Phase 9.4: expanded language comparison."""
+    from voynich.phases.language_comparison import run_language_comparison
+    t0 = time.time()
+    run_language_comparison()
+    print(f"\nLanguage comparison completed in {time.time() - t0:.1f}s")
+
+
+def cmd_typology():
+    """Run Phase 9.5: text typology classification."""
+    from voynich.phases.text_typology import run_text_typology
+    t0 = time.time()
+    run_text_typology()
+    print(f"\nText typology completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase9():
+    """Run full Phase 9: alternative encoding hypothesis testing."""
+    cmd_nomenclator()
+    print("\n" + "=" * 70 + "\n")
+    cmd_homophones()
+    print("\n" + "=" * 70 + "\n")
+    cmd_position_dep()
+    print("\n" + "=" * 70 + "\n")
+    cmd_lang_compare()
+    print("\n" + "=" * 70 + "\n")
+    cmd_typology()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -574,6 +633,12 @@ def main():
         'mdl-decode': cmd_mdl_decode,
         'cipher-validate': cmd_cipher_validate,
         'phase8': cmd_phase8,
+        'nomenclator': cmd_nomenclator,
+        'homophones': cmd_homophones,
+        'position-dep': cmd_position_dep,
+        'lang-compare': cmd_lang_compare,
+        'typology': cmd_typology,
+        'phase9': cmd_phase9,
     }
 
     if len(sys.argv) < 2:

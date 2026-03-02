@@ -1481,3 +1481,151 @@ def simulated_annealing(
             global_best_state = copy.deepcopy(best_state)
 
     return global_best_state, global_best_cost, convergence_history
+
+
+# ---------------------------------------------------------------------------
+# Phase 9: Piecewise Zipf & Entropy Curves
+# ---------------------------------------------------------------------------
+
+def piecewise_zipf_fit(
+    ranks: np.ndarray,
+    freqs: np.ndarray,
+    min_segment_size: int = 10,
+) -> Dict[str, Any]:
+    """
+    Fit a two-segment (piecewise) power law to rank-frequency data.
+
+    Sweeps all possible breakpoints and selects the one that minimizes
+    total sum-of-squared-errors in log-log space.  Also fits a single
+    power law for comparison.
+
+    Returns dict with breakpoint_rank, per-segment exponents and R²,
+    and SSE values for both models.
+    """
+    ranks = np.asarray(ranks, dtype=float)
+    freqs = np.asarray(freqs, dtype=float)
+    n = len(ranks)
+    if n < 2 * min_segment_size:
+        return {
+            'breakpoint_rank': n // 2,
+            'segment1_exponent': 0.0, 'segment1_r_squared': 0.0,
+            'segment2_exponent': 0.0, 'segment2_r_squared': 0.0,
+            'single_exponent': 0.0, 'single_r_squared': 0.0,
+            'sse_single': 0.0, 'sse_piecewise': 0.0, 'n_data': n,
+        }
+
+    log_r = np.log(ranks)
+    log_f = np.log(freqs + 1e-10)
+
+    # --- single fit ---
+    A_full = np.vstack([log_r, np.ones(n)]).T
+    try:
+        sol = np.linalg.lstsq(A_full, log_f, rcond=None)
+        slope_s, intercept_s = sol[0]
+    except np.linalg.LinAlgError:
+        slope_s, intercept_s = -1.0, 0.0
+    pred_s = slope_s * log_r + intercept_s
+    sse_single = float(np.sum((log_f - pred_s) ** 2))
+    ss_tot = float(np.sum((log_f - np.mean(log_f)) ** 2))
+    r2_single = 1 - sse_single / ss_tot if ss_tot > 0 else 0.0
+
+    # --- sweep breakpoints ---
+    best_sse_pw = float('inf')
+    best_bp = min_segment_size
+    best_slopes = (-1.0, 0.0, -1.0, 0.0)
+
+    for bp in range(min_segment_size, n - min_segment_size + 1):
+        lr1, lf1 = log_r[:bp], log_f[:bp]
+        lr2, lf2 = log_r[bp:], log_f[bp:]
+        A1 = np.vstack([lr1, np.ones(bp)]).T
+        A2 = np.vstack([lr2, np.ones(n - bp)]).T
+        try:
+            s1, i1 = np.linalg.lstsq(A1, lf1, rcond=None)[0]
+            s2, i2 = np.linalg.lstsq(A2, lf2, rcond=None)[0]
+        except np.linalg.LinAlgError:
+            continue
+        sse = float(np.sum((lf1 - (s1 * lr1 + i1)) ** 2)
+                     + np.sum((lf2 - (s2 * lr2 + i2)) ** 2))
+        if sse < best_sse_pw:
+            best_sse_pw = sse
+            best_bp = bp
+            best_slopes = (s1, i1, s2, i2)
+
+    # per-segment R²
+    def _seg_r2(log_r_seg, log_f_seg, slope, intercept):
+        pred = slope * log_r_seg + intercept
+        ss_res = float(np.sum((log_f_seg - pred) ** 2))
+        ss_t = float(np.sum((log_f_seg - np.mean(log_f_seg)) ** 2))
+        return 1 - ss_res / ss_t if ss_t > 0 else 0.0
+
+    s1, i1, s2, i2 = best_slopes
+    r2_seg1 = _seg_r2(log_r[:best_bp], log_f[:best_bp], s1, i1)
+    r2_seg2 = _seg_r2(log_r[best_bp:], log_f[best_bp:], s2, i2)
+
+    return {
+        'breakpoint_rank': int(best_bp),
+        'segment1_exponent': float(-s1),
+        'segment1_r_squared': float(r2_seg1),
+        'segment2_exponent': float(-s2),
+        'segment2_r_squared': float(r2_seg2),
+        'single_exponent': float(-slope_s),
+        'single_r_squared': float(r2_single),
+        'sse_single': sse_single,
+        'sse_piecewise': float(best_sse_pw),
+        'n_data': n,
+    }
+
+
+def aic_bic_compare(
+    n_data: int,
+    sse_model1: float,
+    k_model1: int,
+    sse_model2: float,
+    k_model2: int,
+) -> Dict[str, Any]:
+    """
+    Compare two models using AIC and BIC.
+
+    AIC = n * ln(SSE / n) + 2k
+    BIC = n * ln(SSE / n) + k * ln(n)
+
+    Lower is better.  delta < 0 means model 2 is preferred.
+    """
+    if n_data <= 0 or sse_model1 <= 0 or sse_model2 <= 0:
+        return {
+            'aic_model1': 0.0, 'aic_model2': 0.0,
+            'bic_model1': 0.0, 'bic_model2': 0.0,
+            'delta_aic': 0.0, 'delta_bic': 0.0,
+            'preferred_model': 'neither',
+        }
+    ln_n = math.log(n_data)
+    aic1 = n_data * math.log(sse_model1 / n_data) + 2 * k_model1
+    aic2 = n_data * math.log(sse_model2 / n_data) + 2 * k_model2
+    bic1 = n_data * math.log(sse_model1 / n_data) + k_model1 * ln_n
+    bic2 = n_data * math.log(sse_model2 / n_data) + k_model2 * ln_n
+    d_aic = aic2 - aic1
+    d_bic = bic2 - bic1
+    if d_aic < -2 and d_bic < -2:
+        preferred = 'model2'
+    elif d_aic > 2 and d_bic > 2:
+        preferred = 'model1'
+    else:
+        preferred = 'ambiguous'
+    return {
+        'aic_model1': float(aic1), 'aic_model2': float(aic2),
+        'bic_model1': float(bic1), 'bic_model2': float(bic2),
+        'delta_aic': float(d_aic), 'delta_bic': float(d_bic),
+        'preferred_model': preferred,
+    }
+
+
+def entropy_curve(text: str, max_order: int = 8) -> Dict[int, float]:
+    """
+    Compute conditional character entropy at context orders 0 … max_order.
+
+    Order 0 is the unconditional (first-order) character entropy.
+    """
+    curve: Dict[int, float] = {0: first_order_entropy(text)}
+    for order in range(1, max_order + 1):
+        curve[order] = conditional_entropy(text, order=order)
+    return curve
