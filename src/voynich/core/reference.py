@@ -1749,3 +1749,125 @@ EVA_VISUAL_COMPONENTS: Dict[str, Dict[str, str]] = {
     'j':     {'first_stroke': 'connector',  'last_stroke': 'connector',  'glyph_class': 'bench'},
     'u':     {'first_stroke': 'connector',  'last_stroke': 'connector',  'glyph_class': 'bench'},
 }
+
+
+# ---------------------------------------------------------------------------
+# Phase 14: Articulatory hypotheses for stroke-type → phoneme mappings
+# ---------------------------------------------------------------------------
+# These are PRIORS for domain initialization in the feature CSP, not hard
+# constraints.  Each entry maps one stroke type to a ranked list of candidate
+# phonemes.  The intersection of PHONEME_PLACE_MAP[first_stroke] and
+# PHONEME_NUCLEUS_MAP[last_stroke] seeds the domain for each feature triple.
+
+PHONEME_PLACE_MAP: Dict[str, List[str]] = {
+    # first_stroke -> candidate onset consonants (place of articulation)
+    # Tall strokes (ascender) = stops (most common consonant class in Latin)
+    'ascender':   ['t', 'k', 'p', 'd', 'g', 'b'],
+    # Connected strokes = labials and bilabials
+    'connector':  ['b', 'p', 'v', 'm', 'f'],
+    # Crossbar = rare/fricative category
+    'crossbar':   ['x', 'h', 'f', 'k'],
+    # Loop onset = liquids, sonorants, open vowels
+    'loop':       ['l', 'r', 'n', 'a', 'o', 'e'],
+    # Open curve = sibilants / palatals
+    'open_curve': ['c', 's', 'sc', 'h'],
+    # Sigmoid = sibilant category
+    'sigmoid':    ['s', 'z', 'sc'],
+    # Vertical strokes = nasals and dentals
+    'vertical':   ['m', 'n', 'd', 'l', 'i'],
+}
+
+PHONEME_NUCLEUS_MAP: Dict[str, List[str]] = {
+    # last_stroke -> candidate vowel qualities / coda phonemes
+    # Tall ascender end = open/low vowels
+    'ascender':   ['a', 'e', 'i', 'o'],
+    # Connector end = mid vowels
+    'connector':  ['e', 'i', 'a', 'o'],
+    # Crossbar end = coronal coda / dental closure
+    'crossbar':   ['e', 'a', 't'],
+    # Descender = high back vowels
+    'descender':  ['u', 'i', 'o', 'y'],
+    # Hook end = nasal coda
+    'hook':       ['n', 'm', 'a', 'i'],
+    # Loop end = round / back vowels
+    'loop':       ['o', 'a', 'u', 'e'],
+    # Open curve end = open vowels
+    'open_curve': ['a', 'e', 'o'],
+    # Plume end = labial coda
+    'plume':      ['p', 'f', 'a', 'e'],
+    # Sigmoid end = rhotic / sibilant coda
+    'sigmoid':    ['r', 'a', 's', 'e'],
+    # Tail end = unrounded front vowels
+    'tail':       ['a', 'e', 'i'],
+    # Vertical end = high front / lateral
+    'vertical':   ['i', 'l', 'n', 'e'],
+}
+
+
+def build_triple_phoneme_hypotheses(
+    language: str,
+    inventory: Optional[Any] = None,
+) -> Dict[str, List[str]]:
+    """Build candidate syllable lists for each attested feature triple.
+
+    For each of the ~23 attested ``(first_stroke, last_stroke, glyph_class)``
+    triples found in :data:`EVA_VISUAL_COMPONENTS`, generates candidate
+    syllables as the cross-product of
+    ``PHONEME_PLACE_MAP[first_stroke]`` × ``PHONEME_NUCLEUS_MAP[last_stroke]``,
+    filtered to syllables legal in the target language inventory.
+
+    If the cross-product yields no legal syllables (e.g. for a rare triple),
+    falls back to the full language inventory so the domain is never empty.
+
+    Parameters
+    ----------
+    language:
+        Target language code (e.g. ``'latin'``).
+    inventory:
+        Optional pre-built syllable list (from
+        :func:`build_cv_syllable_table`).  If *None*, the table is built
+        automatically for *language*.
+
+    Returns
+    -------
+    Dict[str, List[str]]
+        Mapping from ``triple_key`` string to list of candidate syllables.
+    """
+    if inventory is None:
+        inventory = build_cv_syllable_table(language)
+    inv_set = set(inventory)
+
+    hypotheses: Dict[str, List[str]] = {}
+
+    # Collect all unique triples from EVA_VISUAL_COMPONENTS
+    triples_seen: Dict[str, Tuple[str, str, str]] = {}
+    for _glyph, comp in EVA_VISUAL_COMPONENTS.items():
+        fs = comp['first_stroke']
+        ls = comp['last_stroke']
+        gc = comp['glyph_class']
+        triple_key = f"{fs},{ls},{gc}"
+        triples_seen[triple_key] = (fs, ls, gc)
+
+    for triple_key, (fs, ls, _gc) in triples_seen.items():
+        onset_candidates = PHONEME_PLACE_MAP.get(fs, [])
+        nucleus_candidates = PHONEME_NUCLEUS_MAP.get(ls, [])
+
+        candidates: List[str] = []
+        # Cross-product: onset + nucleus
+        for onset in onset_candidates:
+            for nucleus in nucleus_candidates:
+                syl = onset + nucleus
+                if syl in inv_set:
+                    candidates.append(syl)
+        # Also include pure vowels that appear as nuclei
+        for nucleus in nucleus_candidates:
+            if nucleus in inv_set and nucleus not in candidates:
+                candidates.append(nucleus)
+
+        if not candidates:
+            # Fallback: full inventory so the domain is never empty
+            candidates = list(inventory)
+
+        hypotheses[triple_key] = candidates
+
+    return hypotheses

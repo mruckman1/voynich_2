@@ -862,6 +862,76 @@ def cmd_phase13():
     cmd_context_decode()
 
 
+# ---------------------------------------------------------------------------
+# Phase 14: Sub-Cell Phonetic Feature Model
+# ---------------------------------------------------------------------------
+
+def cmd_cell_analysis():
+    """Run Phase 14.1: within-cell character distributional analysis."""
+    from voynich.phases.cell_analysis import run_cell_analysis
+    t0 = time.time()
+    run_cell_analysis()
+    print(f"\nCell analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_stroke_features():
+    """Run Phase 14.2: stroke feature decomposition and triple enumeration."""
+    from voynich.phases.stroke_features import run_stroke_features
+    t0 = time.time()
+    run_stroke_features()
+    print(f"\nStroke features completed in {time.time() - t0:.1f}s")
+
+
+def cmd_feature_csp():
+    """Run Phase 14.3: feature-level CSP solver (25 variables vs 14 cells)."""
+    from voynich.phases.feature_csp import run_feature_csp
+    t0 = time.time()
+    run_feature_csp()
+    print(f"\nFeature CSP completed in {time.time() - t0:.1f}s")
+
+
+def cmd_feature_calibrate():
+    """Run Phase 14.4: synthetic abugida calibration of the feature CSP."""
+    from voynich.phases.feature_calibrate import run_feature_calibrate
+    t0 = time.time()
+    run_feature_calibrate()
+    print(f"\nFeature calibration completed in {time.time() - t0:.1f}s")
+
+
+def cmd_feature_decode():
+    """Run Phase 14.5-14.6: full Voynich decode + V1-V12 validation battery."""
+    from voynich.phases.feature_decode import run_feature_decode
+    t0 = time.time()
+    run_feature_decode()
+    print(f"\nFeature decode completed in {time.time() - t0:.1f}s")
+
+
+def cmd_subcell_split():
+    """Run Phase 14.7: data-driven sub-cell splitting fallback CSP."""
+    from voynich.phases.subcell_split import run_subcell_split
+    t0 = time.time()
+    run_subcell_split()
+    print(f"\nSub-cell split completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase14():
+    """Run full Phase 14 pipeline: sub-cell phonetic feature model."""
+    print("=" * 70)
+    print("PHASE 14: Sub-Cell Phonetic Feature Model")
+    print("=" * 70)
+    cmd_cell_analysis()
+    print("\n" + "=" * 70 + "\n")
+    cmd_stroke_features()
+    print("\n" + "=" * 70 + "\n")
+    cmd_feature_csp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_feature_calibrate()
+    print("\n" + "=" * 70 + "\n")
+    cmd_feature_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_subcell_split()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -946,6 +1016,13 @@ def main():
         'rule-validate': cmd_rule_validate,
         'context-decode': cmd_context_decode,
         'phase13': cmd_phase13,
+        'cell-analysis': cmd_cell_analysis,
+        'stroke-features': cmd_stroke_features,
+        'feature-csp': cmd_feature_csp,
+        'feature-calibrate': cmd_feature_calibrate,
+        'feature-decode': cmd_feature_decode,
+        'subcell-split': cmd_subcell_split,
+        'phase14': cmd_phase14,
     }
 
     if len(sys.argv) < 2:

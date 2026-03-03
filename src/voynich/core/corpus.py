@@ -655,3 +655,42 @@ def token_to_grid_cells_alt(
                 cells.append(cell)
         return cells
     raise ValueError(f"Unknown decomposition mode: {mode!r}")
+
+
+# ---------------------------------------------------------------------------
+# Feature-triple decomposition helpers  (Phase 14 feature CSP)
+# ---------------------------------------------------------------------------
+
+def build_eva_to_triple_lookup() -> Dict[str, str]:
+    """Build reverse lookup: EVA glyph -> triple_key string.
+
+    triple_key format: ``"first_stroke,last_stroke,glyph_class"``
+    e.g. ``'ch' -> "open_curve,connector,bench"``
+
+    Used by Phase 14 feature CSP instead of
+    :func:`build_eva_to_cell_lookup`.
+    """
+    from voynich.core.reference import EVA_VISUAL_COMPONENTS
+    lookup: Dict[str, str] = {}
+    for glyph, components in EVA_VISUAL_COMPONENTS.items():
+        triple_key = (
+            components['first_stroke'] + ','
+            + components['last_stroke'] + ','
+            + components['glyph_class']
+        )
+        lookup[glyph] = triple_key
+    return lookup
+
+
+def token_to_triples(
+    token: str,
+    eva_to_triple: Dict[str, str],
+) -> List[str]:
+    """Decompose a Voynich token into a sequence of triple_key strings.
+
+    Analogous to :func:`token_to_grid_cells` but uses the feature triple
+    lookup from :func:`build_eva_to_triple_lookup`.
+    Unknown glyphs (not in the lookup) are silently skipped.
+    """
+    chars = tokenize_eva_chars(token)
+    return [eva_to_triple[ch] for ch in chars if ch in eva_to_triple]
