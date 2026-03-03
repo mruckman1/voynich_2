@@ -91,6 +91,13 @@ Usage:
     voynich text-analysis     # Phase 15.5: decoded text analysis + phrase detection
     voynich phase15-validate  # Phase 15.6: full V1-V14 validation battery
     voynich phase15           # Run full Phase 15 pipeline
+    voynich mod-standalone    # Phase 16.1: standalone modifier candidate analysis
+    voynich mod-anomaly       # Phase 16.2: frequency anomaly modifier detection
+    voynich mod-distrib       # Phase 16.3: syllable distribution matching
+    voynich mod-pairs         # Phase 16.4: minimal pair modifier evidence
+    voynich mod-localize      # Phase 16.5: hit localization padding analysis
+    voynich mod-integrate     # Phase 16.6: convergent classification + re-decode
+    voynich phase16           # Run full Phase 16 pipeline
 """
 import sys
 import time
@@ -1016,6 +1023,76 @@ def cmd_phase15():
     cmd_phase15_validate()
 
 
+# ---------------------------------------------------------------------------
+# Phase 16: Modifier Detection and Syllable Correction
+# ---------------------------------------------------------------------------
+
+def cmd_mod_standalone():
+    """Run Phase 16.1: standalone modifier candidate analysis."""
+    from voynich.phases.modifier_standalone import run_modifier_standalone
+    t0 = time.time()
+    run_modifier_standalone()
+    print(f"\nModifier standalone analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_mod_anomaly():
+    """Run Phase 16.2: frequency anomaly modifier detection."""
+    from voynich.phases.modifier_anomaly import run_modifier_anomaly
+    t0 = time.time()
+    run_modifier_anomaly()
+    print(f"\nModifier anomaly detection completed in {time.time() - t0:.1f}s")
+
+
+def cmd_mod_distrib():
+    """Run Phase 16.3: syllable distribution matching."""
+    from voynich.phases.modifier_distribution import run_modifier_distribution
+    t0 = time.time()
+    run_modifier_distribution()
+    print(f"\nModifier distribution matching completed in {time.time() - t0:.1f}s")
+
+
+def cmd_mod_pairs():
+    """Run Phase 16.4: minimal pair modifier evidence."""
+    from voynich.phases.modifier_minimal_pairs import run_modifier_minimal_pairs
+    t0 = time.time()
+    run_modifier_minimal_pairs()
+    print(f"\nMinimal pair analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_mod_localize():
+    """Run Phase 16.5: hit localization padding analysis."""
+    from voynich.phases.modifier_localize import run_modifier_localize
+    t0 = time.time()
+    run_modifier_localize()
+    print(f"\nHit localization analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_mod_integrate():
+    """Run Phase 16.6: convergent classification + re-decode."""
+    from voynich.phases.modifier_integrate import run_modifier_integrate
+    t0 = time.time()
+    run_modifier_integrate()
+    print(f"\nModifier integration + re-decode completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase16():
+    """Run full Phase 16 pipeline: modifier detection + syllable correction."""
+    print("=" * 70)
+    print("PHASE 16: Modifier Detection and Syllable Correction")
+    print("=" * 70)
+    cmd_mod_standalone()
+    print("\n" + "=" * 70 + "\n")
+    cmd_mod_anomaly()
+    print("\n" + "=" * 70 + "\n")
+    cmd_mod_distrib()
+    print("\n" + "=" * 70 + "\n")
+    cmd_mod_pairs()
+    print("\n" + "=" * 70 + "\n")
+    cmd_mod_localize()
+    print("\n" + "=" * 70 + "\n")
+    cmd_mod_integrate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -1114,6 +1191,14 @@ def main():
         'text-analysis': cmd_text_analysis,
         'phase15-validate': cmd_phase15_validate,
         'phase15': cmd_phase15,
+        # Phase 16
+        'mod-standalone': cmd_mod_standalone,
+        'mod-anomaly': cmd_mod_anomaly,
+        'mod-distrib': cmd_mod_distrib,
+        'mod-pairs': cmd_mod_pairs,
+        'mod-localize': cmd_mod_localize,
+        'mod-integrate': cmd_mod_integrate,
+        'phase16': cmd_phase16,
     }
 
     if len(sys.argv) < 2:

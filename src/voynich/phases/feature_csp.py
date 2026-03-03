@@ -175,6 +175,42 @@ def build_feature_variables(
     return variables
 
 
+def build_feature_variables_with_modifiers(
+    eva_to_triple: Dict[str, str],
+    token_freqs: Counter,
+    inventory: PhonemeInventory,
+    modifier_chars: set,
+    hypothesis_map: Optional[Dict[str, List[str]]] = None,
+) -> Tuple[List[FeatureVariable], set]:
+    """Build FeatureVariables excluding modifier characters.
+
+    Characters in *modifier_chars* are removed from glyph lists and their
+    frequencies are not counted.  Triples that lose all their glyphs (i.e.
+    every glyph for that triple is a modifier) are excluded entirely.
+
+    Returns (variables, excluded_triple_keys).
+    """
+    # Filter out modifier chars
+    filtered_lookup = {
+        glyph: triple for glyph, triple in eva_to_triple.items()
+        if glyph not in modifier_chars
+    }
+    filtered_freqs = Counter({
+        glyph: freq for glyph, freq in token_freqs.items()
+        if glyph not in modifier_chars
+    })
+
+    variables = build_feature_variables(
+        filtered_lookup, filtered_freqs, inventory, hypothesis_map,
+    )
+
+    remaining_triples = {v.cell_key for v in variables}
+    all_triples = set(eva_to_triple.values())
+    excluded = all_triples - remaining_triples
+
+    return variables, excluded
+
+
 # ---------------------------------------------------------------------------
 # Domain initialisation
 # ---------------------------------------------------------------------------

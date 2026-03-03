@@ -694,3 +694,131 @@ def token_to_triples(
     """
     chars = tokenize_eva_chars(token)
     return [eva_to_triple[ch] for ch in chars if ch in eva_to_triple]
+
+
+# ---------------------------------------------------------------------------
+# Modifier-aware token decomposition  (Phase 16)
+# ---------------------------------------------------------------------------
+
+def get_single_char_tokens(tokens: List[str]) -> set:
+    """Return the set of EVA chars/ligatures that appear as single-character tokens."""
+    solo: set = set()
+    for token in tokens:
+        chars = tokenize_eva_chars(token)
+        if len(chars) == 1:
+            solo.add(chars[0])
+    return solo
+
+
+def decode_token_modifier_aware(
+    token: str,
+    assignment: Dict[str, str],
+    eva_to_triple: Dict[str, str],
+    modifier_chars: set,
+    modifier_rules: Optional[Dict[str, str]] = None,
+) -> str:
+    """Decode a token with modifier-aware processing.
+
+    Operates at the EVA-character level *before* triple mapping, so that
+    characters sharing a triple (e.g. 'd', 'i', 'm' all map to
+    ``vertical,vertical,minim``) can be treated independently.
+
+    Parameters
+    ----------
+    token : str
+        Raw EVA token string.
+    assignment : dict
+        triple_key → syllable mapping from Phase 14/15.
+    eva_to_triple : dict
+        EVA character → triple_key lookup.
+    modifier_chars : set
+        EVA characters classified as modifiers (to be skipped or altered).
+    modifier_rules : dict, optional
+        EVA character → modifier_type mapping.  Supported types:
+        ``'silent'`` — drop entirely (default if not specified),
+        ``'vowel_changer'`` — replace adjacent syllable's vowel,
+        ``'geminator'`` — double adjacent consonant,
+        ``'nasalizer'`` — append 'n' to adjacent syllable,
+        ``'cluster'`` — prepend consonant to adjacent onset.
+
+    Returns
+    -------
+    str
+        Decoded phonetic string.
+    """
+    chars = tokenize_eva_chars(token)
+    if modifier_rules is None:
+        modifier_rules = {}
+
+    # Build per-char syllable list, marking modifiers
+    syllables: List[Optional[str]] = []
+    is_modifier: List[bool] = []
+
+    for ch in chars:
+        if ch in modifier_chars:
+            triple = eva_to_triple.get(ch)
+            syl = assignment.get(triple, '') if triple else ''
+            syllables.append(syl)
+            is_modifier.append(True)
+        else:
+            triple = eva_to_triple.get(ch)
+            syl = assignment.get(triple, '?') if triple else '?'
+            syllables.append(syl)
+            is_modifier.append(False)
+
+    # Apply modifier rules
+    result_parts: List[str] = []
+    n = len(syllables)
+
+    for i in range(n):
+        if is_modifier[i]:
+            rule = modifier_rules.get(chars[i], 'silent')
+            mod_syl = syllables[i] or ''
+
+            if rule == 'silent':
+                continue  # Drop entirely
+
+            # Find adjacent syllabic syllable to modify
+            # Prefer the preceding syllable; fall back to next
+            adj_idx = None
+            if i > 0 and not is_modifier[i - 1]:
+                adj_idx = len(result_parts) - 1
+            elif i < n - 1 and not is_modifier[i + 1]:
+                adj_idx = None  # will apply to next when we encounter it
+                # For forward application, skip for now and apply when
+                # the next syllabic char is processed
+                continue
+
+            if adj_idx is not None and 0 <= adj_idx < len(result_parts):
+                prev = result_parts[adj_idx]
+                if rule == 'vowel_changer' and mod_syl:
+                    # Replace last vowel in previous syllable
+                    vowels = set('aeiou')
+                    mod_vowel = next((c for c in mod_syl if c in vowels), '')
+                    if mod_vowel:
+                        new = list(prev)
+                        for j in range(len(new) - 1, -1, -1):
+                            if new[j] in vowels:
+                                new[j] = mod_vowel
+                                break
+                        result_parts[adj_idx] = ''.join(new)
+                elif rule == 'geminator' and prev:
+                    # Double the last consonant
+                    consonants = set('bcdfghjklmnpqrstvwxyz')
+                    for j in range(len(prev) - 1, -1, -1):
+                        if prev[j] in consonants:
+                            result_parts[adj_idx] = prev[:j + 1] + prev[j] + prev[j + 1:]
+                            break
+                elif rule == 'nasalizer':
+                    result_parts[adj_idx] = prev + 'n'
+                elif rule == 'cluster' and mod_syl:
+                    # Prepend modifier's consonant to next syllable
+                    consonants = set('bcdfghjklmnpqrstvwxyz')
+                    mod_cons = next((c for c in mod_syl if c in consonants), '')
+                    if mod_cons:
+                        result_parts[adj_idx] = mod_cons + prev
+            # If no adjacent syllable found, just skip
+        else:
+            result_parts.append(syllables[i])
+
+    return ''.join(result_parts)

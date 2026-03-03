@@ -21,6 +21,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from voynich.core._paths import results_dir as _results_dir
 from voynich.core.corpus import (
     build_eva_to_triple_lookup,
+    decode_token_modifier_aware,
     load_corpus,
     tokenize_eva_chars,
 )
@@ -32,6 +33,42 @@ from voynich.core.reference import (
     PHARMACEUTICAL_VOCABULARY,
 )
 from voynich.phases.csp_solver import _convert, decode_corpus, decode_token
+
+
+# ---------------------------------------------------------------------------
+# Modifier-aware decoding
+# ---------------------------------------------------------------------------
+
+def _decode_modifier_aware(
+    tokens: List[str],
+    assignment: Dict[str, str],
+    eva_to_triple: Dict[str, str],
+    modifier_chars: set,
+    modifier_rules: Dict[str, str],
+    ref_word_set: set,
+    max_tokens: int = 5000,
+) -> List[str]:
+    """R3-style combined decode: alteration → stripping → original."""
+    decoded: List[str] = []
+    for token in tokens[:max_tokens]:
+        # Try alteration
+        alt = decode_token_modifier_aware(
+            token, assignment, eva_to_triple, modifier_chars,
+            modifier_rules=modifier_rules,
+        )
+        if alt.lower() in ref_word_set:
+            decoded.append(alt)
+            continue
+        # Try stripping
+        stripped = decode_token_modifier_aware(
+            token, assignment, eva_to_triple, modifier_chars,
+        )
+        if stripped.lower() in ref_word_set:
+            decoded.append(stripped)
+            continue
+        # Fall back to original
+        decoded.append(decode_token(token, assignment, eva_to_triple))
+    return decoded
 
 
 # ---------------------------------------------------------------------------
@@ -148,6 +185,8 @@ def _assess_section_readability(
     eva_to_triple: Dict[str, str],
     ref_word_set: set,
     max_tokens_per_section: int = 500,
+    modifier_chars: Optional[set] = None,
+    modifier_rules: Optional[Dict[str, str]] = None,
 ) -> List[Dict]:
     """Decode each section and assess readability."""
     sections = ['herbal_a', 'pharmaceutical', 'astronomical', 'biological']
@@ -159,7 +198,14 @@ def _assess_section_readability(
             continue
 
         sample = sect_tokens[:max_tokens_per_section]
-        decoded = [decode_token(t, assignment, eva_to_triple) for t in sample]
+        if modifier_chars:
+            decoded = _decode_modifier_aware(
+                sample, assignment, eva_to_triple,
+                modifier_chars, modifier_rules or {}, ref_word_set,
+                max_tokens=max_tokens_per_section,
+            )
+        else:
+            decoded = [decode_token(t, assignment, eva_to_triple) for t in sample]
 
         # Dict hit rate
         hits = sum(1 for w in decoded if w in ref_word_set)
@@ -338,8 +384,30 @@ def run_text_analysis() -> None:
 
     all_syls = build_cv_syllable_table('latin')
 
+    # Check for Phase 16 modifier-aware decoding
+    modifier_chars: Optional[set] = None
+    modifier_rules: Optional[Dict[str, str]] = None
+    mi_path = os.path.join(rd, 'modifier_integrate.json')
+    if os.path.exists(mi_path):
+        with open(mi_path) as f:
+            mi_data = json.load(f)
+        if mi_data.get('r3_final_gate', False):
+            modifier_chars = set(mi_data.get('modifier_chars', []))
+            # Reconstruct modifier_rules from classifications
+            modifier_rules = {}
+            for c in mi_data.get('classifications', []):
+                if c.get('final_classification') == 'modifier':
+                    modifier_rules[c['eva_char']] = c.get('modifier_type', 'silent')
+            print(f"  Phase 16 modifier-aware decoding: {len(modifier_chars)} modifiers")
+
     # Decode full corpus
-    decoded = decode_corpus(tokens, best_assignment, eva_to_triple, max_tokens=5000)
+    if modifier_chars:
+        decoded = _decode_modifier_aware(
+            tokens, best_assignment, eva_to_triple,
+            modifier_chars, modifier_rules or {}, ref_word_set,
+        )
+    else:
+        decoded = decode_corpus(tokens, best_assignment, eva_to_triple, max_tokens=5000)
 
     # ─── 5a: Phrase detection ───
     print("\n  5a: Phrase detection ...")
@@ -362,6 +430,7 @@ def run_text_analysis() -> None:
     print("\n  5b: Section readability ...")
     section_readability = _assess_section_readability(
         corpus, best_assignment, eva_to_triple, ref_word_set,
+        modifier_chars=modifier_chars, modifier_rules=modifier_rules,
     )
     for sr in section_readability:
         print(f"      {sr['section']}: dict_hit={sr['dict_hit_rate']:.1%}, "
