@@ -1402,6 +1402,8 @@ The critical architectural insight is that modifier classification must operate 
 
 The R3 combined strategy outperforms both pure stripping (R1) and pure alteration (R2) by trying alteration rules first (which may preserve more phonetic information) and falling back to stripping only when alteration doesn't produce a dictionary hit. This +4.4% gap between R3 and R1/R2 suggests that some modifier characters genuinely alter rather than silence the adjacent syllable.
 
+**Phrase detection caveat**: Despite 51.6% dict_hit (53% in herbal_a), re-running the Phase 15.5 phrase detector with modifier-aware decoding finds **zero Latin pharmaceutical phrases** — 0/30 keywords (`recipe`, `aqua`, `folia`, `radix`, `cum`, `et`, `in`, `ad`, etc.) appear anywhere in the decoded output. The high dict_hit is driven by short decoded strings (`di`, `cone`, `se`, `ne`, `de`, `ce`) colliding with the 131K-word expanded dictionary, not by producing recognizable Latin words. The modifier correction fixes syllable count (3.5 → 2.63) but the underlying phoneme assignment still outputs syllable fragments, not word-level Latin. The 51.6% measures dictionary collision rate of a syllable-level decoding, not genuine readability.
+
 ## Data
 
 ### Voynich Corpus
