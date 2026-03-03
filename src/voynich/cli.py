@@ -1093,6 +1093,74 @@ def cmd_phase16():
     cmd_mod_integrate()
 
 
+# ── Phase 17 Step 0: Honesty Diagnostics ──────────────────────────────
+
+def cmd_honesty_dict():
+    """Run Phase 17.0.1: dictionary tier control test."""
+    from voynich.phases.honesty_dict import run_honesty_dict
+    t0 = time.time()
+    run_honesty_dict()
+    print(f"\nDictionary honesty test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_honesty_keywords():
+    """Run Phase 17.0.2: keyword presence test."""
+    from voynich.phases.honesty_keywords import run_honesty_keywords
+    t0 = time.time()
+    run_honesty_keywords()
+    print(f"\nKeyword presence test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_honesty_verbs():
+    """Run Phase 17.0.3: positional verb decode test."""
+    from voynich.phases.honesty_verbs import run_honesty_verbs
+    t0 = time.time()
+    run_honesty_verbs()
+    print(f"\nVerb decode test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_null_corpus():
+    """Run Phase 17.0.4: null corpus control test."""
+    from voynich.phases.null_corpus import run_null_corpus
+    t0 = time.time()
+    run_null_corpus()
+    print(f"\nNull corpus control test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_honesty_words():
+    """Run Phase 17.0.5: minimum viable word test."""
+    from voynich.phases.honesty_words import run_honesty_words
+    t0 = time.time()
+    run_honesty_words()
+    print(f"\nMinimum viable word test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_step0_integrate():
+    """Run Phase 17.0.6: honesty diagnostics integration."""
+    from voynich.phases.step0_integrate import run_step0_integrate
+    t0 = time.time()
+    run_step0_integrate()
+    print(f"\nStep 0 integration completed in {time.time() - t0:.1f}s")
+
+
+def cmd_step0():
+    """Run full Phase 17 Step 0: honesty diagnostics pipeline."""
+    print("=" * 70)
+    print("PHASE 17 STEP 0: Honesty Diagnostics")
+    print("=" * 70)
+    cmd_honesty_dict()
+    print("\n" + "=" * 70 + "\n")
+    cmd_honesty_keywords()
+    print("\n" + "=" * 70 + "\n")
+    cmd_honesty_verbs()
+    print("\n" + "=" * 70 + "\n")
+    cmd_null_corpus()
+    print("\n" + "=" * 70 + "\n")
+    cmd_honesty_words()
+    print("\n" + "=" * 70 + "\n")
+    cmd_step0_integrate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -1199,6 +1267,14 @@ def main():
         'mod-localize': cmd_mod_localize,
         'mod-integrate': cmd_mod_integrate,
         'phase16': cmd_phase16,
+        # Phase 17 Step 0
+        'honesty-dict': cmd_honesty_dict,
+        'honesty-keywords': cmd_honesty_keywords,
+        'honesty-verbs': cmd_honesty_verbs,
+        'null-corpus': cmd_null_corpus,
+        'honesty-words': cmd_honesty_words,
+        'step0-integrate': cmd_step0_integrate,
+        'step0': cmd_step0,
     }
 
     if len(sys.argv) < 2:

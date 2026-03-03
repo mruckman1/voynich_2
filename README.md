@@ -1,6 +1,6 @@
 # Voynich Manuscript: Syllabary & Information-Theoretic Analysis
 
-A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, context-dependent rule analysis, stroke-feature abugida decoding, feature model refinement with articulatory constraints, and modifier detection with syllable correction. Seventeen complementary approaches across sixteen phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step.
+A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, context-dependent rule analysis, stroke-feature abugida decoding, feature model refinement with articulatory constraints, modifier detection with syllable correction, and honesty diagnostics validating whether the decoding signal is genuine or artifact. Seventeen complementary approaches across sixteen phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step. Phase 17 Step 0 applies five independent validation tests to the Phase 16 headline result (51.6% dict_hit) — the verdict is **NO-GO**: only 2/5 tests pass, and null corpora achieve 37.6% dict_hit through the same pipeline, indicating the signal is substantially confounded with dictionary expansion and per-token cherry-picking.
 
 **Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification). **Phase 10** tests the three surviving hypotheses — constructed script (H1), information dispersion (H2), and keyed cipher (H3) — through five discriminating analyses: token-level entropy curves, mutual information decay, folio-level encoding shifts, glyph construction grammar, and hypothesis integration. **Phase 11** directly attacks the 14-variable phonetic mapping problem using constraint satisfaction: six constraint layers progressively prune each grid cell's candidate syllable set, AC-3 arc-consistency propagation removes inconsistencies, and beam search (MRV-ordered, width 50) finds the CE-optimal assignment across Latin, Occitan, Italian, and German. **Phase 11.5** runs five sequential refinement steps to push past the 11.1% dictionary hit rate: failure diagnosis (NEAR_MISS dominant, 13/14 high-error cells), inherent vowel and CVC/CCV relaxation sweeps (relaxation degrades selectivity — strict CV remains optimal), verb constraint integration from Phase 9 (1 soft constraint), iterative anchor bootstrapping (converges immediately at 7.2% dict hit), and a full V1–V9 validation battery confirming 8/9 tests pass with selectivity 1.85×. Verdict: the CSP framework is correct; the bottleneck is grid precision, not the language or encoding model.
 
@@ -23,6 +23,8 @@ Phase 14 implements the featural abugida model predicted by Phases 12–13. Inst
 Phase 15 refines the Phase 14 feature model through three independent improvements: medieval Latin dictionary expansion, articulatory consistency scoring, and iterative re-solving with confirmed dictionary hits. **Dictionary expansion is the dominant factor**: generating medieval spelling variants (ae→e simplification, vowel interchange, voicing, gemination/degemination) and pharmaceutical vocabulary inflections expands the reference dictionary from 6,180 to 131K words, raising dict_hit from 19.4% to **35.4% (2.55× selectivity)** without changing the phoneme assignment — the Phase 14 mapping was already finding real Latin words that weren't in the strict classical dictionary. Articulatory consistency (AC) scoring — requiring that triples sharing the same `first_stroke` map to consonants from the same place of articulation — raises AC from 30.8% (Phase 14) to **63.5%** via per-onset coordinate descent, passing the V12 gate. A 2³ ablation study across all three improvements confirms dictionary expansion alone accounts for +16% dict_hit (vs +8.2% for AC scoring, −0.1% for hit constraints), with no positive synergy between interventions. The V1–V14 validation battery passes **11/14 tests** (V1 field mismatch, V9 MCMC, V13 phrase selectivity are the three failures). Decoded text shows 3/6 pharmaceutical vocabulary domains with hits (`cola`, `bene`, `ad`/`de`/`in`), herbal_a section dict_hit of 35.8%, and recognizable Latin morpheme patterns (`sene-`, `radi-`, `cone-`, `sera-`).
 
 Phase 16 tests whether the remaining gap between decoded syllable count (~3.5 per token) and Latin word length (~2.5 syllables) is caused by **modifier characters** — EVA glyphs that alter adjacent syllables rather than producing their own, analogous to Devanagari virama or Arabic shadda. Five independent approaches converge on modifier identification: (B) standalone distributional analysis identifies 7 EVA chars that never appear as single-character tokens and have low positional/adjacency entropy; (D) frequency anomaly detection finds 30 chars with anomalous Zipf residuals, obligatory co-occurrence, or token-length correlation; (A) syllable distribution matching searches modifier subsets to align Voynich token lengths with Latin word lengths; (E) minimal pair subtraction finds 15,811 token pairs differing by one char, with 2,509 cases where removal preserves dictionary-hit status; (C) dictionary hit localization identifies 11 chars appearing disproportionately in "padding" positions of decoded strings. Convergent classification (≥3/5 approaches agreeing) yields **15 modifier characters, 11 syllabic, 18 ambiguous**. Three re-decode strategies are tested: R1 (strip modifiers), R2 (apply alteration rules: vowel_changer, geminator, nasalizer, cluster, silent), and R3 (combined: try alteration → stripping → original per token). **R3 combined achieves 51.6% dict_hit (3.40× selectivity) with mean 2.63 syllables/token** — up from 35.4% in Phase 15 and closely matching the Latin target of ~2.5 syllables/word. The +16.2% absolute gain confirms that the feature model was correct but over-counting syllables due to modifier characters inflating token length.
+
+Phase 17 Step 0 applies five honesty diagnostics to determine whether the 51.6% dict_hit reflects genuine Latin decoding or artifacts of dictionary expansion and per-token cherry-picking. **Test 1 (Dictionary Control)** scores decoded output against the original 17K-word dictionary (not the 131K expanded set) — **PASS at 35.5%** with 4.40× selectivity. **Test 2 (Keyword Presence)** checks for 100 expected Latin medical words — **MARGINAL** with 5 exact and 15 relaxed matches (below the 20 threshold). **Test 3 (Verb Decode)** decodes Phase 9's 15 verb candidate stems and compares to Latin imperatives — **FAIL** with only 1/15 at edit distance ≤1. **Test 4 (Null Corpus)** generates 5 synthetic corpora matching Voynich character bigram statistics and runs them through the same pipeline — **FAIL**, null corpora achieve 37.6% mean R3 dict_hit (max 38.9%), indicating the assignment produces substantial Latin dictionary hits on *any* text with Voynich-like character statistics. **Test 5 (Minimum Viable Words)** tests specific tokens with independent evidence — **PASS** with 8 high-frequency token matches. Overall verdict: **NO-GO** (2/5 passed, confidence "suspect", score 0.40). The null corpus result is the critical red flag: while there is an 11.7σ separation between real (51.6%) and null (37.6%), the null floor is far too high — a genuine cipher should produce near-zero dict_hit on random text.
 
 ## Quick Start
 
@@ -132,6 +134,13 @@ voynich mod-pairs         # Phase 16.4: minimal pair subtraction (token pairs di
 voynich mod-localize      # Phase 16.5: dictionary hit localization (padding ratio per EVA char)
 voynich mod-integrate     # Phase 16.6: convergent classification (≥3/5 agreement) + 3 re-decode strategies (strip/alter/combined)
 voynich phase16           # Run full Phase 16 pipeline (mod-standalone → mod-anomaly → mod-distrib → mod-pairs → mod-localize → mod-integrate)
+voynich honesty-dict      # Phase 17.0.1: dictionary tier control test (original/expanded/core dict scoring)
+voynich honesty-keywords  # Phase 17.0.2: top-100 Latin medical keyword presence test
+voynich honesty-verbs     # Phase 17.0.3: positional verb decode test (15 stems vs Latin imperatives)
+voynich null-corpus       # Phase 17.0.4: null corpus end-to-end control (5 synthetic bigram corpora)
+voynich honesty-words     # Phase 17.0.5: minimum viable words test (rosetta plants, verbs, high-freq tokens)
+voynich step0-integrate   # Phase 17.0.6: compile all 5 tests into GO/NO-GO verdict
+voynich step0             # Run full Phase 17 Step 0 pipeline (all 6 honesty diagnostics)
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -236,7 +245,13 @@ voynich_2/
 │       ├── modifier_distribution.py # Phase 16.3: syllable distribution matching (modifier subsets vs Latin syllable counts)
 │       ├── modifier_minimal_pairs.py # Phase 16.4: minimal pair subtraction (token pairs differing by 1 EVA char)
 │       ├── modifier_localize.py # Phase 16.5: dictionary hit localization (padding ratio per EVA char)
-│       └── modifier_integrate.py # Phase 16.6: convergent classification + 3 re-decode strategies (strip/alter/combined)
+│       ├── modifier_integrate.py # Phase 16.6: convergent classification + 3 re-decode strategies (strip/alter/combined)
+│       ├── honesty_dict.py    # Phase 17.0.1: dictionary tier control test (original/expanded/core dict scoring + cross-strategy comparison)
+│       ├── honesty_keywords.py # Phase 17.0.2: top-100 Latin medical keyword presence test (exact + edit-distance-1 matching)
+│       ├── honesty_verbs.py   # Phase 17.0.3: positional verb decode test (15 Phase 9 stems vs Latin imperatives)
+│       ├── null_corpus.py     # Phase 17.0.4: null corpus end-to-end control (5 bigram-model synthetic corpora through same decode pipeline)
+│       ├── honesty_words.py   # Phase 17.0.5: minimum viable words test (rosetta plants, verbs, astronomical, high-frequency tokens)
+│       └── step0_integrate.py # Phase 17.0.6: compile all 5 honesty tests into weighted GO/NO-GO verdict
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
@@ -1404,6 +1419,74 @@ The R3 combined strategy outperforms both pure stripping (R1) and pure alteratio
 
 **Phrase detection caveat**: Despite 51.6% dict_hit (53% in herbal_a), re-running the Phase 15.5 phrase detector with modifier-aware decoding finds **zero Latin pharmaceutical phrases** — 0/30 keywords (`recipe`, `aqua`, `folia`, `radix`, `cum`, `et`, `in`, `ad`, etc.) appear anywhere in the decoded output. The high dict_hit is driven by short decoded strings (`di`, `cone`, `se`, `ne`, `de`, `ce`) colliding with the 131K-word expanded dictionary, not by producing recognizable Latin words. The modifier correction fixes syllable count (3.5 → 2.63) but the underlying phoneme assignment still outputs syllable fragments, not word-level Latin. The 51.6% measures dictionary collision rate of a syllable-level decoding, not genuine readability.
 
+## Phase 17 Step 0: Honesty Diagnostics
+
+Before proceeding with word-boundary detection or further refinement, Phase 17 Step 0 applies five independent validation tests to determine whether the Phase 16 headline result (51.6% dict_hit, 3.40× selectivity) reflects genuine Latin decoding or artifacts of dictionary expansion (17K → 131K words) and per-token cherry-picking (R3 combined strategy).
+
+### Five Honesty Tests
+
+| Step | Test | Method | Gate | Result |
+|------|------|--------|------|--------|
+| 17.0.1 | Dict Control | Score R3 decoded output against original (17K), expanded (131K), and core (7K) dictionaries | original_hit > 25% | **PASS** — 35.5% original, 4.40× selectivity |
+| 17.0.2 | Keyword Presence | Check 100 expected Latin medical words against decoded output (exact + ED≤1) | n_relaxed ≥ 20 AND \|ρ\| > 0.3 | **MARGINAL** — 5 exact, 15 relaxed (ρ=−0.821) |
+| 17.0.3 | Verb Decode | Decode 15 Phase 9 verb stems, compare to Latin imperatives | n_ed1 ≥ 5 AND \|ρ\| > 0.3 | **FAIL** — 1/15 at ED≤1 |
+| 17.0.4 | Null Corpus | Generate 5 synthetic bigram corpora, apply same decode pipeline | null_r3_max < 25% | **FAIL** — null mean 37.6% (max 38.9%) |
+| 17.0.5 | Min Words | Test specific tokens with independent evidence (rosetta plants, verbs, astronomical, high-freq) | total_matches ≥ 3 | **PASS** — 8 matches |
+
+### Cross-Strategy Comparison (Test 1)
+
+| Strategy | Original Dict | Expanded Dict | Core Dict |
+|----------|--------------|---------------|-----------|
+| R3 Combined | 35.5% | 50.1% | 3.7% |
+| R1 Strip | — | — | — |
+| Naive (no modifiers) | — | — | — |
+
+The 35.5% score against the original dictionary — without the 131K expanded set — demonstrates that some signal survives dictionary reduction, passing the 25% gate with 4.40× selectivity.
+
+### Null Corpus Control (Test 4)
+
+| Corpus | Naive dict_hit | Expanded dict_hit | R3 dict_hit |
+|--------|---------------|-------------------|-------------|
+| Real Voynich | — | — | 51.6% |
+| Null mean (5 corpora) | 24.6% | 33.0% | 37.6% |
+| Null max | 26.3% | 34.5% | 38.9% |
+| Separation | — | — | 11.7σ |
+
+While the 11.7σ separation between real and null is statistically significant, the null floor of 37.6% is far too high. A genuine cipher should produce near-zero dict_hit when applied to random text with Voynich-like character statistics. The high null floor indicates the Phase 15 phoneme assignment and R3 cherry-picking strategy produce substantial Latin dictionary collisions on *any* structured text.
+
+### Keyword Analysis (Test 2)
+
+Five keywords found as exact decoded tokens: `de`, `si`, `cola`, `tere`, `bene`. An additional 10 found at edit distance ≤1. The frequency-rank correlation is strong (ρ=−0.821, p=0.023) — higher-ranked keywords appear more often — but the total of 15 relaxed matches falls below the 20-keyword gate.
+
+### Integration Verdict
+
+| Metric | Value |
+|--------|-------|
+| Tests passed | 2/5 (dict_control, minimum_words) |
+| Tests failed | 3/5 (keyword_presence, verb_decode, null_corpus) |
+| Overall confidence | **suspect** (score = 0.40) |
+| Decision | **NO-GO** |
+| Strongest evidence | Dict control (35.5% against original dict) |
+| Weakest evidence | Null corpus (37.6% null R3 dict_hit) |
+| Red flag | Null corpus achieves comparable dict_hit — pipeline finds Latin in structured noise |
+| Progression | 11.1% → 19.4% → 35.4% → 51.6% → **NO-GO** |
+
+### Phase 17 Step 0 Findings Summary
+
+The honesty diagnostics reveal that the Phase 16 headline result (51.6% dict_hit) is **substantially confounded**:
+
+1. **Dictionary expansion is the dominant driver**: The 131K expanded dictionary (medieval variants + pharmaceutical inflections) turns short decoded syllable fragments into "matches" — the core 7K dictionary scores only 3.7%.
+
+2. **R3 cherry-picking inflates the metric**: The per-token strategy of trying alteration → stripping → original and picking whichever gets a dictionary hit is fundamentally biased toward false positives.
+
+3. **Null corpora achieve 37.6%**: Synthetic text with Voynich-like character bigram statistics, decoded through the same pipeline, scores nearly as high as real Voynich text. The "genuine signal" is at most ~14 percentage points (51.6% − 37.6%).
+
+4. **Some real signal exists**: The 35.5% score against the original 17K dictionary at 4.40× selectivity, combined with 5 exact keyword matches and 8 minimum viable word matches, suggests the phoneme assignment captures *something* real — but it is far from a genuine decoding.
+
+5. **Verb decode confirms Phase 9 failure**: Only 1/15 verb candidates decode within ED≤1 of any Latin imperative, consistent with Phase 9's own failed gate (0.92× selectivity).
+
+The NO-GO verdict means further refinement of the current approach (word boundary detection, phrase recovery) would be building on an unreliable foundation. A fundamentally different validation strategy — or a different decoding approach entirely — is needed before the pipeline can claim genuine Latin decoding.
+
 ## Data
 
 ### Voynich Corpus
@@ -2176,7 +2259,7 @@ Verb candidates do not show the same coherence (ratio 0.96x), likely because the
 
 ## Results Files
 
-Analysis outputs are saved as JSON to `results/` (63 files total):
+Analysis outputs are saved as JSON to `results/` (69 files total):
 
 **Phase 1 — Stroke Analysis:**
 - `stroke_positional.json` — Stroke positional distributions and MI
@@ -2326,6 +2409,14 @@ Analysis outputs are saved as JSON to `results/` (63 files total):
 - `modifier_minimal_pairs.json` — 15,811 minimal pairs found; 2,509 helpful removals (preserves/creates dict hit); per-char modifier scores; gate PASS
 - `modifier_localize.json` — 839 tokens with padding characters; 11 chars with padding ratio ≥ 0.6 (m, iin, g, n, aiin, ey, dy, al, ar, y, or); gate PASS
 - `modifier_integrate.json` — Convergent classification: 15 MODIFIER, 11 SYLLABIC, 18 AMBIGUOUS; R1 strip: 47.2% dict_hit; R2 alter: 47.2% dict_hit; **R3 combined: 51.6% dict_hit, 3.40× selectivity, mean 2.63 syl/token**; progression 11.1% → 19.4% → 35.4% → 51.6%
+
+**Phase 17 Step 0 — Honesty Diagnostics:**
+- `honesty_dict.json` — Dictionary tier control: R3 decoded output scored against original (35.5%, 4.40×), expanded (50.1%), and core (3.7%) dictionaries; cross-strategy comparison (R3/R1/naive); random baseline selectivity; gate **PASS** (original_hit > 25%)
+- `honesty_keywords.json` — Top-100 Latin medical keyword presence: 5 exact matches (de, si, cola, tere, bene), 15 relaxed (ED≤1); frequency-rank correlation ρ=−0.821; random baseline comparison; gate **MARGINAL** (15 < 20 threshold)
+- `honesty_verbs.json` — Positional verb decode: 15 Phase 9 verb stems decoded and compared to 15 Latin imperatives; 1/15 at ED≤1; rank correlation ρ=−0.581; imperative syllable coverage; gate **FAIL**
+- `null_corpus.json` — Null corpus end-to-end: 5 synthetic corpora (EVA character bigram model, seeds 100–104); JSD validation; naive/expanded/R3 decode; null R3 mean 37.6% (max 38.9%); separation 11.7σ; gate **FAIL** (null_max ≥ 25%)
+- `honesty_words.json` — Minimum viable words: 4 test categories (rosetta plants 0/8, verbs 0/10, astronomical 0/7, high-frequency 8/20); 8 total matches; gate **PASS**
+- `step0_integrate.json` — Integration verdict: 2/5 passed; confidence "suspect" (score 0.40); **NO-GO**; red flag: null corpus achieves comparable dict_hit
 
 ## Background
 

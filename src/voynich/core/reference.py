@@ -1952,6 +1952,67 @@ LATIN_PHRASE_PATTERNS: List[Tuple[str, List[str]]] = [
     ('plant_desc', ['folia', 'radix', 'flos', 'semen']),
 ]
 
+# ── Phase 17 Step 0: Honesty Diagnostics Constants ──────────────────────
+
+# Top-100 Latin medical words ranked by expected frequency in pharmaceutical text.
+# Rank 1 = most expected. Built from PHARMACEUTICAL_VOCABULARY + high-frequency
+# medical Latin terms from Circa Instans / De Viribus Herbarum.
+LATIN_MEDICAL_TOP_100: List[Tuple[str, int]] = [
+    # Function words (highest frequency)
+    ('et', 1), ('in', 2), ('est', 3), ('ad', 4), ('de', 5),
+    ('cum', 6), ('non', 7), ('per', 8), ('ut', 9), ('si', 10),
+    ('quod', 11), ('sed', 12), ('vel', 13), ('pro', 14), ('ex', 15),
+    ('ab', 16), ('qui', 17), ('que', 18), ('aut', 19), ('hoc', 20),
+    # Pharmaceutical verbs (imperatives)
+    ('recipe', 21), ('accipe', 22), ('misce', 23), ('contere', 24),
+    ('coque', 25), ('adde', 26), ('pone', 27), ('distilla', 28),
+    ('cola', 29), ('solve', 30), ('tere', 31), ('fac', 32),
+    ('frange', 33), ('incide', 34), ('lava', 35),
+    # Plant parts
+    ('folia', 36), ('radix', 37), ('flos', 38), ('semen', 39),
+    ('cortex', 40), ('herba', 41), ('ramus', 42), ('bacca', 43),
+    # Preparations
+    ('aqua', 44), ('oleum', 45), ('vinum', 46), ('mel', 47),
+    ('acetum', 48), ('pulvis', 49), ('unguentum', 50), ('sirupus', 51),
+    # Body parts
+    ('caput', 52), ('cor', 53), ('stomachum', 54), ('oculus', 55),
+    ('iecur', 56), ('ren', 57), ('pectus', 58), ('manus', 59),
+    # Qualities
+    ('calidus', 60), ('frigidus', 61), ('siccus', 62), ('humidus', 63),
+    ('bonus', 64), ('magnus', 65), ('bene', 66), ('male', 67),
+    # Degree and structure
+    ('gradu', 68), ('primo', 69), ('secundo', 70), ('tertio', 71),
+    ('natura', 72), ('virtus', 73), ('contra', 74), ('dies', 75),
+    # Medical terms
+    ('febris', 76), ('dolor', 77), ('morbus', 78), ('vulnus', 79),
+    ('tumor', 80), ('sanguis', 81), ('venenum', 82), ('remedium', 83),
+    # Quantities
+    ('drachma', 84), ('uncia', 85), ('libra', 86), ('ana', 87),
+    ('quantum', 88), ('partes', 89), ('modicum', 90), ('satis', 91),
+    # Actions and additional terms
+    ('calefacit', 92), ('mundificat', 93), ('valet', 94), ('prodest', 95),
+    ('cura', 96), ('potio', 97), ('emplastrum', 98), ('nox', 99),
+    ('mane', 100),
+]
+
+# Pharmaceutical imperative verbs ranked by expected frequency
+LATIN_IMPERATIVE_RANKED: Dict[str, int] = {
+    'recipe': 1, 'accipe': 2, 'misce': 3, 'contere': 4, 'coque': 5,
+    'adde': 6, 'pone': 7, 'distilla': 8, 'cola': 9, 'solve': 10,
+    'tere': 11, 'fac': 12, 'frange': 13, 'incide': 14, 'lava': 15,
+}
+
+# Calendar and zodiac names for astronomical section testing
+LATIN_MONTH_NAMES: List[str] = [
+    'ianuarius', 'februarius', 'martius', 'aprilis', 'maius', 'iunius',
+    'iulius', 'augustus', 'september', 'october', 'november', 'december',
+]
+
+LATIN_ZODIAC_NAMES: List[str] = [
+    'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo',
+    'libra', 'scorpio', 'sagittarius', 'capricornus', 'aquarius', 'pisces',
+]
+
 # Latin nominal declension endings for inflected form generation
 _LATIN_NOUN_ENDINGS: Dict[str, List[str]] = {
     'noun1': ['a', 'ae', 'am', 'arum', 'is'],            # 1st decl (rosa)
