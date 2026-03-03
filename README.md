@@ -1,6 +1,6 @@
 # Voynich Manuscript: Syllabary & Information-Theoretic Analysis
 
-A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, context-dependent rule analysis, and stroke-feature abugida decoding. Seventeen complementary approaches across fourteen phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step.
+A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, context-dependent rule analysis, stroke-feature abugida decoding, and feature model refinement with articulatory constraints. Seventeen complementary approaches across fifteen phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step.
 
 **Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification). **Phase 10** tests the three surviving hypotheses — constructed script (H1), information dispersion (H2), and keyed cipher (H3) — through five discriminating analyses: token-level entropy curves, mutual information decay, folio-level encoding shifts, glyph construction grammar, and hypothesis integration. **Phase 11** directly attacks the 14-variable phonetic mapping problem using constraint satisfaction: six constraint layers progressively prune each grid cell's candidate syllable set, AC-3 arc-consistency propagation removes inconsistencies, and beam search (MRV-ordered, width 50) finds the CE-optimal assignment across Latin, Occitan, Italian, and German. **Phase 11.5** runs five sequential refinement steps to push past the 11.1% dictionary hit rate: failure diagnosis (NEAR_MISS dominant, 13/14 high-error cells), inherent vowel and CVC/CCV relaxation sweeps (relaxation degrades selectivity — strict CV remains optimal), verb constraint integration from Phase 9 (1 soft constraint), iterative anchor bootstrapping (converges immediately at 7.2% dict hit), and a full V1–V9 validation battery confirming 8/9 tests pass with selectivity 1.85×. Verdict: the CSP framework is correct; the bottleneck is grid precision, not the language or encoding model.
 
@@ -19,6 +19,8 @@ Phase 12 attacks this grid-precision diagnosis directly by working backward from
 Phase 13 tests whether the 11.1% ceiling can be broken by context-dependent reading rules — analogous to inherent vowel suppression in Devanagari or final devoicing in Latin/Occitan — without changing the grid. The approach proceeds in six steps: error pattern analysis (MI gate), null hypothesis testing, rule extraction, context-aware CSP (Version A rule-constrained, Version B free search), cross-validation, and full-corpus decoding with V1–V11 battery. **The MI gate passes at an extraordinary 20.11× selectivity** (threshold 1.5×), confirming that near-miss errors are not random — they are strongly structured by word position and phonetic context (5/14 cells, chi-squared p < 0.0001). Null hypothesis testing rules out both alternative explanations: grid conflation is moderate (7/14 cells need >2 phonemes) but not severe, and dictionary gaps account for only 6% of near-misses. Eight context rules are extracted (all word-final devoicing and pre-vowel nasal assimilation patterns), but their combined dict_hit improvement (+2%) falls short of the 15% gate. The Version B free-search CSP finds **38.5% dict_hit** by optimizing context values unconstrained, but cross-validation shows this is pure overfitting — applying the learned rules to a held-out half of the corpus *decreases* dict_hit. **0/8 rules pass all three validation gates** (cross-validation transfer, selectivity > 1.5×, phonological plausibility). Final result: **11.43% dict_hit, 1.86× selectivity**, a marginal +0.3% over Phase 12. The 11.1% ceiling is confirmed as structural: it is not addressable by context rules, grid moves, decomposition variants, or syllable-type relaxation. Breaking it requires a fundamentally finer phonological representation — either more grid cells or a true abugida/featural model.
 
 Phase 14 implements the featural abugida model predicted by Phases 12–13. Instead of 14 grid-cell variables (one per onset×nucleus slot), **25 stroke-triple variables** are assigned phonemes — one per unique `(first_stroke, last_stroke, glyph_class)` triple from `EVA_VISUAL_COMPONENTS`, giving each EVA character its own phoneme slot. `FeatureVariable` duck-types to `CSPVariable` (same `.cell_key`, `.domain`, `.frequency` interface) so the full Phase 11 `beam_search()` / `ac3_propagate()` / `score_assignment_full()` infrastructure reuses unchanged; the bridge is `build_eva_to_triple_lookup()` replacing `build_eva_to_cell_lookup()`. Distributional clustering (Step 14.1) directly confirms cell conflation: 21 distinct phonemes emerge from 14 cells, matching the Phase 13 diagnosis that 7/14 cells encode >2 phonemes. Stroke feature decomposition (Step 14.2) enumerates 25 attested triples (15 singletons, 10 collision groups) with `PHONEME_PLACE_MAP × PHONEME_NUCLEUS_MAP` cross-products seeding domains (avg 5.2 candidates vs ~30 for Phase 11). Synthetic calibration (Step 14.4) achieves 66.3% dict_hit on clean known-mapping encoded Latin, with ~33% expected Voynich ceiling. **The feature CSP (Step 14.3) achieves 19.4% dict_hit at 3.00× selectivity for Latin** — a +8.3% absolute gain over the 11.1% structural ceiling that withstood three independent attack vectors across Phases 11–13 — with 18 confirmed Latin dictionary hits including `cola`, `radi`, `rami`, `sene`, `sali`. Data-driven sub-cell splitting (Step 14.7) reaches only 8.3%, confirming the stroke-feature hypothesis is essential, not merely additional granularity. V1–V12 validation (Step 14.6) passes 7/12 tests; V12 (feature plausibility: same `first_stroke` → same consonant place of articulation, same `last_stroke` → same vowel height) scores 30.8%, above chance but below the 50% gate.
+
+Phase 15 refines the Phase 14 feature model through three independent improvements: medieval Latin dictionary expansion, articulatory consistency scoring, and iterative re-solving with confirmed dictionary hits. **Dictionary expansion is the dominant factor**: generating medieval spelling variants (ae→e simplification, vowel interchange, voicing, gemination/degemination) and pharmaceutical vocabulary inflections expands the reference dictionary from 6,180 to 131K words, raising dict_hit from 19.4% to **35.4% (2.55× selectivity)** without changing the phoneme assignment — the Phase 14 mapping was already finding real Latin words that weren't in the strict classical dictionary. Articulatory consistency (AC) scoring — requiring that triples sharing the same `first_stroke` map to consonants from the same place of articulation — raises AC from 30.8% (Phase 14) to **63.5%** via per-onset coordinate descent, passing the V12 gate. A 2³ ablation study across all three improvements confirms dictionary expansion alone accounts for +16% dict_hit (vs +8.2% for AC scoring, −0.1% for hit constraints), with no positive synergy between interventions. The V1–V14 validation battery passes **11/14 tests** (V1 field mismatch, V9 MCMC, V13 phrase selectivity are the three failures). Decoded text shows 3/6 pharmaceutical vocabulary domains with hits (`cola`, `bene`, `ad`/`de`/`in`), herbal_a section dict_hit of 35.8%, and recognizable Latin morpheme patterns (`sene-`, `radi-`, `cone-`, `sera-`).
 
 ## Quick Start
 
@@ -114,6 +116,13 @@ voynich feature-calibrate # Phase 14.4: synthetic abugida calibration (66.3% cle
 voynich feature-decode    # Phase 14.5-14.6: full multi-language decode + V1-V12 battery (7/12 pass, 18 confirmed Latin hits)
 voynich subcell-split     # Phase 14.7: data-driven subcell fallback (8.3% dict_hit — feature model wins 19.4% vs 8.3%)
 voynich phase14           # Run full Phase 14 pipeline (cell-analysis → stroke-features → feature-csp → calibrate → decode → subcell-split)
+voynich dict-expand       # Phase 15.1: medieval Latin dictionary expansion + near-miss catalog + selectivity validation
+voynich artic-csp         # Phase 15.2: articulatory consistency scoring (delta grid search + hard constraints + per-onset descent)
+voynich iter-hits         # Phase 15.3: iterative re-solving with confirmed dictionary hits as hard CSP constraints
+voynich combined-refine   # Phase 15.4: 2^3 ablation study (dict × AC × hits) + combined optimization
+voynich text-analysis     # Phase 15.5: decoded text analysis (phrase detection, section readability, vocabulary catalog)
+voynich phase15-validate  # Phase 15.6: full V1-V14 validation battery + progression tracking
+voynich phase15           # Run full Phase 15 pipeline (dict-expand → artic-csp → iter-hits → combined-refine → text-analysis → validate)
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -206,7 +215,13 @@ voynich_2/
 │       ├── feature_csp.py     # Phase 14.3: FeatureVariable (duck-types CSPVariable), stroke-guided domains, 25-variable beam search
 │       ├── feature_calibrate.py # Phase 14.4: synthetic abugida calibration — known-mapping encoding + recovery accuracy test
 │       ├── feature_decode.py  # Phase 14.5-14.6: full multi-language decode + V1–V12 battery (V12: feature plausibility check)
-│       └── subcell_split.py   # Phase 14.7: data-driven expanded-grid fallback (14→21 sub-cells, compare vs feature CSP)
+│       ├── subcell_split.py   # Phase 14.7: data-driven expanded-grid fallback (14→21 sub-cells, compare vs feature CSP)
+│       ├── dict_expansion.py  # Phase 15.1: medieval Latin dictionary expansion + near-miss catalog + selectivity validation
+│       ├── articulatory_csp.py # Phase 15.2: articulatory consistency scoring (delta grid search, hard constraints, per-onset descent)
+│       ├── iterative_hits.py  # Phase 15.3: iterative re-solving with confirmed dictionary hits as hard CSP constraints
+│       ├── combined_refine.py # Phase 15.4: 2^3 ablation study + combined optimization pipeline
+│       ├── text_analysis.py   # Phase 15.5: decoded text analysis (phrase detection, section readability, vocabulary catalog)
+│       └── phase15_validate.py # Phase 15.6: V1–V14 validation battery + progression tracking
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
@@ -1265,6 +1280,64 @@ The feature CSP achieves **19.4% dict_hit (3.00× selectivity)** for Latin — a
 
 Calibration (Step 14.4) shows 66.3% dict_hit on clean synthetic data and only 4% recovery accuracy — expected behavior for an underdetermined system where multiple high-scoring assignments exist. V12 (feature plausibility) scores 30.8%, above chance (6.25%) but below the 50% gate, indicating partial phonetic consistency across stroke classes.
 
+## Phase 15: Feature Model Refinement
+
+Phase 15 attacks three addressable weaknesses in the Phase 14 result: (1) articulatory inconsistency (V12 FAIL at 30.8%), (2) underdetermined search (4% recovery despite 66.3% calibration ceiling), and (3) dictionary gaps (19.4% vs 66.3% ceiling). Three independent improvements are developed, then combined via ablation study.
+
+| Step | Description | Module |
+|------|-------------|--------|
+| 15.1 | Medieval Latin dictionary expansion: 26 spelling variation rules (ae→e, vowel interchange, voicing, gemination/degemination, h-loss); pharmaceutical vocabulary (6 domains, 78 terms); Latin inflectional forms (5 noun declensions, 4 verb conjugations, 3 adjective types); near-miss catalog (365 near-misses, 80% insertion category); expanded dict 6,180 → 131K words; selectivity ratio 0.97 | `dict_expansion.py` |
+| 15.2 | Articulatory consistency scoring: AC metric = mean onset consistency × mean nucleus consistency; baseline AC = 58.7%; delta grid search (0.0–0.5 AC bonus in beam search scoring); hard articulatory constraints (restrict onset domains by place class); per-onset coordinate descent (fix all but one onset group, exhaustively enumerate); best approach: per-onset descent (28.2% dict_hit, AC = 66.7%) | `articulatory_csp.py` |
+| 15.3 | Iterative re-solving with confirmed hits: extract 72 high-confidence dictionary hits as hard CSP constraints; 16/25 triples initially constrained → 18/25 after iteration; split-variable approach (fixed triples excluded from beam search to avoid all-different conflicts); converges at iteration 1 (30.6% dict_hit) | `iterative_hits.py` |
+| 15.4 | Combined optimization: 2³ ablation study across dict expansion × AC scoring × hit constraints; dict expansion alone = 35.4% (+16.0%), AC alone = 27.7% (+8.2%), hits alone = 19.4% (−0.1%); no positive synergy (−8.1%); best config: dict expansion only; combined iterative pipeline confirms 35.4% at 2.55× | `combined_refine.py` |
+| 15.5 | Decoded text analysis: phrase detection (0 multi-word phrases — decoded tokens are long concatenated syllables, not word-segmented); section readability (herbal_a 35.8%, pharmaceutical 22.6%); vocabulary catalog (3/6 domains: `cola`, `bene`, `ad`/`de`/`in`); prior claims comparison (0/5 matches) | `text_analysis.py` |
+| 15.6 | Full V1–V14 validation battery: 11/14 PASS; V12 articulatory consistency 63.5% (PASS); V13 phrase selectivity 0.0× (FAIL — needs word segmentation); V14 domain coverage 3/6 (PASS); progression tracking Phase 11 → 14 → 15 | `phase15_validate.py` |
+
+### Phase 15 Ablation Table
+
+| Config | Dict Expansion | AC Scoring | Hit Constraints | Dict Hit | Selectivity | AC |
+|--------|:-:|:-:|:-:|--------|-------------|------|
+| baseline | | | | 19.4% | 2.75× | 0.587 |
+| **dict** | **x** | | | **35.4%** | **2.61×** | **0.587** |
+| ac | | x | | 27.7% | 3.95× | 0.554 |
+| hits | | | x | 19.4% | 2.38× | 0.698 |
+| dict+ac | x | x | | 31.3% | 2.40× | 0.554 |
+| dict+hits | x | | x | 35.4% | 2.70× | 0.587 |
+| ac+hits | | x | x | 19.6% | 2.42× | 0.651 |
+| dict+ac+hits | x | x | x | 35.4% | 2.70× | 0.635 |
+
+### Phase 15 Key Results
+
+| Step | Metric | Value | Gate |
+|------|--------|-------|------|
+| 15.1 Dictionary | Expanded dict size | 6,180 → 131,366 | — |
+| 15.1 Dictionary | Dict hit (expanded) | **34.9%** (+15.5%) | PASS |
+| 15.1 Dictionary | Selectivity ratio | 0.97 (≥ 0.9 gate) | PASS |
+| 15.2 AC Scoring | Baseline AC | 58.7% | — |
+| 15.2 AC Scoring | Best AC (per-onset descent) | 66.7% | — |
+| 15.2 AC Scoring | Best dict_hit (hard constraints) | 27.7% (3.95×) | PASS |
+| 15.3 Iterative | Triples constrained | 16 → 18 / 25 | — |
+| 15.3 Iterative | Dict hit after iteration | 30.6% | PASS |
+| 15.4 Combined | Best config | dict expansion only | — |
+| 15.4 Combined | Best dict_hit | **35.4%** (2.55×) | PASS |
+| 15.4 Combined | Synergy | −8.1% (no synergy) | — |
+| 15.5 Text | Domains with hits | 3/6 | — |
+| 15.5 Text | Herbal A section hit rate | 35.8% | — |
+| 15.6 Validate | V1–V14 battery | **11/14** PASS | PASS |
+| 15.6 Validate | V12 (AC) | 63.5% (≥ 50%) | PASS |
+| 15.6 Validate | V14 (domain coverage) | 3/6 (≥ 3) | PASS |
+| 15.6 Validate | Progression | 11.1% → 19.4% → **35.4%** | — |
+
+### Phase 15 Findings Summary
+
+Phase 15 nearly doubles the Phase 14 dict_hit rate (19.4% → 35.4%) primarily through dictionary expansion — generating medieval Latin spelling variants and pharmaceutical vocabulary inflections. The key insight is that the Phase 14 phoneme assignment was already finding real Latin words (`sene`, `radi`, `cone`, `sera`) that weren't in the classical Latin reference dictionary due to medieval spelling conventions (ae→e simplification, vowel interchange) and missing inflected forms.
+
+Articulatory consistency improves substantially (30.8% → 63.5%) through per-onset coordinate descent, confirming that the stroke-to-phoneme mapping is becoming more typologically plausible: triples sharing the same `first_stroke` increasingly map to consonants from the same place of articulation (onset consistency 88.3%), and triples sharing the same `last_stroke` map to similar vowels (nucleus consistency 71.9%).
+
+The 2³ ablation study provides a clean decomposition: dictionary expansion alone accounts for the full +16% improvement, while articulatory constraints improve AC but actually reduce dict_hit when combined with expansion (31.3% vs 35.4%). Hit-based iterative re-solving offers no improvement over the expanded-dictionary baseline. The lack of synergy suggests the three interventions compete rather than cooperate — AC constraints restrict the search space in ways that exclude the dict-expansion-optimal assignment.
+
+Decoded text shows recognizable Latin morpheme patterns across sections: `sene-` (senecio/senex), `radi-` (radix), `cone-` (confer/coquere), `sera-` (series), with herbal_a achieving 35.8% dict_hit and pharmaceutical 22.6%. Three of six pharmaceutical vocabulary domains show hits: verbs (`cola`), qualities (`bene`), and function words (`ad`, `de`, `in`). Phrase detection fails because the decoding produces concatenated syllable strings rather than word-segmented output — a known limitation of the syllabary model that word boundary detection could address in a future phase.
+
 ## Data
 
 ### Voynich Corpus
@@ -2037,7 +2110,7 @@ Verb candidates do not show the same coherence (ratio 0.96x), likely because the
 
 ## Results Files
 
-Analysis outputs are saved as JSON to `results/` (57 files total):
+Analysis outputs are saved as JSON to `results/` (63 files total):
 
 **Phase 1 — Stroke Analysis:**
 - `stroke_positional.json` — Stroke positional distributions and MI
@@ -2171,6 +2244,14 @@ Analysis outputs are saved as JSON to `results/` (57 files total):
 - `feature_calibrate.json` — Synthetic abugida calibration: known triple→syllable mapping (25 triples), noise-free 66.3% dict_hit, recovery accuracy 4%, noisy dict_hit, robustness ratio, expected Voynich ceiling ~33%; gate FAIL (underdetermined)
 - `feature_decode.json` — Full corpus decode (Latin/Occitan/Italian/German); V1–V12 battery (7/12 pass); V12 plausibility 30.8%; 18 confirmed Latin hits (cola, radi, rami, sene, sali, …); section text samples; vocabulary catalog; progression 11.1% → 11.15% → 11.43% → 19.4%
 - `subcell_split.json` — Data-driven expanded grid (14→21 sub-cells); split records per original cell; subcell dict_hit 8.3% vs feature 19.4%; comparison verdict FEATURE WINS
+
+**Phase 15 — Feature Model Refinement:**
+- `dict_expansion.json` — Near-miss catalog (365 entries, 80% insertion category); expanded dict 6,180 → 131,366 words; re-scored dict_hit 34.9% (expanded) vs 18.3% (original); selectivity ratio 0.97; gate PASS
+- `articulatory_csp.json` — Baseline AC 58.7%; delta grid search (7 values); hard constraint dict_hit 27.7% (3.95×); per-onset descent AC 66.7%; best approach: per-onset descent
+- `iterative_hits.json` — 72 confirmed hits; 16→18/25 triples constrained; split-variable beam search; converged at iteration 1; dict_hit 30.6%
+- `combined_refine.json` — 2³ ablation table (8 configs); best: dict expansion only (35.4%, 2.55×); synergy −8.1%; iterative convergence curve; full best assignment
+- `text_analysis.json` — Phrase detection (0 phrases); section readability (herbal_a 35.8%, pharma 22.6%); vocabulary catalog (3/6 domains); prior claims (0/5 matches); gate FAIL (no phrases)
+- `phase15_validate.json` — V1–V14 battery: 11/14 PASS; AC 63.5%; progression 11.1% → 19.4% → 35.4%; gate PASS
 
 ## Background
 

@@ -1871,3 +1871,238 @@ def build_triple_phoneme_hypotheses(
         hypotheses[triple_key] = candidates
 
     return hypotheses
+
+
+# ---------------------------------------------------------------------------
+# Phase 15 – Medieval Latin dictionary expansion
+# ---------------------------------------------------------------------------
+
+MEDIEVAL_SPELLING_RULES: List[Tuple[str, str, str]] = [
+    # (pattern, replacement, category)
+    # ae/oe simplification (very common in medieval Latin)
+    ('ae', 'e', 'ae_simplification'),
+    ('oe', 'e', 'oe_simplification'),
+    # vowel interchange
+    ('e', 'i', 'vowel_interchange'),
+    ('i', 'e', 'vowel_interchange'),
+    ('o', 'u', 'vowel_interchange'),
+    ('u', 'o', 'vowel_interchange'),
+    # consonant voicing/devoicing
+    ('t', 'd', 'voicing'),
+    ('d', 't', 'voicing'),
+    ('p', 'b', 'voicing'),
+    ('b', 'p', 'voicing'),
+    ('c', 'g', 'voicing'),
+    ('g', 'c', 'voicing'),
+    # h variation (universally unstable in medieval Latin)
+    ('h', '', 'h_loss'),
+    # gemination / degemination
+    ('ll', 'l', 'degemination'),
+    ('l', 'll', 'gemination'),
+    ('ss', 's', 'degemination'),
+    ('s', 'ss', 'gemination'),
+    ('rr', 'r', 'degemination'),
+    ('r', 'rr', 'gemination'),
+    ('nn', 'n', 'degemination'),
+    ('n', 'nn', 'gemination'),
+    ('tt', 't', 'degemination'),
+    ('t', 'tt', 'gemination'),
+    ('pp', 'p', 'degemination'),
+    ('p', 'pp', 'gemination'),
+]
+
+PHARMACEUTICAL_VOCABULARY: Dict[str, List[str]] = {
+    'verbs': [
+        'recipe', 'accipe', 'misce', 'contere', 'coque',
+        'adde', 'pone', 'distilla', 'cola', 'solve',
+        'funde', 'unge', 'bibe', 'lava', 'tere',
+    ],
+    'plant_parts': [
+        'folia', 'radix', 'flos', 'semen', 'cortex',
+        'herba', 'ramus', 'bacca', 'bulbus', 'tuber',
+        'spica', 'gummi', 'resina', 'succus',
+    ],
+    'preparations': [
+        'aqua', 'oleum', 'vinum', 'mel', 'acetum',
+        'pulvis', 'emplastrum', 'unguentum', 'sirupus',
+        'decoctum', 'infusum', 'electuarium', 'pilula',
+    ],
+    'body_parts': [
+        'caput', 'stomachum', 'oculus', 'dens', 'pectus',
+        'iecur', 'ren', 'venter', 'manus', 'pes',
+    ],
+    'qualities': [
+        'calidus', 'frigidus', 'siccus', 'humidus',
+        'bene', 'male', 'niger', 'albus', 'dulcis',
+    ],
+    'function_words': [
+        'et', 'in', 'cum', 'est', 'ad', 'de',
+        'per', 'pro', 'sine', 'non', 'vel', 'aut',
+    ],
+}
+
+LATIN_PHRASE_PATTERNS: List[Tuple[str, List[str]]] = [
+    ('recipe_formula', ['recipe', 'accipe']),
+    ('medium', ['cum', 'aqua', 'in', 'aqua', 'oleum', 'vinum']),
+    ('instruction', ['et', 'misce', 'contere', 'coque', 'adde']),
+    ('heating', ['ad', 'ignem', 'coque']),
+    ('quality', ['est', 'calidus', 'frigidus', 'siccus', 'humidus']),
+    ('degree', ['in', 'primo', 'secundo', 'tertio', 'gradu']),
+    ('efficacy', ['valet', 'contra', 'prodest']),
+    ('plant_desc', ['folia', 'radix', 'flos', 'semen']),
+]
+
+# Latin nominal declension endings for inflected form generation
+_LATIN_NOUN_ENDINGS: Dict[str, List[str]] = {
+    'noun1': ['a', 'ae', 'am', 'arum', 'is'],            # 1st decl (rosa)
+    'noun2': ['us', 'i', 'o', 'um', 'orum', 'is', 'os'], # 2nd decl (hortus)
+    'noun2n': ['um', 'i', 'o', 'orum', 'is', 'a'],       # 2nd neut (oleum)
+    'noun3': ['is', 'i', 'em', 'e', 'um', 'ibus', 'es'], # 3rd decl (radix)
+    'noun4': ['us', 'ui', 'um', 'u', 'uum', 'ibus'],     # 4th decl (fructus)
+    'noun5': ['es', 'ei', 'em', 'erum', 'ebus'],          # 5th decl (species)
+}
+
+_LATIN_VERB_ENDINGS: Dict[str, List[str]] = {
+    'verb1': ['o', 'as', 'at', 'amus', 'atis', 'ant',     # pres ind
+              'a', 'are', 'atur', 'ans', 'ando'],          # imp + inf + part
+    'verb2': ['eo', 'es', 'et', 'emus', 'etis', 'ent',
+              'e', 'ere', 'etur', 'ens', 'endo'],
+    'verb3': ['o', 'is', 'it', 'imus', 'itis', 'unt',
+              'e', 'ere', 'itur', 'ens', 'endo'],
+    'verb4': ['io', 'is', 'it', 'imus', 'itis', 'iunt',
+              'i', 'ire', 'itur', 'iens', 'iendo'],
+}
+
+_LATIN_ADJ_ENDINGS: List[str] = [
+    'us', 'a', 'um', 'i', 'ae', 'o', 'am', 'os', 'as',  # 1st/2nd
+    'is', 'e', 'em', 'ibus', 'es', 'ia',                  # 3rd
+]
+
+
+def generate_medieval_variants(word: str) -> Dict[str, List[str]]:
+    """Generate medieval Latin spelling variants of a word.
+
+    Returns dict mapping variant_string -> [rule_categories_applied].
+    Only single-rule applications to avoid combinatorial explosion.
+    """
+    variants: Dict[str, List[str]] = {}
+
+    for pattern, replacement, category in MEDIEVAL_SPELLING_RULES:
+        idx = 0
+        while True:
+            pos = word.find(pattern, idx)
+            if pos < 0:
+                break
+            variant = word[:pos] + replacement + word[pos + len(pattern):]
+            if variant != word and len(variant) >= 2:
+                if variant not in variants:
+                    variants[variant] = []
+                variants[variant].append(category)
+            idx = pos + 1
+
+    return variants
+
+
+def generate_inflected_forms(stem: str, pos: str) -> List[str]:
+    """Generate Latin inflected forms for a stem.
+
+    Parameters
+    ----------
+    stem : str
+        The base stem (without ending), e.g. 'ros' for 'rosa'.
+    pos : str
+        Paradigm key: 'noun1'–'noun5', 'noun2n', 'verb1'–'verb4', 'adj'.
+
+    Returns a list of unique inflected forms.
+    """
+    if pos == 'adj':
+        endings = _LATIN_ADJ_ENDINGS
+    elif pos in _LATIN_NOUN_ENDINGS:
+        endings = _LATIN_NOUN_ENDINGS[pos]
+    elif pos in _LATIN_VERB_ENDINGS:
+        endings = _LATIN_VERB_ENDINGS[pos]
+    else:
+        return [stem]
+
+    forms = set()
+    for ending in endings:
+        form = stem + ending
+        if len(form) >= 2:
+            forms.add(form)
+    return sorted(forms)
+
+
+def build_expanded_word_set(
+    base_word_set: set,
+) -> Tuple[set, Dict[str, str]]:
+    """Build an expanded Latin dictionary from the base reference word set.
+
+    Expansion sources:
+    1. Medieval spelling variants of every base word
+    2. Pharmaceutical vocabulary terms (hand-curated)
+    3. Inflected forms of pharmaceutical stems
+
+    Returns
+    -------
+    (expanded_set, provenance_map)
+        provenance_map maps each NEW word to the base word or source it
+        derives from.
+    """
+    expanded = set(base_word_set)
+    provenance: Dict[str, str] = {}
+
+    # 1. Medieval spelling variants
+    for word in list(base_word_set):
+        for variant, _cats in generate_medieval_variants(word).items():
+            if variant not in expanded:
+                expanded.add(variant)
+                provenance[variant] = f"variant:{word}"
+
+    # 2. Pharmaceutical vocabulary (direct terms)
+    for domain, words in PHARMACEUTICAL_VOCABULARY.items():
+        for w in words:
+            wl = w.lower()
+            if wl not in expanded:
+                expanded.add(wl)
+                provenance[wl] = f"pharma:{domain}"
+
+    # 3. Inflected forms of pharmaceutical vocabulary stems
+    _PHARMA_STEMS: List[Tuple[str, str]] = [
+        # (stem, paradigm)
+        ('aqu', 'noun1'), ('ole', 'noun2n'), ('vin', 'noun2n'),
+        ('herb', 'noun1'), ('foli', 'noun2n'), ('radic', 'noun3'),
+        ('flor', 'noun3'), ('semin', 'noun3'), ('cortic', 'noun3'),
+        ('ram', 'noun2'), ('bacc', 'noun1'), ('succus', 'noun2'),
+        ('pulver', 'noun3'), ('sirup', 'noun2'),
+        ('calid', 'adj'), ('frigid', 'adj'), ('sicc', 'adj'),
+        ('humid', 'adj'), ('nigr', 'adj'), ('alb', 'adj'),
+        ('dulc', 'noun3'),
+        ('coqu', 'verb3'), ('misc', 'verb2'), ('add', 'verb3'),
+        ('solv', 'verb3'), ('lav', 'verb1'), ('bib', 'verb3'),
+        ('fund', 'verb3'), ('distill', 'verb1'), ('col', 'verb1'),
+        ('ung', 'verb3'), ('ter', 'verb3'),
+    ]
+    for stem, paradigm in _PHARMA_STEMS:
+        for form in generate_inflected_forms(stem, paradigm):
+            fl = form.lower()
+            if fl not in expanded:
+                expanded.add(fl)
+                provenance[fl] = f"inflection:{stem}({paradigm})"
+
+    # 4. Medieval variants of pharmaceutical terms and inflections ONLY
+    #    (NOT step-1 spelling variants — that would be variants-of-variants)
+    pharma_direct: set = set()
+    for domain, words in PHARMACEUTICAL_VOCABULARY.items():
+        for w in words:
+            pharma_direct.add(w.lower())
+    for stem, paradigm in _PHARMA_STEMS:
+        for form in generate_inflected_forms(stem, paradigm):
+            pharma_direct.add(form.lower())
+
+    for word in pharma_direct:
+        for variant, _cats in generate_medieval_variants(word).items():
+            if variant not in expanded:
+                expanded.add(variant)
+                provenance[variant] = f"pharma_variant:{word}"
+
+    return expanded, provenance

@@ -77,6 +77,20 @@ Usage:
     voynich rule-validate     # Phase 13.4: cross-validation + per-rule selectivity
     voynich context-decode    # Phase 13.5: full decoding + V1-V11 battery
     voynich phase13           # Run full Phase 13 pipeline
+    voynich cell-analysis     # Phase 14.1: within-cell character distributional analysis
+    voynich stroke-features   # Phase 14.2: stroke-to-phoneme feature mapping
+    voynich feature-csp       # Phase 14.3: feature-level CSP solver
+    voynich feature-calibrate # Phase 14.4: synthetic calibration
+    voynich feature-decode    # Phase 14.5-14.6: full decode + V1-V12
+    voynich subcell-split     # Phase 14.7: data-driven sub-cell splitting
+    voynich phase14           # Run full Phase 14 pipeline
+    voynich dict-expand       # Phase 15.1: medieval Latin dictionary expansion
+    voynich artic-csp         # Phase 15.2: articulatory consistency scoring
+    voynich iter-hits         # Phase 15.3: iterative re-solving with confirmed hits
+    voynich combined-refine   # Phase 15.4: combined optimization + ablation
+    voynich text-analysis     # Phase 15.5: decoded text analysis + phrase detection
+    voynich phase15-validate  # Phase 15.6: full V1-V14 validation battery
+    voynich phase15           # Run full Phase 15 pipeline
 """
 import sys
 import time
@@ -932,6 +946,76 @@ def cmd_phase14():
     cmd_subcell_split()
 
 
+# ---------------------------------------------------------------------------
+# Phase 15: Feature Model Refinement
+# ---------------------------------------------------------------------------
+
+def cmd_dict_expand():
+    """Run Phase 15.1: medieval Latin dictionary expansion + re-scoring."""
+    from voynich.phases.dict_expansion import run_dict_expansion
+    t0 = time.time()
+    run_dict_expansion()
+    print(f"\nDictionary expansion completed in {time.time() - t0:.1f}s")
+
+
+def cmd_artic_csp():
+    """Run Phase 15.2: articulatory consistency CSP scoring."""
+    from voynich.phases.articulatory_csp import run_articulatory_csp
+    t0 = time.time()
+    run_articulatory_csp()
+    print(f"\nArticulatory CSP completed in {time.time() - t0:.1f}s")
+
+
+def cmd_iter_hits():
+    """Run Phase 15.3: iterative re-solving with confirmed hits."""
+    from voynich.phases.iterative_hits import run_iterative_hits
+    t0 = time.time()
+    run_iterative_hits()
+    print(f"\nIterative hits completed in {time.time() - t0:.1f}s")
+
+
+def cmd_combined_refine():
+    """Run Phase 15.4: combined optimization + ablation study."""
+    from voynich.phases.combined_refine import run_combined_refine
+    t0 = time.time()
+    run_combined_refine()
+    print(f"\nCombined refine completed in {time.time() - t0:.1f}s")
+
+
+def cmd_text_analysis():
+    """Run Phase 15.5: decoded text analysis + phrase detection."""
+    from voynich.phases.text_analysis import run_text_analysis
+    t0 = time.time()
+    run_text_analysis()
+    print(f"\nText analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase15_validate():
+    """Run Phase 15.6: full V1-V14 validation battery."""
+    from voynich.phases.phase15_validate import run_phase15_validate
+    t0 = time.time()
+    run_phase15_validate()
+    print(f"\nPhase 15 validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase15():
+    """Run full Phase 15 pipeline: feature model refinement."""
+    print("=" * 70)
+    print("PHASE 15: Feature Model Refinement")
+    print("=" * 70)
+    cmd_dict_expand()
+    print("\n" + "=" * 70 + "\n")
+    cmd_artic_csp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_iter_hits()
+    print("\n" + "=" * 70 + "\n")
+    cmd_combined_refine()
+    print("\n" + "=" * 70 + "\n")
+    cmd_text_analysis()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase15_validate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -1023,6 +1107,13 @@ def main():
         'feature-decode': cmd_feature_decode,
         'subcell-split': cmd_subcell_split,
         'phase14': cmd_phase14,
+        'dict-expand': cmd_dict_expand,
+        'artic-csp': cmd_artic_csp,
+        'iter-hits': cmd_iter_hits,
+        'combined-refine': cmd_combined_refine,
+        'text-analysis': cmd_text_analysis,
+        'phase15-validate': cmd_phase15_validate,
+        'phase15': cmd_phase15,
     }
 
     if len(sys.argv) < 2:
