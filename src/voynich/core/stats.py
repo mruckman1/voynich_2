@@ -1756,3 +1756,134 @@ def coefficient_of_variation(values: List[float]) -> float:
     if abs(m) < 1e-12:
         return 0.0
     return float(np.std(arr) / m)
+
+
+# ---------------------------------------------------------------------------
+# Phase B-C: Paleographic Comparison Utilities
+# ---------------------------------------------------------------------------
+
+def cosine_similarity_triples(
+    v_triple: Dict[str, str],
+    t_triple: Dict[str, str],
+) -> float:
+    """Compute cosine similarity between two stroke-feature triples.
+
+    Each triple is a dict with keys: first_stroke, last_stroke, glyph_class.
+    Similarity is computed as fraction of matching components (0, 1/3, 2/3, or 1).
+    """
+    matches = 0
+    total = 0
+    for key in ('first_stroke', 'last_stroke', 'glyph_class'):
+        v_val = v_triple.get(key, '')
+        t_val = t_triple.get(key, '')
+        if v_val and t_val:
+            total += 1
+            if v_val == t_val:
+                matches += 1
+
+    if total == 0:
+        return 0.0
+    return matches / total
+
+
+def compute_phrase_selectivity(
+    n_phrases: int,
+    null_phrase_counts: List[int],
+) -> Dict[str, float]:
+    """Compute phrase detection selectivity against null baseline.
+
+    Parameters
+    ----------
+    n_phrases : int
+        Number of phrases detected in the real decoded output.
+    null_phrase_counts : list of int
+        Number of phrases detected in each null/random decode.
+
+    Returns
+    -------
+    Dict with:
+        'selectivity': float (n_phrases / null_mean, or inf if null_mean=0)
+        'p_value': float (empirical p-value)
+        'null_mean': float
+        'null_std': float
+        'z_score': float
+    """
+    if not null_phrase_counts:
+        return {
+            'selectivity': float('inf') if n_phrases > 0 else 0.0,
+            'p_value': 0.0 if n_phrases > 0 else 1.0,
+            'null_mean': 0.0,
+            'null_std': 0.0,
+            'z_score': float('inf') if n_phrases > 0 else 0.0,
+        }
+
+    null_arr = np.array(null_phrase_counts, dtype=float)
+    null_mean = float(np.mean(null_arr))
+    null_std = float(np.std(null_arr))
+
+    if null_mean > 0:
+        selectivity = n_phrases / null_mean
+    else:
+        selectivity = float('inf') if n_phrases > 0 else 0.0
+
+    if null_std > 0:
+        z_score = (n_phrases - null_mean) / null_std
+    else:
+        z_score = float('inf') if n_phrases > null_mean else 0.0
+
+    # Empirical p-value: fraction of null runs >= real count
+    n_exceeding = sum(1 for nc in null_phrase_counts if nc >= n_phrases)
+    p_value = n_exceeding / len(null_phrase_counts)
+
+    return {
+        'selectivity': selectivity,
+        'p_value': p_value,
+        'null_mean': null_mean,
+        'null_std': null_std,
+        'z_score': z_score,
+    }
+
+
+def overlap_rate_with_null(
+    real_overlap: int,
+    total_items: int,
+    null_overlaps: List[int],
+) -> Dict[str, float]:
+    """Compute overlap selectivity against null baseline.
+
+    Parameters
+    ----------
+    real_overlap : int
+        Number of items that overlap in the real comparison.
+    total_items : int
+        Total number of items compared.
+    null_overlaps : list of int
+        Overlap counts from null/random comparisons.
+
+    Returns
+    -------
+    Dict with rate, null_mean_rate, selectivity, p_value.
+    """
+    real_rate = real_overlap / total_items if total_items > 0 else 0.0
+
+    if not null_overlaps:
+        return {
+            'rate': real_rate,
+            'null_mean_rate': 0.0,
+            'selectivity': float('inf') if real_rate > 0 else 0.0,
+            'p_value': 0.0 if real_overlap > 0 else 1.0,
+        }
+
+    null_rates = [n / total_items for n in null_overlaps] if total_items > 0 else [0.0] * len(null_overlaps)
+    null_mean = float(np.mean(null_rates))
+
+    selectivity = real_rate / null_mean if null_mean > 0 else (float('inf') if real_rate > 0 else 0.0)
+    n_exceeding = sum(1 for nr in null_rates if nr >= real_rate)
+    p_value = n_exceeding / len(null_rates)
+
+    return {
+        'rate': real_rate,
+        'null_mean_rate': null_mean,
+        'selectivity': selectivity,
+        'p_value': p_value,
+    }

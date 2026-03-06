@@ -2167,3 +2167,303 @@ def build_expanded_word_set(
                 provenance[variant] = f"pharma_variant:{word}"
 
     return expanded, provenance
+
+
+# ---------------------------------------------------------------------------
+# Phase A-D: Paleographic Reference Loading and Validation
+# ---------------------------------------------------------------------------
+
+VALID_FIRST_STROKES = {'ascender', 'connector', 'crossbar', 'loop', 'open_curve', 'sigmoid', 'vertical'}
+VALID_LAST_STROKES = {'ascender', 'connector', 'crossbar', 'descender', 'hook', 'loop', 'open_curve', 'plume', 'sigmoid', 'tail', 'vertical'}
+VALID_GLYPH_CLASSES = {'bench', 'compound', 'gallows', 'minim', 'rare', 'suffix'}
+VALID_MODIFIER_MARKS = {'dot', 'tick', 'thickening', 'angle_change', 'serif', 'crossbar_added'}
+VALID_CONFIDENCES = {'high', 'medium', 'low'}
+
+
+def validate_stroke_fields(entry: Dict[str, Any]) -> List[str]:
+    """Validate stroke vocabulary fields in a paleographic sign entry.
+
+    Returns list of error messages (empty if valid).
+    """
+    errors: List[str] = []
+    sid = entry.get('sign_id', '?')
+
+    fs = entry.get('first_stroke')
+    ls = entry.get('last_stroke')
+    gc = entry.get('glyph_class')
+    tk = entry.get('triple_key')
+
+    if fs and fs != 'unclear' and fs not in VALID_FIRST_STROKES:
+        errors.append(f"{sid}: invalid first_stroke '{fs}'")
+    if ls and ls != 'unclear' and ls not in VALID_LAST_STROKES:
+        errors.append(f"{sid}: invalid last_stroke '{ls}'")
+    if gc and gc != 'unclear' and gc not in VALID_GLYPH_CLASSES:
+        errors.append(f"{sid}: invalid glyph_class '{gc}'")
+
+    # Check triple_key consistency
+    if fs and ls and gc and tk:
+        expected_tk = f"{fs},{ls},{gc}"
+        if tk != expected_tk:
+            errors.append(f"{sid}: triple_key '{tk}' != expected '{expected_tk}'")
+
+    conf = entry.get('confidence')
+    if conf and conf not in VALID_CONFIDENCES:
+        errors.append(f"{sid}: invalid confidence '{conf}'")
+
+    marks = entry.get('modifier_marks', [])
+    for m in marks:
+        if m not in VALID_MODIFIER_MARKS:
+            errors.append(f"{sid}: invalid modifier_mark '{m}'")
+
+    return errors
+
+
+def _load_json_safe(path: str) -> Optional[Dict]:
+    """Load a JSON file, returning None if it doesn't exist."""
+    if not os.path.exists(path):
+        return None
+    with open(path) as f:
+        return json.load(f)
+
+
+def load_tironian_reference(source: str = 'all') -> List[Dict[str, Any]]:
+    """Load Tironian reference signs from data/reference/tironian/.
+
+    Parameters
+    ----------
+    source : str
+        'schmitz', 'chatelain', or 'all' (default).
+
+    Returns
+    -------
+    List of sign entry dicts, each tagged with 'source_file'.
+    """
+    base = str(_data_dir('reference/tironian'))
+    signs: List[Dict[str, Any]] = []
+
+    files_to_load: List[Tuple[str, str]] = []
+    if source in ('schmitz', 'all'):
+        files_to_load.append((os.path.join(base, 'schmitz_plates.json'), 'schmitz'))
+    if source in ('chatelain', 'all'):
+        files_to_load.append((os.path.join(base, 'chatelain_bobbio.json'), 'chatelain'))
+
+    for fpath, tag in files_to_load:
+        data = _load_json_safe(fpath)
+        if data is None:
+            continue
+        for s in data.get('signs', []):
+            s['source_file'] = tag
+            signs.append(s)
+
+    return signs
+
+
+def load_cappelli_reference() -> List[Dict[str, Any]]:
+    """Load Cappelli abbreviation entries from data/reference/cappelli/."""
+    fpath = os.path.join(str(_data_dir('reference/cappelli')), 'cappelli_entries.json')
+    data = _load_json_safe(fpath)
+    if data is None:
+        return []
+    entries = data.get('entries', [])
+    for e in entries:
+        e['source_file'] = 'cappelli'
+    return entries
+
+
+def load_costamagna_reference() -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Load Costamagna sign tables from data/reference/costamagna/.
+
+    Returns
+    -------
+    (family_signs, unaffiliated_signs) where family_signs is a flat list
+    of all signs from all families (each tagged with family_id), and
+    unaffiliated_signs is a list of signs without family membership.
+    """
+    fpath = os.path.join(str(_data_dir('reference/costamagna')), 'costamagna_signs.json')
+    data = _load_json_safe(fpath)
+    if data is None:
+        return [], []
+
+    family_signs: List[Dict[str, Any]] = []
+    for fam in data.get('sign_families', []):
+        fam_id = fam.get('family_id', '?')
+        for s in fam.get('members', []):
+            s['family_id'] = fam_id
+            s['source_file'] = 'costamagna'
+            family_signs.append(s)
+
+    unaffiliated = data.get('unaffiliated_signs', [])
+    for s in unaffiliated:
+        s['source_file'] = 'costamagna'
+
+    return family_signs, unaffiliated
+
+
+def load_fontana_reference() -> List[Dict[str, Any]]:
+    """Load Fontana cipher signs from data/reference/fontana/."""
+    fpath = os.path.join(str(_data_dir('reference/fontana')), 'fontana_signs.json')
+    data = _load_json_safe(fpath)
+    if data is None:
+        return []
+    signs = data.get('signs', [])
+    for s in signs:
+        s['source_file'] = 'fontana'
+    return signs
+
+
+def load_milanese_reference() -> List[Dict[str, Any]]:
+    """Load Milanese cipher keys from data/reference/milanese/."""
+    fpath = os.path.join(str(_data_dir('reference/milanese')), 'milanese_cipher_keys.json')
+    data = _load_json_safe(fpath)
+    if data is None:
+        return []
+    return data.get('ciphers', [])
+
+
+def load_ligature_observations() -> Optional[Dict[str, Any]]:
+    """Load ligature observations from data/reference/ligature/."""
+    fpath = os.path.join(str(_data_dir('reference/ligature')), 'ligature_observations.json')
+    return _load_json_safe(fpath)
+
+
+def load_master_reference() -> Optional[Dict[str, Any]]:
+    """Load the merged master reference from data/reference/paleographic/."""
+    fpath = os.path.join(str(_data_dir('reference/paleographic')), 'master_reference.json')
+    return _load_json_safe(fpath)
+
+
+def detect_sign_families(signs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Group signs into families that share the same first_stroke.
+
+    Within a family, members share first_stroke but differ by last_stroke
+    and/or glyph_class — these are minimal-pair families analogous to the
+    onset families in Phase 14's Voynich feature decomposition.
+
+    Returns list of family dicts:
+    {
+        'family_id': str,
+        'common_first_stroke': str,
+        'n_members': int,
+        'members': List[Dict],
+        'triple_keys': List[str],
+    }
+    """
+    from collections import defaultdict
+    by_first: Dict[str, List[Dict]] = defaultdict(list)
+    for s in signs:
+        fs = s.get('first_stroke', 'unclear')
+        if fs != 'unclear':
+            by_first[fs].append(s)
+
+    families: List[Dict[str, Any]] = []
+    for idx, (fs, members) in enumerate(sorted(by_first.items()), 1):
+        if len(members) < 2:
+            continue
+        triple_keys = sorted(set(s.get('triple_key', '') for s in members if s.get('triple_key')))
+        families.append({
+            'family_id': f'FAM_{idx:02d}',
+            'common_first_stroke': fs,
+            'n_members': len(members),
+            'members': members,
+            'triple_keys': triple_keys,
+            'n_distinct_triples': len(triple_keys),
+        })
+
+    return families
+
+
+def build_tironian_domain_priors(
+    master_ref: Dict[str, Any],
+    voynich_triples: List[str],
+) -> Dict[str, Dict[str, Any]]:
+    """Build CSP domain priors from Tironian sign matches.
+
+    For each Voynich triple_key, finds Tironian signs with matching
+    triple_key and returns their latin syllable values as domain candidates.
+
+    Parameters
+    ----------
+    master_ref : dict
+        The master reference JSON (loaded via load_master_reference()).
+    voynich_triples : list of str
+        The 25 Voynich triple_keys from stroke_features.json.
+
+    Returns
+    -------
+    Dict mapping triple_key -> {
+        'tironian_candidates': List[str],  # syllable values from matches
+        'match_type': str,                 # 'exact', 'near', or 'none'
+        'n_matches': int,
+        'confidences': List[str],
+    }
+    """
+    # Index all reference signs by triple_key
+    ref_by_triple: Dict[str, List[Dict]] = {}
+    for sign in master_ref.get('all_signs', []):
+        tk = sign.get('triple_key', '')
+        if tk:
+            ref_by_triple.setdefault(tk, []).append(sign)
+
+    # Also build a partial-match index (2-of-3 component matches)
+    ref_components: List[Tuple[str, str, str, Dict]] = []
+    for sign in master_ref.get('all_signs', []):
+        fs = sign.get('first_stroke', '')
+        ls = sign.get('last_stroke', '')
+        gc = sign.get('glyph_class', '')
+        if fs and ls and gc:
+            ref_components.append((fs, ls, gc, sign))
+
+    priors: Dict[str, Dict[str, Any]] = {}
+    for vtk in voynich_triples:
+        parts = vtk.split(',')
+        if len(parts) != 3:
+            priors[vtk] = {'tironian_candidates': [], 'match_type': 'none', 'n_matches': 0, 'confidences': []}
+            continue
+
+        vfs, vls, vgc = parts
+
+        # Try exact match first
+        exact = ref_by_triple.get(vtk, [])
+        if exact:
+            candidates = []
+            confs = []
+            for s in exact:
+                val = s.get('latin_expansion') or s.get('syllable_value') or s.get('latin_value')
+                if val:
+                    candidates.append(val.lower())
+                    confs.append(s.get('confidence', 'low'))
+            priors[vtk] = {
+                'tironian_candidates': sorted(set(candidates)),
+                'match_type': 'exact',
+                'n_matches': len(exact),
+                'confidences': confs,
+            }
+            continue
+
+        # Try near match (2 of 3 components match)
+        near_candidates = []
+        near_confs = []
+        for rfs, rls, rgc, sign in ref_components:
+            match_count = (rfs == vfs) + (rls == vls) + (rgc == vgc)
+            if match_count >= 2:
+                val = sign.get('latin_expansion') or sign.get('syllable_value') or sign.get('latin_value')
+                if val:
+                    near_candidates.append(val.lower())
+                    near_confs.append(sign.get('confidence', 'low'))
+
+        if near_candidates:
+            priors[vtk] = {
+                'tironian_candidates': sorted(set(near_candidates)),
+                'match_type': 'near',
+                'n_matches': len(near_candidates),
+                'confidences': near_confs,
+            }
+        else:
+            priors[vtk] = {
+                'tironian_candidates': [],
+                'match_type': 'none',
+                'n_matches': 0,
+                'confidences': [],
+            }
+
+    return priors

@@ -822,3 +822,115 @@ def decode_token_modifier_aware(
             result_parts.append(syllables[i])
 
     return ''.join(result_parts)
+
+
+# ---------------------------------------------------------------------------
+# Phase B.0 / C.5: Ligature Re-Segmentation
+# ---------------------------------------------------------------------------
+
+def rebuild_eva_ligatures(
+    ligature_data: Dict[str, Any],
+    connection_rate_threshold: float = 0.8,
+) -> Tuple[List[str], Dict[str, List[str]]]:
+    """Rebuild EVA_LIGATURES incorporating ligature analysis results.
+
+    Parameters
+    ----------
+    ligature_data : dict
+        Loaded from data/reference/ligature/ligature_observations.json.
+    connection_rate_threshold : float
+        Minimum connection_rate to confirm a pair as a ligature (default 0.8).
+
+    Returns
+    -------
+    (new_ligatures_sorted, resegmentation_map)
+    new_ligatures_sorted : list of str
+        Updated ligature list (longest-first sorted).
+    resegmentation_map : dict
+        Maps old ligatures that should be MERGED further or SPLIT.
+        key = old EVA sequence, value = list of new segments.
+        If value has one element, the pair should be treated as a single sign.
+        If value has multiple elements, the old ligature should be split.
+    """
+    new_ligatures = list(EVA_LIGATURES)
+    resegmentation_map: Dict[str, List[str]] = {}
+
+    summaries = ligature_data.get('pair_summaries', [])
+    for ps in summaries:
+        pair = ps.get('eva_pair', '')
+        rate = ps.get('connection_rate', 0.0)
+        proposed = ps.get('proposed_as_ligature', False)
+
+        if proposed and rate >= connection_rate_threshold:
+            if pair not in new_ligatures:
+                new_ligatures.append(pair)
+            resegmentation_map[pair] = [pair]  # treat as single unit
+
+    # Handle explicit new_segmentations (splitting existing ligatures)
+    for reseg in ligature_data.get('new_segmentations', []):
+        original = reseg.get('original_eva', '')
+        segments = reseg.get('proposed_segments', [])
+        confidence = reseg.get('confidence', 'low')
+        if original and segments and confidence in ('high', 'medium'):
+            resegmentation_map[original] = segments
+            # Remove from ligatures if it's being split
+            if len(segments) > 1 and original in new_ligatures:
+                new_ligatures.remove(original)
+
+    new_ligatures_sorted = sorted(new_ligatures, key=len, reverse=True)
+    return new_ligatures_sorted, resegmentation_map
+
+
+def tokenize_eva_chars_resegmented(
+    token: str,
+    resegmentation_map: Dict[str, List[str]],
+) -> List[str]:
+    """Tokenize an EVA token into characters, applying re-segmentation.
+
+    Like tokenize_eva_chars but first applies merges/splits from the
+    ligature analysis before standard EVA ligature matching.
+    """
+    # First apply any re-segmentation rules
+    modified_token = token
+    # Sort reseg keys longest-first to avoid partial matches
+    for old_seq in sorted(resegmentation_map.keys(), key=len, reverse=True):
+        new_segs = resegmentation_map[old_seq]
+        if len(new_segs) == 1 and new_segs[0] == old_seq:
+            continue  # This is a confirmation, not a change
+        replacement = '\x00'.join(new_segs)  # temporary separator
+        modified_token = modified_token.replace(old_seq, replacement)
+
+    # Split on temporary separator and recombine
+    if '\x00' in modified_token:
+        parts = modified_token.split('\x00')
+        result: List[str] = []
+        for part in parts:
+            if part:
+                result.extend(tokenize_eva_chars(part))
+        return result
+
+    return tokenize_eva_chars(modified_token)
+
+
+def token_to_triples_resegmented(
+    token: str,
+    eva_to_triple: Dict[str, str],
+    resegmentation_map: Dict[str, List[str]],
+) -> List[str]:
+    """Like token_to_triples but applies re-segmentation before triple mapping.
+
+    Parameters
+    ----------
+    token : str
+        EVA token string.
+    eva_to_triple : dict
+        Mapping from EVA character to triple_key.
+    resegmentation_map : dict
+        From rebuild_eva_ligatures().
+
+    Returns
+    -------
+    List of triple_key strings for the token's characters.
+    """
+    chars = tokenize_eva_chars_resegmented(token, resegmentation_map)
+    return [eva_to_triple[ch] for ch in chars if ch in eva_to_triple]

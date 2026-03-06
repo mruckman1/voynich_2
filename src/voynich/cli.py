@@ -1161,6 +1161,198 @@ def cmd_step0():
     cmd_step0_integrate()
 
 
+# ── Phase A: Paleographic Reference Inventory ─────────────────────────
+
+def cmd_ref_validate():
+    """Run Phase A.3a: validate all paleographic reference JSONs."""
+    from voynich.phases.ref_validate import run_ref_validate
+    t0 = time.time()
+    run_ref_validate()
+    print(f"\nReference validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ref_merge():
+    """Run Phase A.3b: merge validated sources into master reference."""
+    from voynich.phases.ref_merge import run_ref_merge
+    t0 = time.time()
+    run_ref_merge()
+    print(f"\nReference merge completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phaseA():
+    """Run full Phase A pipeline: reference inventory."""
+    print("=" * 70)
+    print("PHASE A: Paleographic Reference Inventory")
+    print("=" * 70)
+    cmd_ref_validate()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ref_merge()
+
+
+# ── Phase B: Structural Comparison ────────────────────────────────────
+
+def cmd_ligature_analysis():
+    """Run Phase B.0: ligature analysis on manuscript images."""
+    from voynich.phases.ligature_analysis import run_ligature_analysis
+    t0 = time.time()
+    run_ligature_analysis()
+    print(f"\nLigature analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_triple_overlap():
+    """Run Phase B.1: triple overlap analysis (Voynich vs Tironian)."""
+    from voynich.phases.triple_overlap import run_triple_overlap
+    t0 = time.time()
+    run_triple_overlap()
+    print(f"\nTriple overlap analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_modifier_tironian():
+    """Run Phase B.2: modifier character test against Tironian marks."""
+    from voynich.phases.modifier_tironian import run_modifier_tironian
+    t0 = time.time()
+    run_modifier_tironian()
+    print(f"\nModifier Tironian test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_positional_compare():
+    """Run Phase B.3: positional constraint comparison."""
+    from voynich.phases.positional_compare import run_positional_compare
+    t0 = time.time()
+    run_positional_compare()
+    print(f"\nPositional comparison completed in {time.time() - t0:.1f}s")
+
+
+def cmd_cappelli_match():
+    """Run Phase B.4: Cappelli quick-match."""
+    from voynich.phases.cappelli_match import run_cappelli_match
+    t0 = time.time()
+    run_cappelli_match()
+    print(f"\nCappelli match completed in {time.time() - t0:.1f}s")
+
+
+def cmd_fontana_compare():
+    """Run Phase B.5: Fontana structural comparison."""
+    from voynich.phases.fontana_compare import run_fontana_compare
+    t0 = time.time()
+    run_fontana_compare()
+    print(f"\nFontana comparison completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phaseB():
+    """Run full Phase B pipeline: structural comparison."""
+    print("=" * 70)
+    print("PHASE B: Structural Comparison")
+    print("=" * 70)
+    cmd_ligature_analysis()
+    print("\n" + "=" * 70 + "\n")
+    cmd_triple_overlap()
+    print("\n" + "=" * 70 + "\n")
+    cmd_modifier_tironian()
+    print("\n" + "=" * 70 + "\n")
+    cmd_positional_compare()
+    print("\n" + "=" * 70 + "\n")
+    cmd_cappelli_match()
+    print("\n" + "=" * 70 + "\n")
+    cmd_fontana_compare()
+
+
+# ── Phase C: CSP Re-Solve With Paleographic Priors ───────────────────
+
+def cmd_tironian_csp():
+    """Run Phase C.1-C.2: CSP re-solve with Tironian priors."""
+    from voynich.phases.tironian_csp import run_tironian_csp
+    t0 = time.time()
+    run_tironian_csp()
+    print(f"\nTironian CSP completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phrase_detect():
+    """Run Phase C.3: phrase detection (primary success criterion)."""
+    from voynich.phases.phrase_detect import run_phrase_detect
+    t0 = time.time()
+    run_phrase_detect()
+    print(f"\nPhrase detection completed in {time.time() - t0:.1f}s")
+
+
+def cmd_modifier_clean():
+    """Run Phase C.4: modifier-clean subset test."""
+    from voynich.phases.modifier_clean import run_modifier_clean
+    t0 = time.time()
+    run_modifier_clean()
+    print(f"\nModifier-clean test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_reseg_csp():
+    """Run Phase C.5: re-segmented CSP (if ligatures found)."""
+    from voynich.phases.reseg_csp import run_reseg_csp
+    t0 = time.time()
+    run_reseg_csp()
+    print(f"\nRe-segmented CSP completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phaseC_validate():
+    """Run Phase C.6: full validation battery (17 tests)."""
+    from voynich.phases.phaseC_validate import run_phaseC_validate
+    t0 = time.time()
+    run_phaseC_validate()
+    print(f"\nPhase C validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phaseC():
+    """Run full Phase C pipeline: CSP re-solve with Tironian priors."""
+    print("=" * 70)
+    print("PHASE C: CSP Re-Solve With Paleographic Priors")
+    print("=" * 70)
+    cmd_tironian_csp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phrase_detect()
+    print("\n" + "=" * 70 + "\n")
+    cmd_modifier_clean()
+    print("\n" + "=" * 70 + "\n")
+    cmd_reseg_csp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phaseC_validate()
+
+
+# ── Phase D: Parallel Historical Investigation ────────────────────────
+
+def cmd_milanese_fingerprint():
+    """Run Phase D.1: Milanese cipher fingerprint comparison."""
+    from voynich.phases.milanese_fingerprint import run_milanese_fingerprint
+    t0 = time.time()
+    run_milanese_fingerprint()
+    print(f"\nMilanese fingerprint completed in {time.time() - t0:.1f}s")
+
+
+def cmd_entropy_floor():
+    """Run Phase D.2: entropy floor diagnostic."""
+    from voynich.phases.entropy_floor import run_entropy_floor
+    t0 = time.time()
+    run_entropy_floor()
+    print(f"\nEntropy floor diagnostic completed in {time.time() - t0:.1f}s")
+
+
+def cmd_verbose_encoding():
+    """Run Phase D.3: verbose encoding assessment."""
+    from voynich.phases.verbose_encoding import run_verbose_encoding
+    t0 = time.time()
+    run_verbose_encoding()
+    print(f"\nVerbose encoding assessment completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phaseD():
+    """Run full Phase D pipeline: parallel historical investigation."""
+    print("=" * 70)
+    print("PHASE D: Parallel Historical Investigation")
+    print("=" * 70)
+    cmd_milanese_fingerprint()
+    print("\n" + "=" * 70 + "\n")
+    cmd_entropy_floor()
+    print("\n" + "=" * 70 + "\n")
+    cmd_verbose_encoding()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -1275,6 +1467,30 @@ def main():
         'honesty-words': cmd_honesty_words,
         'step0-integrate': cmd_step0_integrate,
         'step0': cmd_step0,
+        # Phase A: Paleographic Reference Inventory
+        'ref-validate': cmd_ref_validate,
+        'ref-merge': cmd_ref_merge,
+        'phaseA': cmd_phaseA,
+        # Phase B: Structural Comparison
+        'ligature-analysis': cmd_ligature_analysis,
+        'triple-overlap': cmd_triple_overlap,
+        'mod-tironian': cmd_modifier_tironian,
+        'pos-compare': cmd_positional_compare,
+        'cappelli-match': cmd_cappelli_match,
+        'fontana-compare': cmd_fontana_compare,
+        'phaseB': cmd_phaseB,
+        # Phase C: CSP Re-Solve
+        'tir-csp': cmd_tironian_csp,
+        'phrase-detect': cmd_phrase_detect,
+        'mod-clean': cmd_modifier_clean,
+        'reseg-csp': cmd_reseg_csp,
+        'phaseC-validate': cmd_phaseC_validate,
+        'phaseC': cmd_phaseC,
+        # Phase D: Parallel Historical Investigation
+        'mil-fingerprint': cmd_milanese_fingerprint,
+        'entropy-floor': cmd_entropy_floor,
+        'verbose-enc': cmd_verbose_encoding,
+        'phaseD': cmd_phaseD,
     }
 
     if len(sys.argv) < 2:
