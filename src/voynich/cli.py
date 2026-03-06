@@ -1519,6 +1519,96 @@ def cmd_phase19():
     cmd_phase19_integrate()
 
 
+# ---------------------------------------------------------------------------
+# Phase 20: Tachygraphic Table Construction and Corpus Decoding
+# ---------------------------------------------------------------------------
+
+def cmd_tachy_anchors():
+    """Run Phase 20.1: tachygraphic anchor extraction."""
+    from voynich.phases.tachy_anchors import run_tachy_anchors
+    t0 = time.time()
+    run_tachy_anchors()
+    print(f"\nTachygraphic anchors completed in {time.time() - t0:.1f}s")
+
+
+def cmd_tachy_families():
+    """Run Phase 20.2: sign family → syllable family mapping."""
+    from voynich.phases.tachy_families import run_tachy_families
+    t0 = time.time()
+    run_tachy_families()
+    print(f"\nTachygraphic families completed in {time.time() - t0:.1f}s")
+
+
+def cmd_tachy_grid():
+    """Run Phase 20.3: constrained tachygraphic grid solve."""
+    from voynich.phases.tachy_grid_solve import run_tachy_grid_solve
+    t0 = time.time()
+    run_tachy_grid_solve()
+    print(f"\nTachygraphic grid solve completed in {time.time() - t0:.1f}s")
+
+
+def cmd_tachy_decode():
+    """Run Phase 20.4: full corpus tachygraphic decode."""
+    from voynich.phases.tachy_decode import run_tachy_decode
+    t0 = time.time()
+    run_tachy_decode()
+    print(f"\nTachygraphic decode completed in {time.time() - t0:.1f}s")
+
+
+def cmd_tachy_read():
+    """Run Phase 20.5: tachygraphic readability assessment."""
+    from voynich.phases.tachy_readability import run_tachy_readability
+    t0 = time.time()
+    run_tachy_readability()
+    print(f"\nTachygraphic readability completed in {time.time() - t0:.1f}s")
+
+
+def cmd_tachy_phrases():
+    """Run Phase 20.6: Latin phrase detection + botanical cross-check."""
+    from voynich.phases.tachy_phrases import run_tachy_phrases
+    t0 = time.time()
+    run_tachy_phrases()
+    print(f"\nTachygraphic phrases completed in {time.time() - t0:.1f}s")
+
+
+def cmd_tachy_validate():
+    """Run Phase 20.7: tachygraphic validation battery."""
+    from voynich.phases.tachy_validate import run_tachy_validate
+    t0 = time.time()
+    run_tachy_validate()
+    print(f"\nTachygraphic validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase20_integrate():
+    """Run Phase 20.8: Phase 20 integration and verdict."""
+    from voynich.phases.phase20_integrate import run_phase20_integrate
+    t0 = time.time()
+    run_phase20_integrate()
+    print(f"\nPhase 20 integration completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase20():
+    """Run full Phase 20 pipeline: tachygraphic table construction."""
+    print("=" * 70)
+    print("PHASE 20: Tachygraphic Table Construction and Corpus Decoding")
+    print("=" * 70)
+    cmd_tachy_anchors()
+    print("\n" + "=" * 70 + "\n")
+    cmd_tachy_families()
+    print("\n" + "=" * 70 + "\n")
+    cmd_tachy_grid()
+    print("\n" + "=" * 70 + "\n")
+    cmd_tachy_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_tachy_read()
+    print("\n" + "=" * 70 + "\n")
+    cmd_tachy_phrases()
+    print("\n" + "=" * 70 + "\n")
+    cmd_tachy_validate()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase20_integrate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -1676,6 +1766,16 @@ def main():
         'stroke-sim': cmd_stroke_sim,
         'phase19-integrate': cmd_phase19_integrate,
         'phase19': cmd_phase19,
+        # Phase 20: Tachygraphic Table Construction and Corpus Decoding
+        'tachy-anchors': cmd_tachy_anchors,
+        'tachy-families': cmd_tachy_families,
+        'tachy-grid': cmd_tachy_grid,
+        'tachy-decode': cmd_tachy_decode,
+        'tachy-read': cmd_tachy_read,
+        'tachy-phrases': cmd_tachy_phrases,
+        'tachy-validate': cmd_tachy_validate,
+        'phase20-integrate': cmd_phase20_integrate,
+        'phase20': cmd_phase20,
     }
 
     if len(sys.argv) < 2:

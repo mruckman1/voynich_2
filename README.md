@@ -1,8 +1,8 @@
 # Voynich Manuscript: Syllabary & Information-Theoretic Analysis
 
-A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, context-dependent rule analysis, stroke-feature abugida decoding, feature model refinement with articulatory constraints, modifier detection with syllable correction, honesty diagnostics validating whether the decoding signal is genuine or artifact, a five-test hypothesis discrimination battery targeting the tri-state degeneracy between hoax, verbose cipher, and taxonomic language, and convergent constraint exploitation testing the tachygraphic hypothesis against 8 independent narrow constraints. Nineteen complementary approaches across eighteen phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step. Phase 17 Step 0 applies five independent validation tests to the Phase 16 headline result (51.6% dict_hit) — the verdict is **NO-GO**: only 2/5 tests pass, and null corpora achieve 37.6% dict_hit through the same pipeline, indicating the signal is substantially confounded with dictionary expansion and per-token cherry-picking. Phase 18 deploys five mathematically independent diagnostic tests — burstiness, stride-entropy decimation, prefix trie topology, unsupervised HMM POS induction, and Lempel-Ziv complexity growth — to discriminate between H1 (procedural hoax), H2 (verbose cipher), and H3 (taxonomic language). The verdict is **INDETERMINATE** (H1=0.370, H2=0.375, H3=0.313, confidence=0.01): the manuscript simultaneously exhibits Poisson-like word spacing (H1), natural-language compression profile (H2), and unnaturally balanced vocabulary structure (H3), confirming that the tri-state degeneracy is genuine and not an artifact of insufficient analysis. Phase 19 attacks 8 independent narrow constraints where the combinatorial space is small enough for exhaustive or near-exhaustive search, directly testing the hypothesis that the manuscript uses **Italian syllabic tachygraphy** (Costamagna/Bobbio tradition). The verdict is **PASS** (5/8 tests passed, convergence=0.65, readiness=0.55): the tachygraphic encoder uniquely reproduces the Voynich entropy shift (cos=0.820, cleanly discriminated from all alternatives), sign families show significantly lower phonetic entropy than null (1.61×), the tachygraphic simulation reproduces the full Voynich statistical fingerprint AND Phase 18's tri-state pattern, illustration-text links are confirmed at p<0.0001 (1.94×), and cross-approach convergence is extraordinary (32.26×). **Phase 18's tri-state degeneracy is RESOLVED**: the manuscript uses a tachygraphic syllabic cipher encoding Latin medical text — simultaneously a constructed system (H1), encoding natural language (H2), with systematic vocabulary (H3).
+A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, context-dependent rule analysis, stroke-feature abugida decoding, feature model refinement with articulatory constraints, modifier detection with syllable correction, honesty diagnostics validating whether the decoding signal is genuine or artifact, a five-test hypothesis discrimination battery targeting the tri-state degeneracy between hoax, verbose cipher, and taxonomic language, convergent constraint exploitation testing the tachygraphic hypothesis against 8 independent narrow constraints, and tachygraphic table construction attempting full corpus decoding at EVA-character granularity. Twenty complementary approaches across nineteen phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step. Phase 17 Step 0 applies five independent validation tests to the Phase 16 headline result (51.6% dict_hit) — the verdict is **NO-GO**: only 2/5 tests pass, and null corpora achieve 37.6% dict_hit through the same pipeline, indicating the signal is substantially confounded with dictionary expansion and per-token cherry-picking. Phase 18 deploys five mathematically independent diagnostic tests — burstiness, stride-entropy decimation, prefix trie topology, unsupervised HMM POS induction, and Lempel-Ziv complexity growth — to discriminate between H1 (procedural hoax), H2 (verbose cipher), and H3 (taxonomic language). The verdict is **INDETERMINATE** (H1=0.370, H2=0.375, H3=0.313, confidence=0.01): the manuscript simultaneously exhibits Poisson-like word spacing (H1), natural-language compression profile (H2), and unnaturally balanced vocabulary structure (H3), confirming that the tri-state degeneracy is genuine and not an artifact of insufficient analysis. Phase 19 attacks 8 independent narrow constraints where the combinatorial space is small enough for exhaustive or near-exhaustive search, directly testing the hypothesis that the manuscript uses **Italian syllabic tachygraphy** (Costamagna/Bobbio tradition). The verdict is **PASS** (5/8 tests passed, convergence=0.65, readiness=0.55): the tachygraphic encoder uniquely reproduces the Voynich entropy shift (cos=0.820, cleanly discriminated from all alternatives), sign families show significantly lower phonetic entropy than null (1.61×), the tachygraphic simulation reproduces the full Voynich statistical fingerprint AND Phase 18's tri-state pattern, illustration-text links are confirmed at p<0.0001 (1.94×), and cross-approach convergence is extraordinary (32.26×). **Phase 18's tri-state degeneracy is RESOLVED**: the manuscript uses a tachygraphic syllabic cipher encoding Latin medical text — simultaneously a constructed system (H1), encoding natural language (H2), with systematic vocabulary (H3).
 
-**Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification). **Phase 10** tests the three surviving hypotheses — constructed script (H1), information dispersion (H2), and keyed cipher (H3) — through five discriminating analyses: token-level entropy curves, mutual information decay, folio-level encoding shifts, glyph construction grammar, and hypothesis integration. **Phase 11** directly attacks the 14-variable phonetic mapping problem using constraint satisfaction: six constraint layers progressively prune each grid cell's candidate syllable set, AC-3 arc-consistency propagation removes inconsistencies, and beam search (MRV-ordered, width 50) finds the CE-optimal assignment across Latin, Occitan, Italian, and German. **Phase 11.5** runs five sequential refinement steps to push past the 11.1% dictionary hit rate: failure diagnosis (NEAR_MISS dominant, 13/14 high-error cells), inherent vowel and CVC/CCV relaxation sweeps (relaxation degrades selectivity — strict CV remains optimal), verb constraint integration from Phase 9 (1 soft constraint), iterative anchor bootstrapping (converges immediately at 7.2% dict hit), and a full V1–V9 validation battery confirming 8/9 tests pass with selectivity 1.85×. Verdict: the CSP framework is correct; the bottleneck is grid precision, not the language or encoding model. **Phase 19** attacks 8 independent narrow constraints to test the tachygraphic hypothesis directly: entropy shift analysis identifies tachygraphic encoding as the unique best match (cos=0.820), sign families show systematic phonetic regularity (1.61×), a tachygraphic simulation reproduces both the Voynich fingerprint and Phase 18's tri-state, illustration-text links confirm at p<0.0001, and cross-approach convergence reaches 32.26×. The tri-state degeneracy is resolved: the manuscript uses an Italian syllabic tachygraphic cipher encoding Latin medical text.
+**Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification). **Phase 10** tests the three surviving hypotheses — constructed script (H1), information dispersion (H2), and keyed cipher (H3) — through five discriminating analyses: token-level entropy curves, mutual information decay, folio-level encoding shifts, glyph construction grammar, and hypothesis integration. **Phase 11** directly attacks the 14-variable phonetic mapping problem using constraint satisfaction: six constraint layers progressively prune each grid cell's candidate syllable set, AC-3 arc-consistency propagation removes inconsistencies, and beam search (MRV-ordered, width 50) finds the CE-optimal assignment across Latin, Occitan, Italian, and German. **Phase 11.5** runs five sequential refinement steps to push past the 11.1% dictionary hit rate: failure diagnosis (NEAR_MISS dominant, 13/14 high-error cells), inherent vowel and CVC/CCV relaxation sweeps (relaxation degrades selectivity — strict CV remains optimal), verb constraint integration from Phase 9 (1 soft constraint), iterative anchor bootstrapping (converges immediately at 7.2% dict hit), and a full V1–V9 validation battery confirming 8/9 tests pass with selectivity 1.85×. Verdict: the CSP framework is correct; the bottleneck is grid precision, not the language or encoding model. **Phase 19** attacks 8 independent narrow constraints to test the tachygraphic hypothesis directly: entropy shift analysis identifies tachygraphic encoding as the unique best match (cos=0.820), sign families show systematic phonetic regularity (1.61×), a tachygraphic simulation reproduces both the Voynich fingerprint and Phase 18's tri-state, illustration-text links confirm at p<0.0001, and cross-approach convergence reaches 32.26×. The tri-state degeneracy is resolved: the manuscript uses an Italian syllabic tachygraphic cipher encoding Latin medical text. **Phase 20** attempts to convert Phase 19's structural confirmation into a concrete decoding by building a full EVA-character→Latin-syllable tachygraphic table (29 syllabic chars, 15 modifiers) from cross-approach anchors and sign family constraints, then decoding all 36,238 tokens. The verdict is **FAILED** (7/12 validation tests, need ≥8): the char-level table achieves 36.0% expanded dict_hit (regression from Phase 16's 51.6%) with null selectivity 0.97× — random assignments from the same family-constrained domains score equally. The beam search solver returns no solutions due to highly constrained domains (mean size 3.2), and the family-derived fallback table produces 0 botanical matches and 0.91× phrase selectivity. The tachygraphic structural hypothesis (Phase 19) remains supported, but translating it into a working decoding table at individual character granularity is not yet achievable.
 
 Key finding across all phases: the Voynich manuscript encodes **Latin medical text** using an **Italian syllabic tachygraphic cipher** — a ~5×4 syllabary (5 consonant classes × 4 vowel variants) rooted in the Costamagna/Bobbio shorthand tradition, with genuine affix+stem structure. Phase 19 resolves the Phase 18 tri-state degeneracy by demonstrating that the tachygraphic encoding simultaneously produces all three statistical signatures (H1 constructed, H2 natural language, H3 systematic vocabulary). Two independent decoding approaches converge on the same Latin words ("de", "bene" as exact matches), illustration-text links confirm at p<0.0001, and the tachygraphic entropy shift uniquely identifies the encoding mechanism (cos=0.820, discriminated from all 8 alternatives). Fisher's combined probability test across 5 independent evidence families yields p = 2.75×10⁻¹⁰, confirming that the aggregate signal is real even though the selectivity ceiling — where frequency priors dominate over genuine linguistic content — persists at the level of individual word identification. Phase 8's MDL decoder, tested against all four candidate languages (Latin, Occitan, Italian, German), cannot discriminate between them — German wins on raw CE due to corpus size, not linguistic affinity. The failed sanity check (4% cipher recovery) and lack of language discrimination confirm the compression gains are frequency-driven, not genuine decryption.
 
@@ -158,6 +158,15 @@ voynich illus-target      # Phase 19.7: illustration-targeted decoding (50 folio
 voynich stroke-sim        # Phase 19.6: tachygraphic simulation parameter sweep (24 variants vs Voynich fingerprint)
 voynich phase19-integrate # Phase 19.9: aggregate all 8 tests into convergence/readiness verdict
 voynich phase19           # Run full Phase 19 pipeline (all 9 tests)
+voynich tachy-anchors     # Phase 20.1: extract per-EVA-char syllable anchors from cross-approach mappings + Phase 15 triples
+voynich tachy-families    # Phase 20.2: map sign families to consonant classes, assign vowel variants within each family
+voynich tachy-grid        # Phase 20.3: constrained grid solve — 29-variable CSP at EVA-character granularity
+voynich tachy-decode      # Phase 20.4: full corpus decode (36K tokens) with tachygraphic table + R3 modifier strategy
+voynich tachy-read        # Phase 20.5: readability assessment (bigram plausibility, POS validity, domain coherence, phrases)
+voynich tachy-phrases     # Phase 20.6: Latin phrase detection + botanical cross-check (28 folios with plant IDs)
+voynich tachy-validate    # Phase 20.7: 12-test validation battery (V1–V12) integrating all Phase 20 evidence
+voynich phase20-integrate # Phase 20.8: compile verdict, tachygraphic table, progression tracking
+voynich phase20           # Run full Phase 20 pipeline (all 8 steps)
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -283,7 +292,15 @@ voynich_2/
 │       ├── cross_approach.py     # Phase 19.8: cross-approach convergence (29 skeleton↔decoded mappings)
 │       ├── illustration_targeted.py # Phase 19.7: illustration-targeted decoding (50 folios × botanical IDs)
 │       ├── stroke_modification.py # Phase 19.6: tachygraphic simulation (24-variant parameter sweep × 9-metric fingerprint)
-│       └── phase19_integrate.py  # Phase 19.9: aggregate 8 tests → evidence matrix, readiness score, Phase 18 resolution
+│       ├── phase19_integrate.py  # Phase 19.9: aggregate 8 tests → evidence matrix, readiness score, Phase 18 resolution
+│       ├── tachy_anchors.py       # Phase 20.1: per-EVA-char syllable anchors from cross-approach + Phase 15 triples
+│       ├── tachy_families.py      # Phase 20.2: sign family → consonant class mapping, vowel variant assignment
+│       ├── tachy_grid_solve.py    # Phase 20.3: 29-variable CSP at EVA-char granularity (TachyVariable duck-types CSPVariable)
+│       ├── tachy_decode.py        # Phase 20.4: full corpus decode with tachygraphic table + R3 modifier strategy
+│       ├── tachy_readability.py   # Phase 20.5: readability assessment (bigram, POS, domain coherence, phrases, cross-entropy)
+│       ├── tachy_phrases.py       # Phase 20.6: Latin phrase detection + botanical cross-check (28 folio plant IDs)
+│       ├── tachy_validate.py      # Phase 20.7: 12-test validation battery (V1–V12)
+│       └── phase20_integrate.py   # Phase 20.8: final verdict, tachygraphic table, progression tracking
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
@@ -1825,6 +1842,152 @@ The core system appears to be a **~5×4 tachygraphic syllabary** (5 consonant cl
 | Phase 17 | NO-GO (2/5 honesty tests) — null corpus achieves 37.6% |
 | Phase 18 | INDETERMINATE (H1=0.370, H2=0.375, H3=0.313) |
 | **Phase 19** | **5/8 convergent tests, readiness=0.55 — tri-state RESOLVED** |
+| **Phase 20** | **FAILED — 7/12 V-battery, dict_hit=36.0%, selectivity=0.97×** |
+
+## Phase 20: Tachygraphic Table Construction and Corpus Decoding
+
+Phase 19 confirmed the tachygraphic hypothesis structurally (5/8 tests, 4 HIGH-confidence results) but didn't produce a concrete decoding table. Phase 20 attempts to convert this structural confirmation into a working decoder by building a full EVA-character→Latin-syllable tachygraphic table from cross-approach anchors and sign family constraints, then decoding all 36,238 tokens and testing whether the output is recognizable Latin.
+
+### Eight-Step Pipeline
+
+| Step | CLI Command | Goal | Key Result | Gate |
+|------|-------------|------|------------|------|
+| 20.1 | `tachy-anchors` | Extract per-char anchors from cross-approach word mappings | 13 Tier 1 anchors, 16 chars anchored, 100% unanimity | **PASS** (≥5 chars) |
+| 20.2 | `tachy-families` | Map 6 sign families to consonant classes + vowel variants | 11 sub-families, 29 chars mapped, 7 consonant classes | **PASS** (≥4 families coherent) |
+| 20.3 | `tachy-grid` | CSP-solve full tachygraphic table at char granularity | Beam search: NO SOLUTIONS; family fallback: 43.9% dict_hit, 0.97× selectivity | **FAIL** (selectivity < 1.3×) |
+| 20.4 | `tachy-decode` | Decode full corpus with best table | 36.0% expanded dict_hit, 2.70 syl/token, regression from Phase 16 | — |
+| 20.5 | `tachy-read` | Readability assessment (5 tests) | 3/5 pass on degenerate conditions; bigram=0.000 | **PASS** (≥3/5) |
+| 20.6 | `tachy-phrases` | Phrase detection + botanical cross-check | 59 phrases but 0.91× selectivity; 0 botanical matches | **FAIL** |
+| 20.7 | `tachy-validate` | 12-test validation battery | 7/12 passed (need ≥8) | **FAIL** |
+| 20.8 | `phase20-integrate` | Final verdict and progression | **FAILED** | — |
+
+### Step 20.1 — Anchor Extraction
+
+Decomposed 8 cross-approach anchor tokens ("de"→de, "bene"→bene, "terra"→terra, etc.) into individual EVA characters via `tokenize_eva_chars()`, then mapped each character through its `(first_stroke, last_stroke, glyph_class)` triple to the Phase 15 syllable assignment. Validated each decomposition by checking whether concatenated syllables (after modifier stripping) reproduce the known decoded string.
+
+**Result**: 13 Tier 1 anchors (appearing in 3+ validated tokens with unanimous syllable assignment), 3 Tier 3 anchors, 0 Tier 2. 16/29 syllabic characters anchored (55.2%).
+
+**Key anchors**: k→de, t→te, d→di, o→ra, a→la, e→ra, l→ne, s→se, sh→se, ol→ne, qo→to, qot→be, y→di.
+
+### Step 20.2 — Sign Family Mapping
+
+Sub-segmented the 6 sign families (removing 15 modifier chars) into 11 sub-families by `first_stroke` value:
+
+| Family | Sub-families | Syllabic Members | Assigned Consonant |
+|--------|-------------|-----------------|-------------------|
+| bench | connector, hook, loop, vertical | j / o,a,e / ch,sh,cth,cph,cfh / l,ol,r,aiiin,c,s | p / r / c / n,s |
+| minim | (1 group) | d,g | d |
+| gallows | (1 group) | k,t,p,f | d |
+| compound | (1 group) | qo,qot,qok | t,b |
+| suffix | (1 group) | y,q | d |
+| rare | (3 groups) | x / v / z | f / c / s |
+
+29 characters mapped to CV syllables across 7 consonant classes (more than the expected 5 from Phase 19.6's C5_V4 model). JSD between mapped and Latin frequency distributions: 0.738.
+
+### Step 20.3 — Constrained Grid Solve
+
+Built 29 `TachyVariable` instances (duck-typing `CSPVariable`) with identity `eva_to_cell` mapping. 16 anchored variables had single-value domains; 13 free variables had domains of size 5 (family-constrained vowel variants).
+
+**Critical failure**: `beam_search()` returned NO solutions across 5 random restarts. The solver was designed for 14–25 variables with domains of ~75 syllables; with 13 free variables each having only 5 candidates and strong all-different constraints, no complete valid assignment existed.
+
+**Fallback**: Used the family-derived preliminary table directly. dict_hit=43.9%, but null selectivity=0.97× — random assignments from the same constrained domains achieve equivalent rates.
+
+### Step 20.4 — Full Corpus Decode
+
+Applied the tachygraphic table to all 36,238 tokens using R3 combined modifier strategy. Results:
+
+- **Expanded dict_hit**: 36.0% (regression from Phase 16's 51.6%)
+- **Original dict_hit**: 28.6%
+- **Mean syllables/token**: 2.70 (close to Latin target of ~2.5)
+- **Top decoded words**: di (1682×), se (1050×), cara (1025×), ca (895×)
+
+Per-section analysis showed all tokens falling into "unknown" (folio-level section classification not exposed by corpus loader in this pathway).
+
+### Step 20.5 — Readability Assessment
+
+| Test | Value | Null | Selectivity | Result |
+|------|-------|------|-------------|--------|
+| Bigram plausibility | 0.000 | 0.000 | ∞ (degenerate) | PASS* |
+| Cross-entropy ratio | 1.00 | — | 1.00 | PASS* |
+| POS trigram validity | 1.000 | 1.000 | 1.00× | FAIL |
+| Domain coherence | 1 domain | — | — | FAIL |
+| Phrase detection | 1 phrase | — | — | PASS |
+
+*Degenerate conditions: the 50-token decoded sample was too small for meaningful bigram or cross-entropy analysis, yielding 0/0 or identical scores.
+
+### Step 20.6 — Phrase Detection and Botanical Cross-Check
+
+- **59 phrases detected** — but null random word sequences produce **65 phrases** (selectivity 0.91×)
+- All 59 phrases classified as "other" (none matched recipe, humoral, application, or botanical categories)
+- **0/28 botanical matches** — no decoded text on botanical folios contained expected plant name stems
+- Permutation p-value: 1.000
+
+### Step 20.7 — Validation Battery (V1–V12)
+
+| # | Test | Result | Detail |
+|---|------|--------|--------|
+| V1 | Null discrimination | **FAIL** | selectivity=0.97× |
+| V2 | Bigram plausibility | **PASS** | selectivity=∞ (degenerate) |
+| V3 | Phrase detection | **FAIL** | 59 phrases but selectivity=0.91× |
+| V4 | Cross-approach agreement | **PASS** | 8 anchor words, 16 chars anchored |
+| V5 | Illustration-text match | **FAIL** | p=1.0000, 0 botanical matches |
+| V6 | Section coherence | **FAIL** | 1/7 domains with hits |
+| V7 | Language A/B discrimination | **PASS** | ratio=0.00 (direction=signal) |
+| V8 | POS validity | **FAIL** | selectivity=1.00× |
+| V9 | Anchor fidelity | **PASS** | 13/13 Tier 1 preserved |
+| V10 | Family coherence | **PASS** | 8/11 sub-families coherent |
+| V11 | Table stability | **PASS** | 100% pairwise agreement |
+| V12 | Phase 16 improvement | **PASS** | 3/5 readability tests pass |
+
+**Score**: 7/12 (need ≥8 for PASS, ≥10 for STRONG PASS). Gate: **FAIL**.
+
+### Step 20.8 — Integration and Verdict
+
+**Outcome: FAILED**
+
+The tachygraphic table construction did not produce a working decoder. Three root causes:
+
+1. **Beam search incompatibility**: The CSP solver was designed for large domains (~75 syllables per variable) at 14–25 variables. With 29 char-level variables and mean domain size 3.2, no complete valid assignment existed within the all-different constraint.
+
+2. **Circular anchor evidence**: The 13 Tier 1 anchors derive from Phase 15's triple→syllable mapping, which operates at the same (first_stroke, last_stroke, glyph_class) granularity. Characters sharing a triple (e.g., d/i/m all map to "vertical,vertical,minim") receive the same syllable — the char-level anchors don't provide new information beyond Phase 15.
+
+3. **Family-constrained domain inflation**: When the beam search fails and the fallback family table is used, the narrow domains (5 candidates each, all within one consonant class) ensure that even random assignments produce similar dict_hit rates (null selectivity 0.97×).
+
+**Tachygraphic Table** (29 EVA characters → Latin CV syllables):
+
+| EVA | Syllable | EVA | Syllable | EVA | Syllable |
+|-----|----------|-----|----------|-----|----------|
+| a | la | e | ra | o | ra |
+| c | co | ch | ca | cfh | cu |
+| cph | ci | cth | ce | d | di |
+| f | di | g | da | j | pa |
+| k | de | l | ne | ol | ne |
+| p | da | q | da | qo | to |
+| qok | ta | qot | be | r | ri |
+| s | se | sh | se | t | te |
+| v | ca | x | fa | y | di |
+| z | sa | aiiin | ro | | |
+
+### Phase 20 Findings Summary
+
+The tachygraphic hypothesis (Phase 19) is structurally supported by strong independent evidence — entropy shift discrimination (cos=0.820), sign family regularity (1.61×), cross-approach convergence (32.26×), and illustration-text links (p<0.0001). However, **translating this structural confirmation into a working character-level decoding table is not yet achievable**. The gap between Phase 19's statistical patterns and Phase 20's concrete decoding attempt suggests:
+
+- The ~5×4 tachygraphic model may be correct at the family level but require a different approach to resolve within-family distinctions
+- The Phase 15 triple→syllable assignments, while statistically significant, may not constitute true character-level anchors — multiple characters sharing a triple receive identical assignments
+- A successful decoder may need to operate at a different granularity (word-level or morpheme-level) rather than character-level substitution
+
+### Progression
+
+| Phase | Result |
+|---|---|
+| Phase 11 | 11.1% dict_hit (1.92×) |
+| Phase 14 | 19.4% dict_hit (3.00×) — sub-cell feature model breakthrough |
+| Phase 15 | 35.4% dict_hit (2.55×) — medieval dictionary expansion |
+| Phase 16 | 51.6% dict_hit (3.38×) — modifier detection |
+| Phase 17 | NO-GO (2/5 honesty tests) — null corpus achieves 37.6% |
+| Phase 18 | INDETERMINATE (H1=0.370, H2=0.375, H3=0.313) |
+| Phase 19 | 5/8 convergent tests, readiness=0.55 — tri-state RESOLVED |
+| **Phase 20** | **FAILED — 36.0% dict_hit, 0.97× selectivity, 7/12 V-battery** |
 
 ## Data
 
@@ -2775,6 +2938,16 @@ Analysis outputs are saved as JSON to `results/` (69 files total):
 - `illustration_targeted.json` — 50 folios with botanical IDs; 46/50 matched; 3 name matches, 83 stem matches, 187 prep matches; total score 268.5 vs null mean 138.5; **p=0.0000, selectivity 1.94×**; best strategy A (Phase 15/16 CSP); top folios: f1r (35.5, Cloves/Comfrey), f8v (33.0, Comfrey), f10r (24.0, Chicory); gate **PASS**
 - `cross_approach.json` — 29 Approach-1 skeleton mappings tested; 9,210 tokens decoded; exact=2/29 ("de"→de, "bene"→bene), edit2=8/29 (+ terra→tera, rosa→rase, sal→sela), skeleton=7/29; null mean skeleton 0.75%; **selectivity 32.26×**; gate **PASS**
 - `phase19_integrate.json` — 8/8 tests loaded; **5/8 gates passed** (62.5%); syllabary evidence 0.67, morpheme 0.50, decode 0.50, cipher 1.00; **overall convergence 0.65, readiness 0.55**; Phase 18 tri-state **RESOLVED**: tachygraphic syllabic cipher (p=0.70); 4 key findings (tachygraphic confirmed, cross-approach converged, illustration link confirmed, cipher mechanism identified); gate **PASS**
+
+**Phase 20 — Tachygraphic Table Construction:**
+- `tachy_anchors.json` — 8 anchor words decomposed; 16/29 syllabic chars anchored; 13 Tier 1 (3+ tokens, unanimous), 0 Tier 2, 3 Tier 3; top anchors: k→de, t→te, d→di, o→ra, a→la; gate **PASS** (≥5 chars anchored)
+- `tachy_families.json` — 6 families → 11 sub-families (bench split by first_stroke into 4); 29 syllabic chars mapped; 7 consonant classes (p,r,c,n,d,t,s); JSD vs Latin freq=0.738; gate **PASS** (≥4 families coherent)
+- `tachy_grid_solve.json` — 29 TachyVariables (16 anchored, 13 free with domain size 5); beam search: **NO SOLUTIONS** across 5 restarts; family table fallback: dict_hit=43.9%, null selectivity=**0.97×**; stability=100%; gate **FAIL** (selectivity < 1.3×)
+- `tachy_decode.json` — 36,238 tokens decoded; 34,765 non-empty; original dict_hit=28.6%, expanded dict_hit=**36.0%** (regression from Phase 16's 51.6%); mean 2.70 syl/token; top words: di(1682), se(1050), cara(1025), ca(895)
+- `tachy_readability.json` — Bigram plausibility=0.000 (null=0.000, selectivity=∞); CE ratio=1.00; POS selectivity=1.00×; 1/7 domains with hits; 1 phrase hit; **3/5 pass** (degenerate conditions); gate **PASS**
+- `tachy_phrases.json` — 59 phrases (all "other" category); null mean=65.0; selectivity=**0.91×**; z-score=0.0; 0/28 botanical matches; p=1.000; gate **FAIL**
+- `tachy_validate.json` — V1 FAIL (0.97×), V2 PASS (∞, degenerate), V3 FAIL (0.91×), V4 PASS (8 anchors), V5 FAIL (p=1.0), V6 FAIL (1 domain), V7 PASS (ratio signal), V8 FAIL (1.00×), V9 PASS (13/13), V10 PASS (8/11), V11 PASS (100%), V12 PASS (3/5); **7/12** (need ≥8); gate **FAIL**
+- `phase20_integrate.json` — Outcome **FAILED**; V-battery 7/12; dict_hit=36.0%; phrases=59; bigram=0.000; botanical=0; tachygraphic hypothesis structurally supported but char-level table does not produce recognizable Latin
 
 ## Background
 
