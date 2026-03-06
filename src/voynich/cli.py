@@ -1421,6 +1421,104 @@ def cmd_phase18():
     cmd_hyp_discriminate()
 
 
+# === Phase 19: Convergent Constraint Exploitation ===
+
+def cmd_modifier_validate():
+    """Run Phase 19.4: modifier character distributional validation."""
+    from voynich.phases.modifier_validation import run_modifier_validation
+    t0 = time.time()
+    run_modifier_validation()
+    print(f"\nModifier validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_affix_isolate():
+    """Run Phase 19.3: affix layer isolation and independent decoding."""
+    from voynich.phases.affix_isolation import run_affix_isolation
+    t0 = time.time()
+    run_affix_isolation()
+    print(f"\nAffix isolation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_lang_b_attack():
+    """Run Phase 19.1: Language B combinatorial attack."""
+    from voynich.phases.lang_b_combinatorial import run_lang_b_combinatorial
+    t0 = time.time()
+    run_lang_b_combinatorial()
+    print(f"\nLanguage B combinatorial attack completed in {time.time() - t0:.1f}s")
+
+
+def cmd_entropy_shift():
+    """Run Phase 19.2: cipher mechanism entropy shift identification."""
+    from voynich.phases.entropy_shift_cipher import run_entropy_shift
+    t0 = time.time()
+    run_entropy_shift()
+    print(f"\nEntropy shift analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_tachy_stroke():
+    """Run Phase 19.5: tachygraphic stroke-rule test."""
+    from voynich.phases.tachygraphic_stroke import run_tachygraphic_stroke
+    t0 = time.time()
+    run_tachygraphic_stroke()
+    print(f"\nTachygraphic stroke test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_cross_validate():
+    """Run Phase 19.8: cross-approach bidirectional mapping validation."""
+    from voynich.phases.cross_approach import run_cross_approach
+    t0 = time.time()
+    run_cross_approach()
+    print(f"\nCross-approach validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_illus_target():
+    """Run Phase 19.7: illustration-targeted folio decode."""
+    from voynich.phases.illustration_targeted import run_illustration_targeted
+    t0 = time.time()
+    run_illustration_targeted()
+    print(f"\nIllustration-targeted decode completed in {time.time() - t0:.1f}s")
+
+
+def cmd_stroke_sim():
+    """Run Phase 19.6: stroke-modification encoding simulation."""
+    from voynich.phases.stroke_modification import run_stroke_modification
+    t0 = time.time()
+    run_stroke_modification()
+    print(f"\nStroke modification simulation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase19_integrate():
+    """Run Phase 19.9: Phase 19 integration."""
+    from voynich.phases.phase19_integrate import run_phase19_integrate
+    t0 = time.time()
+    run_phase19_integrate()
+    print(f"\nPhase 19 integration completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase19():
+    """Run full Phase 19 pipeline: convergent constraint exploitation."""
+    print("=" * 70)
+    print("PHASE 19: Convergent Constraint Exploitation")
+    print("=" * 70)
+    cmd_modifier_validate()
+    print("\n" + "=" * 70 + "\n")
+    cmd_affix_isolate()
+    print("\n" + "=" * 70 + "\n")
+    cmd_lang_b_attack()
+    print("\n" + "=" * 70 + "\n")
+    cmd_entropy_shift()
+    print("\n" + "=" * 70 + "\n")
+    cmd_tachy_stroke()
+    print("\n" + "=" * 70 + "\n")
+    cmd_cross_validate()
+    print("\n" + "=" * 70 + "\n")
+    cmd_illus_target()
+    print("\n" + "=" * 70 + "\n")
+    cmd_stroke_sim()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase19_integrate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -1567,6 +1665,17 @@ def main():
         'lz-complexity': cmd_lz_complexity,
         'hyp-discriminate': cmd_hyp_discriminate,
         'phase18': cmd_phase18,
+        # Phase 19: Convergent Constraint Exploitation
+        'modifier-validate': cmd_modifier_validate,
+        'affix-isolate': cmd_affix_isolate,
+        'lang-b-attack': cmd_lang_b_attack,
+        'entropy-shift': cmd_entropy_shift,
+        'tachy-stroke': cmd_tachy_stroke,
+        'cross-validate': cmd_cross_validate,
+        'illus-target': cmd_illus_target,
+        'stroke-sim': cmd_stroke_sim,
+        'phase19-integrate': cmd_phase19_integrate,
+        'phase19': cmd_phase19,
     }
 
     if len(sys.argv) < 2:
