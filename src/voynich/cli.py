@@ -1353,6 +1353,74 @@ def cmd_phaseD():
     cmd_verbose_encoding()
 
 
+# ── Phase 18: Hypothesis Discrimination Battery ──────────────────────────
+
+def cmd_burstiness():
+    """Run Phase 18.1: spatial autocorrelation / burstiness test."""
+    from voynich.phases.burstiness_test import run_burstiness_test
+    t0 = time.time()
+    run_burstiness_test()
+    print(f"\nBurstiness test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_stride_entropy():
+    """Run Phase 18.2: stride-entropy decimation test."""
+    from voynich.phases.stride_entropy import run_stride_entropy
+    t0 = time.time()
+    run_stride_entropy()
+    print(f"\nStride entropy test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_trie_topology():
+    """Run Phase 18.3: prefix trie topology analysis."""
+    from voynich.phases.trie_topology import run_trie_topology
+    t0 = time.time()
+    run_trie_topology()
+    print(f"\nTrie topology analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_hmm_pos():
+    """Run Phase 18.4: unsupervised HMM POS induction."""
+    from voynich.phases.hmm_pos_induction import run_hmm_pos_induction
+    t0 = time.time()
+    run_hmm_pos_induction()
+    print(f"\nHMM POS induction completed in {time.time() - t0:.1f}s")
+
+
+def cmd_lz_complexity():
+    """Run Phase 18.5: Lempel-Ziv complexity growth curve."""
+    from voynich.phases.lz_complexity import run_lz_complexity
+    t0 = time.time()
+    run_lz_complexity()
+    print(f"\nLZ complexity test completed in {time.time() - t0:.1f}s")
+
+
+def cmd_hyp_discriminate():
+    """Run Phase 18.6: final hypothesis discrimination."""
+    from voynich.phases.hypothesis_discriminator import run_hypothesis_discriminator
+    t0 = time.time()
+    run_hypothesis_discriminator()
+    print(f"\nHypothesis discrimination completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase18():
+    """Run full Phase 18 pipeline: hypothesis discrimination battery."""
+    print("=" * 70)
+    print("PHASE 18: Hypothesis Discrimination Battery")
+    print("=" * 70)
+    cmd_burstiness()
+    print("\n" + "=" * 70 + "\n")
+    cmd_stride_entropy()
+    print("\n" + "=" * 70 + "\n")
+    cmd_trie_topology()
+    print("\n" + "=" * 70 + "\n")
+    cmd_hmm_pos()
+    print("\n" + "=" * 70 + "\n")
+    cmd_lz_complexity()
+    print("\n" + "=" * 70 + "\n")
+    cmd_hyp_discriminate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -1491,6 +1559,14 @@ def main():
         'entropy-floor': cmd_entropy_floor,
         'verbose-enc': cmd_verbose_encoding,
         'phaseD': cmd_phaseD,
+        # Phase 18: Hypothesis Discrimination Battery
+        'burstiness': cmd_burstiness,
+        'stride-entropy': cmd_stride_entropy,
+        'trie-topology': cmd_trie_topology,
+        'hmm-pos': cmd_hmm_pos,
+        'lz-complexity': cmd_lz_complexity,
+        'hyp-discriminate': cmd_hyp_discriminate,
+        'phase18': cmd_phase18,
     }
 
     if len(sys.argv) < 2:

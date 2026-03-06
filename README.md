@@ -1,6 +1,6 @@
 # Voynich Manuscript: Syllabary & Information-Theoretic Analysis
 
-A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, context-dependent rule analysis, stroke-feature abugida decoding, feature model refinement with articulatory constraints, modifier detection with syllable correction, and honesty diagnostics validating whether the decoding signal is genuine or artifact. Seventeen complementary approaches across sixteen phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step. Phase 17 Step 0 applies five independent validation tests to the Phase 16 headline result (51.6% dict_hit) — the verdict is **NO-GO**: only 2/5 tests pass, and null corpora achieve 37.6% dict_hit through the same pipeline, indicating the signal is substantially confounded with dictionary expansion and per-token cherry-picking.
+A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, context-dependent rule analysis, stroke-feature abugida decoding, feature model refinement with articulatory constraints, modifier detection with syllable correction, honesty diagnostics validating whether the decoding signal is genuine or artifact, and a five-test hypothesis discrimination battery targeting the tri-state degeneracy between hoax, verbose cipher, and taxonomic language. Eighteen complementary approaches across seventeen phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step. Phase 17 Step 0 applies five independent validation tests to the Phase 16 headline result (51.6% dict_hit) — the verdict is **NO-GO**: only 2/5 tests pass, and null corpora achieve 37.6% dict_hit through the same pipeline, indicating the signal is substantially confounded with dictionary expansion and per-token cherry-picking. Phase 18 deploys five mathematically independent diagnostic tests — burstiness, stride-entropy decimation, prefix trie topology, unsupervised HMM POS induction, and Lempel-Ziv complexity growth — to discriminate between H1 (procedural hoax), H2 (verbose cipher), and H3 (taxonomic language). The verdict is **INDETERMINATE** (H1=0.370, H2=0.375, H3=0.313, confidence=0.01): the manuscript simultaneously exhibits Poisson-like word spacing (H1), natural-language compression profile (H2), and unnaturally balanced vocabulary structure (H3), confirming that the tri-state degeneracy is genuine and not an artifact of insufficient analysis.
 
 **Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification). **Phase 10** tests the three surviving hypotheses — constructed script (H1), information dispersion (H2), and keyed cipher (H3) — through five discriminating analyses: token-level entropy curves, mutual information decay, folio-level encoding shifts, glyph construction grammar, and hypothesis integration. **Phase 11** directly attacks the 14-variable phonetic mapping problem using constraint satisfaction: six constraint layers progressively prune each grid cell's candidate syllable set, AC-3 arc-consistency propagation removes inconsistencies, and beam search (MRV-ordered, width 50) finds the CE-optimal assignment across Latin, Occitan, Italian, and German. **Phase 11.5** runs five sequential refinement steps to push past the 11.1% dictionary hit rate: failure diagnosis (NEAR_MISS dominant, 13/14 high-error cells), inherent vowel and CVC/CCV relaxation sweeps (relaxation degrades selectivity — strict CV remains optimal), verb constraint integration from Phase 9 (1 soft constraint), iterative anchor bootstrapping (converges immediately at 7.2% dict hit), and a full V1–V9 validation battery confirming 8/9 tests pass with selectivity 1.85×. Verdict: the CSP framework is correct; the bottleneck is grid precision, not the language or encoding model.
 
@@ -251,7 +251,13 @@ voynich_2/
 │       ├── honesty_verbs.py   # Phase 17.0.3: positional verb decode test (15 Phase 9 stems vs Latin imperatives)
 │       ├── null_corpus.py     # Phase 17.0.4: null corpus end-to-end control (5 bigram-model synthetic corpora through same decode pipeline)
 │       ├── honesty_words.py   # Phase 17.0.5: minimum viable words test (rosetta plants, verbs, astronomical, high-frequency tokens)
-│       └── step0_integrate.py # Phase 17.0.6: compile all 5 honesty tests into weighted GO/NO-GO verdict
+│       ├── step0_integrate.py # Phase 17.0.6: compile all 5 honesty tests into weighted GO/NO-GO verdict
+│       ├── burstiness_test.py # Phase 18.1: spatial autocorrelation / burstiness test (inter-arrival gap CV)
+│       ├── stride_entropy.py  # Phase 18.2: stride-entropy decimation analysis (EVA char stream at stride K=1..8)
+│       ├── trie_topology.py   # Phase 18.3: prefix trie topology & Colless imbalance index
+│       ├── hmm_pos_induction.py # Phase 18.4: unsupervised HMM POS induction (K=8 Baum-Welch EM)
+│       ├── lz_complexity.py   # Phase 18.5: Lempel-Ziv complexity growth curve (zlib/lzma/LZ78)
+│       └── hypothesis_discriminator.py # Phase 18.6: weighted aggregation of 5 tests into H1/H2/H3 verdict
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   └── reference/               # Real historical corpora organized by language (not in git)
@@ -1487,6 +1493,63 @@ The honesty diagnostics reveal that the Phase 16 headline result (51.6% dict_hit
 
 The NO-GO verdict means further refinement of the current approach (word boundary detection, phrase recovery) would be building on an unreliable foundation. A fundamentally different validation strategy — or a different decoding approach entirely — is needed before the pipeline can claim genuine Latin decoding.
 
+## Phase 18: Hypothesis Discrimination Battery
+
+Given the Phase 17 NO-GO verdict and the persistent ambiguity across all prior phases, Phase 18 attacks the problem from a fundamentally different angle: instead of trying to decode the manuscript, it applies five mathematically independent diagnostic tests to determine which of three macroscopic hypotheses — H1 (Procedural Hoax), H2 (Verbose State-Machine Cipher), H3 (Taxonomic/Philosophical Language) — best explains the manuscript's statistical structure. Each test targets a specific hypothesis and produces a discriminative score; a weighted aggregator combines all five into a final verdict.
+
+### Five Diagnostic Tests
+
+| Step | Test | Method | Target | Key Metric | Result |
+|------|------|--------|--------|------------|--------|
+| 18.1 | Burstiness | Inter-arrival gap CV for mid-frequency tokens; Poisson vs Weibull fit | H1 (uniform) vs H2/H3 (bursty) | mean CV = 1.014 | **NEAR-POISSON** — but exceeds shuffled null CI [0.82, 0.87]; Weibull fits better (KS 0.02 vs 0.15) |
+| 18.2 | Stride Entropy | Decimation of EVA char stream at stride K=1..8; entropy curves H1–H6 | H2 (floor collapse at expansion ratio) | No collapse found | **NO COLLAPSE** — all decimated H6 ≈ 0.0, far below Latin H6 (0.68); H2 not supported |
+| 18.3 | Trie Topology | Character-level prefix trie; Colless imbalance index vs Latin/Cardan null | H3 (balanced/shallow) vs H2 (deep/imbalanced) | Colless = 0.243 | **BALANCED** — Latin 0.736, Cardan 0.089; Voynich between but closer to Cardan; supports H3 |
+| 18.4 | HMM POS Induction | K=8 Baum-Welch EM on top-500 vocabulary; transition matrix entropy/sparsity | H1 (rigid) vs H2/H3 (grammar-like) | Transition entropy = 1.01 bits | **RIGID** — Latin 1.17; 72% sparsity; dominant fraction 0.68; supports H1 |
+| 18.5 | LZ Complexity | zlib/lzma compression ratios + LZ78 phrase count at increasing corpus sizes | H1 (flatline) vs H2 (natural-scaled) vs H3 (ultra-compressible) | Voynich/Latin ratio = 0.94 | **NATURAL-LIKE** — compression matches Latin; supports H2 |
+
+### Reference Comparisons
+
+| Metric | Voynich | Latin | Occitan | Cardan Grille Null |
+|--------|---------|-------|---------|-------------------|
+| Burstiness CV | 1.014 | 1.299 | 1.360 | ~0.84 (shuffled) |
+| Colless Index | 0.243 | 0.736 | 0.541 | 0.089 |
+| HMM Transition Entropy | 1.006 | 1.171 | — | — |
+| Asymptotic zlib Ratio | 0.330 | 0.350 | — | 0.443 |
+| LZ78 Growth Rate | 0.832 | 0.861 | — | 0.866 |
+
+### Hypothesis Aggregation
+
+Each test's per-hypothesis support score is combined using discriminative weights (higher weight = test is more relevant for that hypothesis):
+
+| Test | Weight H1 | Weight H2 | Weight H3 | Score H1 | Score H2 | Score H3 |
+|------|-----------|-----------|-----------|----------|----------|----------|
+| 18.1 Burstiness | 1.5 | 1.0 | 0.8 | 0.398 | 0.415 | 0.187 |
+| 18.2 Stride Entropy | 0.8 | 2.0 | 0.5 | 0.535 | 0.278 | 0.188 |
+| 18.3 Trie Topology | 0.8 | 0.5 | 2.0 | 0.247 | 0.221 | 0.533 |
+| 18.4 HMM POS | 1.2 | 1.0 | 1.0 | 0.437 | 0.350 | 0.212 |
+| 18.5 LZ Complexity | 1.0 | 1.2 | 1.5 | 0.213 | 0.590 | 0.197 |
+| **Weighted Aggregate** | | | | **0.370** | **0.375** | **0.313** |
+
+**Final Verdict: INDETERMINATE** (confidence = 0.014)
+
+### Evidence Chain
+
+1. **Burstiness** (mean CV = 1.014): Token recurrence is near-Poisson — consistent with procedural generation (H1). However, CV exceeds the shuffled null (0.84) and Weibull fits the gap distribution significantly better than geometric (Poisson), suggesting *some* topical clustering exists.
+2. **Stride Entropy** (no floor collapse): No decimation stride produces an entropy floor matching Latin. The baseline EVA H6 is already extremely low (0.113 bits vs Latin 0.681), and all decimated streams drop to near zero. This rules out a simple verbose cipher with fixed expansion ratio (H2 weakened).
+3. **Trie Topology** (Colless = 0.243): The vocabulary prefix tree is far more balanced than natural language (Latin 0.736, Occitan 0.541) but more imbalanced than pure random combination (Cardan 0.089). This intermediate position is most consistent with an engineered vocabulary (H3) that retains some natural-language-like irregularity.
+4. **HMM Transitions** (entropy = 1.006 bits): The 8-state HMM finds rigid, low-entropy transitions with 72% sparsity and 68% dominant-transition fraction — slightly more rigid than Latin (1.171 bits). Consistent with table-based generation (H1) or a highly constrained grammar.
+5. **LZ Complexity** (Voynich/Latin = 0.941): The compression growth curve closely matches Latin, with Voynich actually slightly *more* compressible (asymptotic zlib 0.330 vs Latin 0.350). The Cardan null is substantially less compressible (0.443). This is the strongest single piece of evidence for H2 (natural language content).
+
+### Phase 18 Findings Summary
+
+The five diagnostic tests split cleanly across all three hypotheses, producing a near-perfect three-way tie (H1=0.370, H2=0.375, H3=0.313). This is itself a significant scientific finding: **the tri-state degeneracy is genuine and irreducible by standard information-theoretic methods**. The Voynich manuscript simultaneously exhibits:
+
+- **H1 signatures**: near-Poisson word spacing (CV = 1.01 vs Latin 1.30), rigid HMM transitions (1.01 bits vs Latin 1.17), and very low baseline entropy floor (H6 = 0.113)
+- **H2 signatures**: natural-language compression profile (zlib ratio 0.330 vs Latin 0.350, growth rate 0.832 vs 0.861), and burstiness CV that exceeds shuffled null
+- **H3 signatures**: unnaturally balanced vocabulary trie (Colless 0.243, between Cardan 0.089 and Latin 0.736), suggesting systematic vocabulary engineering
+
+This tri-state overlap is consistent with only a small number of generative processes: (a) a table-based generator that deliberately mimics some natural-language properties (a "sophisticated hoax"), (b) a genuine cipher whose verbose encoding destroys burstiness while preserving compressibility, or (c) a constructed taxonomic language that reuses natural-language word formation patterns. Discriminating further would require analysis at the semantic or archaeological level — statistical methods alone have reached their resolution limit.
+
 ## Data
 
 ### Voynich Corpus
@@ -2417,6 +2480,14 @@ Analysis outputs are saved as JSON to `results/` (69 files total):
 - `null_corpus.json` — Null corpus end-to-end: 5 synthetic corpora (EVA character bigram model, seeds 100–104); JSD validation; naive/expanded/R3 decode; null R3 mean 37.6% (max 38.9%); separation 11.7σ; gate **FAIL** (null_max ≥ 25%)
 - `honesty_words.json` — Minimum viable words: 4 test categories (rosetta plants 0/8, verbs 0/10, astronomical 0/7, high-frequency 8/20); 8 total matches; gate **PASS**
 - `step0_integrate.json` — Integration verdict: 2/5 passed; confidence "suspect" (score 0.40); **NO-GO**; red flag: null corpus achieves comparable dict_hit
+
+**Phase 18 — Hypothesis Discrimination Battery:**
+- `burstiness_test.json` — 315 qualifying mid-frequency types; mean CV = 1.014 (near-Poisson); shuffled null CV = 0.844 [0.820, 0.871]; Weibull KS = 0.020 vs Poisson KS = 0.151; Latin CV = 1.299, Occitan CV = 1.360; H1=0.398, H2=0.415, H3=0.187
+- `stride_entropy.json` — 35,358 EVA chars, 43 unique; baseline H6 = 0.113; Latin H6 = 0.681; stride K=1..8 all produce H6 ≈ 0.0; no floor collapse; Latin control confirms no false collapse; H1=0.535, H2=0.278, H3=0.188
+- `trie_topology.json` — 3,762 Voynich types, max depth 11; Colless = 0.243 (Latin 0.736, Occitan 0.541, Cardan 0.089); branching@depth0 = 37; H1=0.247, H2=0.221, H3=0.533
+- `hmm_pos_induction.json` — K=8 HMM, V=501, 5 random inits; best LL = −43,011; transition entropy = 1.006 bits (Latin 1.171); sparsity = 0.719; dominant fraction = 0.682; Voynich-Latin JSD = 0.419; H1=0.437, H2=0.350, H3=0.212
+- `lz_complexity.json` — zlib asymptotic: Voynich 0.330, Latin 0.350, Cardan 0.443; LZ78 growth rate: Voynich 0.832, Latin 0.861, Cardan 0.866; Voynich/Cardan = 0.745, Voynich/Latin = 0.941; H1=0.213, H2=0.590, H3=0.197
+- `hypothesis_discriminator.json` — 5/5 tests loaded; weighted aggregate H1=0.370, H2=0.375, H3=0.313; **INDETERMINATE** (confidence 0.014); tri-state degeneracy confirmed
 
 ## Background
 
