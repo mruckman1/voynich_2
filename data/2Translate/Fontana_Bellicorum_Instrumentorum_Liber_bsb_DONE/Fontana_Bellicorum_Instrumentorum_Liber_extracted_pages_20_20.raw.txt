@@ -1,0 +1,43 @@
+```json
+[
+  {
+    "folio": "11",
+    "page_type": "mixed",
+    "page_illustration_description": "A complex, segmented pipe or conduit structure composed of curved and straight sections joined by barrel-like elements with metal bands and mountings.",
+    "plain_text_transcription": null,
+    "cipher_signs": [
+      {
+        "sign_id": "F01",
+        "base_form": "vertical_stroke",
+        "added_feature": "loop_added",
+        "letter_value": null,
+        "family_relationship": [],
+        "first_occurrence_folio": "11",
+        "confidence": "high"
+      },
+      {
+        "sign_id": "F02",
+        "base_form": "circle",
+        "added_feature": "tick_up",
+        "letter_value": null,
+        "family_relationship": [],
+        "first_occurrence_folio": "11",
+        "confidence": "high"
+      },
+      {
+        "sign_id": "F03",
+        "base_form": "open_curve_right",
+        "added_feature": "tick_left",
+        "letter_value": null,
+        "family_relationship": [],
+        "first_occurrence_folio": "11",
+        "confidence": "high"
+      },
+      {
+        "sign_id": "F04",
+        "base_form": "circle",
+        "added_feature": "crossbar",
+        "letter_value": null,
+        "family_relationship": [],
+        "first_occurrence_folio": "11",
+        

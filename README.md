@@ -167,6 +167,19 @@ voynich tachy-phrases     # Phase 20.6: Latin phrase detection + botanical cross
 voynich tachy-validate    # Phase 20.7: 12-test validation battery (V1–V12) integrating all Phase 20 evidence
 voynich phase20-integrate # Phase 20.8: compile verdict, tachygraphic table, progression tracking
 voynich phase20           # Run full Phase 20 pipeline (all 8 steps)
+
+# Phase 21: Paleographic Sign Comparison (historical source → EVA stroke comparison)
+voynich paleo-ingest      # Phase 21.1: normalize 5 historical sources → unified sign database
+voynich fontana-families  # Phase 21.2: Fontana cipher families + gallows rotation test
+voynich chatelain-families # Phase 21.3: Chatelain Bobbio families → reference syllable table
+voynich eva-compare       # Phase 21.4: 44 EVA chars vs all historical signs (two-tier similarity)
+voynich family-syllable   # Phase 21.5: map Voynich families → historical syllable families
+voynich cappelli-mod      # Phase 21.6: modifier identification via Cappelli abbreviation marks
+voynich paleo-table       # Phase 21.7: assemble paleographic decoding table
+voynich paleo-decode      # Phase 21.8: decode full corpus with paleographic table
+voynich paleo-validate    # Phase 21.9: 15-test validation battery (12 original + 3 paleographic)
+voynich phase21-integrate # Phase 21.10: final verdict, progression, gap analysis
+voynich phase21           # Run full Phase 21 pipeline (all 10 steps)
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -300,14 +313,26 @@ voynich_2/
 │       ├── tachy_readability.py   # Phase 20.5: readability assessment (bigram, POS, domain coherence, phrases, cross-entropy)
 │       ├── tachy_phrases.py       # Phase 20.6: Latin phrase detection + botanical cross-check (28 folio plant IDs)
 │       ├── tachy_validate.py      # Phase 20.7: 12-test validation battery (V1–V12)
-│       └── phase20_integrate.py   # Phase 20.8: final verdict, tachygraphic table, progression tracking
+│       ├── phase20_integrate.py   # Phase 20.8: final verdict, tachygraphic table, progression tracking
+│       ├── paleo_ingest.py       # Phase 21.1: source normalization (5 historical sources → unified sign DB)
+│       ├── fontana_families.py   # Phase 21.2: Fontana cipher family extraction + gallows rotation test
+│       ├── chatelain_families.py # Phase 21.3: Chatelain Bobbio family extraction → syllable table
+│       ├── eva_stroke_compare.py # Phase 21.4: 44 EVA chars vs all historical signs (two-tier similarity)
+│       ├── family_to_syllable.py # Phase 21.5: sign family → historical syllable family mapping
+│       ├── cappelli_modifier.py  # Phase 21.6: modifier identification via Cappelli abbreviation marks
+│       ├── paleo_table.py        # Phase 21.7: paleographic decoding table assembly
+│       ├── paleo_decode.py       # Phase 21.8: full corpus decode with paleographic table
+│       ├── paleo_validate.py     # Phase 21.9: 15-test validation battery (12 + 3 paleographic)
+│       └── phase21_integrate.py  # Phase 21.10: final verdict, progression, gap analysis
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
+│   ├── 2Translate/              # Transcribed historical sources (Chatelain, Schmitz, Cappelli, Fontana)
 │   └── reference/               # Real historical corpora organized by language (not in git)
 │       ├── latin/               # Circa Instans, De Viribus Herbarum
 │       ├── occitan/             # Régime du Corps
 │       ├── italian/             # Historical Italian medical texts
 │       ├── german/              # Buch der Natur (Konrad von Megenberg)
+│       ├── paleographic/        # Phase 21 master_reference.json (generated)
 │       └── voynich_plant/       # Plant ID concordance CSV + medieval Latin name mapping
 ├── results/                     # JSON output from analysis runs
 └── archive/                     # Previous codebase (consonant-skeleton approach — deprecated)
@@ -1988,6 +2013,189 @@ The tachygraphic hypothesis (Phase 19) is structurally supported by strong indep
 | Phase 18 | INDETERMINATE (H1=0.370, H2=0.375, H3=0.313) |
 | Phase 19 | 5/8 convergent tests, readiness=0.55 — tri-state RESOLVED |
 | **Phase 20** | **FAILED — 36.0% dict_hit, 0.97× selectivity, 7/12 V-battery** |
+| **Phase 21** | **PALEOGRAPHIC CONSTRAINTS — 2.4% dict_hit, 20/44 Priority 1-3, 5/15 V-battery** |
+
+## Phase 21: Paleographic Sign Comparison
+
+Phase 20 failed to convert structural tachygraphic confirmation into a working decoder (7/12 V-battery, 0.97× selectivity). The root cause: character-level phonetic values cannot be derived from statistics alone — they must be discovered through external evidence. Phase 21 systematically compares EVA character forms against five historical tachygraphic sources transcribed to structured JSON, looking for correspondences that provide character-level phonetic assignments grounded in the historical tradition rather than statistical optimization.
+
+### Historical Sources
+
+| Source | Entries | Latin Values | Stroke Data | Schema |
+|--------|---------|-------------|-------------|--------|
+| Chatelain | 1,069 | 1,050 | 1,069 (full triples) | `first_stroke` / `middle_strokes` / `final_stroke` |
+| Schmitz | 1,350 | 1,350 | 1,350 (full triples) | Same triple architecture as Chatelain |
+| Cappelli | 2,678 | 2,677 | 113 (visual desc. only) | `abbreviated_form` bracket notation + optional `visual_description` |
+| Fontana BSB | 42 signs | 0 | 42 | `base_form` + `added_feature` (no letter values) |
+| Fontana BNF | 60 signs | 0 | 60 | Same as BSB + `matches_bsb_sign` cross-reference |
+
+**Key challenge:** Stroke vocabulary mismatch — historical sources use `diagonal_right`, `vertical_stroke`, `hook_right`, etc., while EVA uses `loop`, `ascender`, `vertical`, `open_curve`, `sigmoid`. A two-tier normalization layer (canonical form for exact matching + category for fuzzy matching) bridges this gap.
+
+### Ten-Step Pipeline
+
+| Step | CLI Command | Goal | Key Result | Gate |
+|------|-------------|------|------------|------|
+| 21.1 | `paleo-ingest` | Normalize all 5 sources into unified sign database | 5,199 signs, 2,634 with stroke data, master_reference.json written | — |
+| 21.2 | `fontana-families` | Extract Fontana cipher families + gallows rotation test | 10 families, rotation_match=True, **14.81× selectivity** | **PASS** |
+| 21.3 | `chatelain-families` | Extract Bobbio sign families → syllable table | 37 families, syllabic fraction=0.027, 2 table entries | **FAIL** (< 0.10) |
+| 21.4 | `eva-compare` | Compare 44 EVA chars vs all historical signs | 28 exact + 5 near + 8 partial, selectivity=0.97× | **FAIL** (< 1.5×) |
+| 21.5 | `family-syllable` | Map Voynich families to historical syllable families | 33/44 assigned (75% coverage), 0 high-conf, 20 Priority 1-3 | — |
+| 21.6 | `cappelli-mod` | Match 15 modifier chars against Cappelli abbreviation marks | 13 visual matches, 0/15 distributional passes | **FAIL** |
+| 21.7 | `paleo-table` | Assemble paleographic decoding table | 28/44 assigned, 20 P1-3, 4 homophones, JSD=0.952 | — |
+| 21.8 | `paleo-decode` | Decode full corpus | 2.4% expanded dict_hit (22.3% high-conf subset) | — |
+| 21.9 | `paleo-validate` | 15-test validation battery (12 original + 3 paleographic) | 5/15 passed; V13/V14/V15 all PASS | **FAIL** (< 9) |
+| 21.10 | `phase21-integrate` | Final verdict and progression | **PALEOGRAPHIC CONSTRAINTS** | — |
+
+### Step 21.1 — Source Normalization
+
+Loaded all 5 sources from `data/2Translate/`, applied two-tier stroke normalization (`STROKE_CANONICAL_MAP` for exact matching, `STROKE_CATEGORY_MAP` for fuzzy matching), and wrote unified database to `data/reference/paleographic/master_reference.json`.
+
+**Normalization examples:** EVA `vertical` → canonical `vertical_stroke` → category `straight`; EVA `loop` → canonical `closed_loop` → category `loop`; historical `hook_right` → canonical `hook_right` → category `hook`.
+
+Top canonical strokes after normalization: `horizontal_stroke` (1,379), `vertical_stroke` (1,165), `diagonal_right` (810) — historical scripts dominated by straight strokes while EVA dominated by loops and curves.
+
+### Step 21.2 — Fontana Family Extraction
+
+Grouped Fontana cipher signs by `base_form`, yielding 10 families. The `circle` family (39 members) has 9 directional tick variants covering all cardinal directions — the clearest structural parallel to Voynich bench characters.
+
+**Gallows rotation test: PASS.** The `vertical_stroke` family has 7 directional tick variants and `horizontal_stroke` has 4, matching the 4-gallows pattern (k, t, p, f share `ascender` first_stroke). Fontana's modifier toolkit is 62% directional ticks — his system modifies signs primarily by adding ticks in different positions, consistent with tachygraphic sign-family construction.
+
+**Null selectivity: 14.81×** — real Fontana family→EVA first_stroke correspondence is 14.81× better than random groupings of EVA chars into families of the same sizes.
+
+### Step 21.3 — Chatelain Bobbio Family Extraction
+
+Filtered to 1,003 Italian-origin Chatelain entries (436 simple signs), built 37 families from `variant_of` relationships. Only 1 family shows consonant sharing (initial `c`), yielding a syllabic fraction of **0.027** (below the 0.10 gate).
+
+**Schmitz comparison:** Schmitz syllabic fraction (0.115) is actually higher than Chatelain (0.027), contrary to the prediction that Bobbio material would be more syllabic. The Chatelain material doesn't preserve enough syllabic family organization to build a meaningful reference syllable table — only 2 entries produced.
+
+**Proceeding anyway:** Even word-level correspondences provide phonetic constraints for downstream stroke comparison.
+
+### Step 21.4 — EVA-to-Historical Stroke Comparison
+
+Compared each of 44 EVA characters against 2,634 historical signs using `stroke_similarity()` (canonical exact = 1.0/component, category match = 0.5/component, normalized by available components).
+
+**Match level distribution:** 28 exact (≥ 0.85), 5 near (≥ 0.65), 8 partial (≥ 0.45), 3 none.
+
+**Critical finding — selectivity 0.97×:** Because Chatelain/Schmitz use only 3 basic stroke types (`horizontal_stroke`, `vertical_stroke`, `diagonal_right`) for ~80% of their signs, almost any EVA character will match many historical signs. The comparison finds real correspondences but they are not discriminating above chance.
+
+Key per-character matches:
+- **Bench** (o, a, e, r, l): All match via `closed_loop` first_stroke → Fontana `circle` family (83+ matches each)
+- **Gallows** (k, t, p, f): Match `ascender` first_stroke signs → assigned full words "(imss) in millesimo suprascripto", "(adh) adhuc"
+- **Minims** (g, i, m, d, n): Match 1,023 historical signs via `vertical_stroke` — extremely overdetermined
+- **s** → "se" (exact), **sh** → "sub" (near): The most plausible syllable-level assignments
+- **b, j, u**: `connector` first_stroke matches zero historical signs (connector is EVA-only)
+
+### Step 21.5 — Family-to-Syllable Mapping
+
+Built paleographic assignment table for 44 EVA characters using evidence priority hierarchy: (1) anchor confirmed by paleo, (2) Chatelain Bobbio family, (3) Fontana construction rule, (4) individual stroke match, (5) family propagation, (6) statistical fallback.
+
+**Result:** 33/44 assigned (75% coverage), but **0 high-confidence** — all medium. 20 characters got Priority 3 from Fontana family structure matches, but since Fontana has no `letter_value` data, these produce `latin_syllable=None`. The 13 Priority 4 assignments come from stroke matches but carry full Latin words ("ipsius", "(adh) adhuc", "denarius"), not syllables.
+
+**Zero anchors retrieved** from Phase 19.8 cross-approach data, removing the strongest potential evidence tier.
+
+### Step 21.6 — Cappelli Modifier Identification
+
+Split analysis: visual comparison (113 Cappelli entries with stroke data) found **13 matches** for the 15 Phase 16 modifier chars. Functional comparison (all 2,678 entries via bracket notation) tested distributional predictions — **0/15 passed**. Cappelli's bracket function distribution is concentrated in `other` (1,752), `superscript` (519), `omission_nasal` (175), and Voynich modifier types don't map cleanly.
+
+### Step 21.7 — Paleographic Table Assembly
+
+Combined all evidence:
+
+| EVA | Assignment | Priority | Evidence |
+|-----|-----------|----------|----------|
+| k, p | "(imss) in millesimo suprascripto" | P4 | stroke exact/near |
+| t, f | "(adh) adhuc" | P4 | stroke exact |
+| y, q | "ipsius" | P4 | stroke near |
+| s | "se" | P4 | stroke exact |
+| sh | "sub" | P4 | stroke near |
+| c | "(c) codice" | P4 | stroke exact |
+| x | "denarius" | P4 | stroke exact |
+| qo, qok | "a" | P4 | stroke exact/near |
+| qot | "ac" | P4 | stroke exact |
+
+**Quality metrics:** 28/44 assigned (64%), 20 Priority 1-3 (45%), 0 high-confidence. JSD against Latin reference = 0.952 (very high divergence). Edit distance to Phase 20 and Phase 15 tables = 1.000 (completely different assignments). 15 characters classified as modifiers.
+
+### Step 21.8 — Corpus Decode
+
+Decoded 36,238 tokens. Only 3,970 cleanly decoded (10.9% — rest contain `?` for unmapped chars). Expanded dict hit = **2.4%** overall, but **22.3% for the high-confidence subset** (tokens composed entirely of assigned characters).
+
+Top decoded "words": `a` (885), `se` (576), `sub` (474), `ac` (252), `ipsius` (226). Clear artifacts: concatenated full-word assignments like "ipsius(imss) in millesimo suprascripto" instead of syllable strings.
+
+### Step 21.9 — Validation Battery (V1–V15)
+
+Phase 20.7's 12 tests + 3 new paleographic tests:
+
+| # | Test | Result | Detail |
+|---|------|--------|--------|
+| V1 | Null discrimination | **FAIL** | selectivity=0.41× |
+| V2 | Bigram plausibility | **PASS** | 1.0 |
+| V3 | Phrase detection | **FAIL** | 0 phrases, selectivity=0.0× |
+| V4 | Cross-approach agreement | **FAIL** | 0 anchor words |
+| V5 | Illustration-text match | **FAIL** | — |
+| V6 | Section coherence | **FAIL** | — |
+| V7 | Language A/B discrimination | **FAIL** | ratio=17.0 |
+| V8 | POS validity | **FAIL** | 0 function words |
+| V9 | Anchor fidelity | **FAIL** | 0% preserved |
+| V10 | Family coherence | **FAIL** | — |
+| V11 | Table stability | **FAIL** | 0% match Phase 15 |
+| V12 | Phase 16 improvement | **PASS** | — |
+| V13 | **Paleographic coverage** | **PASS** | **45% Priority 1-3** (gate: ≥30%) |
+| V14 | **Historical consistency** | **PASS** | **100%** — all table entries match historical first_stroke patterns |
+| V15 | **Fontana alignment** | **PASS** | **4/4 gallows consistent** |
+
+**Score:** 5/15 (need ≥9 for PASS, ≥12 for STRONG PASS). Gate: **FAIL**.
+
+The 3 new paleographic tests (V13/V14/V15) all pass, confirming the historical comparison finds real structural correspondences. The 10 failing tests reflect the inability to translate those correspondences into readable text.
+
+### Step 21.10 — Integration and Verdict
+
+**Outcome: PALEOGRAPHIC CONSTRAINTS**
+
+The paleographic comparison successfully identifies structural correspondences between EVA characters and historical tachygraphic signs (20/44 Priority 1-3 assignments, Fontana family alignment 14.81×, 100% historical consistency), but the resulting table does not produce readable Latin text. Five root causes:
+
+1. **Historical Latin values are full words, not syllables.** Chatelain and Schmitz catalog complete Latin words (ipsius, adhuc, denarius) mapped to individual Tironian signs. These can't be assigned to individual EVA characters in a syllabic system where each character represents a CV syllable, not a complete word.
+
+2. **Stroke vocabulary is too coarse for discrimination.** 80% of historical signs use only 3 stroke types (`horizontal_stroke`, `vertical_stroke`, `diagonal_right`), yielding selectivity ≈ 1.0×. The two-tier normalization bridges the vocabulary gap but cannot create discriminatory power where the source data lacks it.
+
+3. **Chatelain lacks syllabic family structure.** Syllabic fraction = 0.027 (gate: ≥ 0.10). The Bobbio material doesn't preserve the consonant-family organization that would enable systematic family-to-syllable mapping.
+
+4. **Fontana has structural parallels but zero phonetic values.** The rotation/directional-tick system matches beautifully (14.81×), confirming shared sign-construction principles, but all `letter_value` fields are null — no phonetic values to adopt.
+
+5. **Phase 19.8 anchors couldn't bridge the gap.** The cross-approach anchor lookup returned 0 matches, removing the strongest evidence tier (Priority 1: anchor confirmed by paleographic stroke match).
+
+**Gap analysis:** 11 unassigned chars: `h`, `ch`, `cth`, `ckh`, `cph`, `cfh`, `v`, `z`, `b`, `j`, `u` — mostly the `open_curve+connector` compound series (the `h`-series) and `connector`-based characters, which have no historical parallels.
+
+### Phase 21 Findings Summary
+
+Phase 21 represents a fundamentally different approach from Phases 11–20: external historical comparison rather than internal statistical optimization. The approach succeeds at what it can do (confirming structural parallels) but fails at what it needs the historical data to provide (syllable-level phonetic values).
+
+**What works:**
+- Fontana's sign-construction rules closely parallel Voynich sign families (14.81× selectivity)
+- All 4 gallows characters behave consistently with historical ascender-initial families
+- 100% of table entries match historical first_stroke patterns
+- The two-tier stroke normalization successfully bridges EVA↔historical vocabulary
+
+**What doesn't:**
+- Tironian notes are a word-level notation (1 sign = 1 word), not a syllabic system — the Chatelain/Schmitz values can't be decomposed into CV syllables
+- The historical stroke vocabulary is dominated by 3 basic types, making discrimination impossible
+- Cappelli abbreviation marks don't map to Voynich modifier functions
+- Without Costamagna's publications on Italian syllabic tachygraphy (the direct tradition), the syllabic layer of the tachygraphic system remains inaccessible
+
+**Missing source:** Costamagna's publications on Italian notarial tachygraphy (the tradition that may have preserved syllabic organization from late-antique Tironian notes) remain unlocated. These would potentially provide the syllable-level evidence that Chatelain (paleographic) and Schmitz (general Tironian) cannot.
+
+### Progression
+
+| Phase | Result |
+|---|---|
+| Phase 11 | 11.1% dict_hit (1.92×) |
+| Phase 14 | 19.4% dict_hit (3.00×) — sub-cell feature model breakthrough |
+| Phase 15 | 35.4% dict_hit (2.55×) — medieval dictionary expansion |
+| Phase 16 | 51.6% dict_hit (3.38×) — modifier detection |
+| Phase 17 | NO-GO (2/5 honesty tests) — null corpus achieves 37.6% |
+| Phase 18 | INDETERMINATE (H1=0.370, H2=0.375, H3=0.313) |
+| Phase 19 | 5/8 convergent tests, readiness=0.55 — tri-state RESOLVED |
+| Phase 20 | FAILED — 36.0% dict_hit, 0.97× selectivity, 7/12 V-battery |
+| **Phase 21** | **PALEOGRAPHIC CONSTRAINTS — 2.4% dict_hit, 20/44 P1-3, 5/15 V-battery** |
 
 ## Data
 
@@ -2761,7 +2969,7 @@ Verb candidates do not show the same coherence (ratio 0.96x), likely because the
 
 ## Results Files
 
-Analysis outputs are saved as JSON to `results/` (69 files total):
+Analysis outputs are saved as JSON to `results/` (148 files total):
 
 **Phase 1 — Stroke Analysis:**
 - `stroke_positional.json` — Stroke positional distributions and MI
@@ -2948,6 +3156,18 @@ Analysis outputs are saved as JSON to `results/` (69 files total):
 - `tachy_phrases.json` — 59 phrases (all "other" category); null mean=65.0; selectivity=**0.91×**; z-score=0.0; 0/28 botanical matches; p=1.000; gate **FAIL**
 - `tachy_validate.json` — V1 FAIL (0.97×), V2 PASS (∞, degenerate), V3 FAIL (0.91×), V4 PASS (8 anchors), V5 FAIL (p=1.0), V6 FAIL (1 domain), V7 PASS (ratio signal), V8 FAIL (1.00×), V9 PASS (13/13), V10 PASS (8/11), V11 PASS (100%), V12 PASS (3/5); **7/12** (need ≥8); gate **FAIL**
 - `phase20_integrate.json` — Outcome **FAILED**; V-battery 7/12; dict_hit=36.0%; phrases=59; bigram=0.000; botanical=0; tachygraphic hypothesis structurally supported but char-level table does not produce recognizable Latin
+
+**Phase 21 — Paleographic Sign Comparison:**
+- `paleo_ingest.json` — 5,199 signs from 5 sources (Chatelain 1,069 + Schmitz 1,350 + Cappelli 2,678 + Fontana BSB 42 + Fontana BNF 60); 2,634 with stroke data; 5,077 with Latin values; master_reference.json written to `data/reference/paleographic/`
+- `fontana_families.json` — 10 families by base_form; `circle` family 39 members with 9 directional ticks; gallows rotation test **PASS**; modifier toolkit 62% directional_tick; **null selectivity 14.81×**; gate **PASS**
+- `chatelain_families.json` — 1,003 Italian-origin signs, 436 simple; 37 families; syllabic fraction 0.027 (gate ≥0.10: **FAIL**); only 1 consonant-sharing family (initial `c`); 2 reference table entries; Schmitz syllabic fraction 0.115 > Chatelain 0.027
+- `eva_stroke_compare.json` — 44 EVA chars vs 2,634 historical signs; 28 exact + 5 near + 8 partial + 3 none; real mean score 0.805, null mean 0.829; **selectivity 0.97×** (gate ≥1.5: **FAIL**); top matches: bench→closed_loop (83+), minims→vertical_stroke (1,023), s→"se"
+- `family_to_syllable.json` — 33/44 assigned (75% coverage); High=0, Medium=33, Low=0, Unassigned=11; 0 anchors retrieved; Priority distribution: P3=20 (Fontana family), P4=13 (stroke match); latin_syllable=None for all P3 entries
+- `cappelli_modifier.json` — 13 visual matches for 15 modifier chars; 0/15 distributional passes; bracket functions: other(1,752), superscript(519), omission_nasal(175); null selectivity 0.00×; gate **FAIL**
+- `paleo_table.json` — 28/44 assigned (64%), 20 Priority 1-3 (45%), 0 high-confidence; 15 modifiers; 4 homophones; JSD=0.952; edit distance to Phase 20 and Phase 15: 1.000
+- `paleo_decode.json` — 36,238 tokens; 3,970 cleanly decoded (10.9%); original dict_hit 0.0%, **expanded dict_hit 2.4%**; high-confidence subset (3,970 tokens) at **22.3%**; top words: a(885), se(576), sub(474)
+- `paleo_validate.json` — V-battery 5/15 (**FAIL**); V2 PASS (bigram), V12 PASS (improvement), **V13 PASS (45% P1-3)**, **V14 PASS (100% historical consistency)**, **V15 PASS (4/4 gallows)**; strong pass=false
+- `phase21_integrate.json` — Verdict **PALEOGRAPHIC CONSTRAINTS**; 20/44 Priority 1-3; 11 unassigned chars (h-series + connector-based); progression Phase 11→21 tracked
 
 ## Background
 

@@ -1786,6 +1786,65 @@ def cosine_similarity_triples(
     return matches / total
 
 
+def stroke_similarity(
+    eva_strokes: Dict[str, str],
+    hist_strokes: Dict[str, str],
+    include_class: bool = True,
+) -> float:
+    """Two-tier stroke similarity for Phase 21 paleographic comparison.
+
+    Level 1: canonical exact match → 1.0 per component.
+    Level 2: category match → 0.5 per component.
+    Level 3: no match → 0.0.
+
+    Normalizes by the number of available (non-empty) components.
+
+    Parameters
+    ----------
+    eva_strokes : dict
+        Keys: first_stroke, last_stroke, and optionally glyph_class.
+        Values should already be in canonical form.
+    hist_strokes : dict
+        Same key structure. May lack glyph_class.
+    include_class : bool
+        If True, include glyph_class in comparison (3 components).
+        If False, compare only first_stroke and last_stroke (2 components).
+    """
+    from voynich.core.reference import normalize_stroke, stroke_category
+
+    keys = ['first_stroke', 'last_stroke']
+    if include_class:
+        keys.append('glyph_class')
+
+    score = 0.0
+    available = 0
+
+    for key in keys:
+        e_val = eva_strokes.get(key, '')
+        h_val = hist_strokes.get(key, '')
+        if not e_val or not h_val:
+            continue
+
+        available += 1
+
+        # Normalize both sides
+        e_canon = normalize_stroke(e_val)
+        h_canon = normalize_stroke(h_val)
+
+        if e_canon == h_canon:
+            score += 1.0
+        elif key != 'glyph_class':
+            # Category-level fuzzy match (not applicable to glyph_class)
+            e_cat = stroke_category(e_canon)
+            h_cat = stroke_category(h_canon)
+            if e_cat != 'unknown' and e_cat == h_cat:
+                score += 0.5
+
+    if available == 0:
+        return 0.0
+    return score / available
+
+
 def compute_phrase_selectivity(
     n_phrases: int,
     null_phrase_counts: List[int],

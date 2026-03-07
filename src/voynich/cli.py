@@ -1609,6 +1609,116 @@ def cmd_phase20():
     cmd_phase20_integrate()
 
 
+# ---------------------------------------------------------------------------
+# Phase 21: Paleographic Sign Comparison
+# ---------------------------------------------------------------------------
+
+def cmd_paleo_ingest():
+    """Run Phase 21.1: paleographic source normalization."""
+    from voynich.phases.paleo_ingest import run_paleo_ingest
+    t0 = time.time()
+    run_paleo_ingest()
+    print(f"\nPaleographic ingest completed in {time.time() - t0:.1f}s")
+
+
+def cmd_fontana_families():
+    """Run Phase 21.2: Fontana family extraction."""
+    from voynich.phases.fontana_families import run_fontana_families
+    t0 = time.time()
+    run_fontana_families()
+    print(f"\nFontana families completed in {time.time() - t0:.1f}s")
+
+
+def cmd_chatelain_families():
+    """Run Phase 21.3: Chatelain Bobbio family extraction."""
+    from voynich.phases.chatelain_families import run_chatelain_families
+    t0 = time.time()
+    run_chatelain_families()
+    print(f"\nChatelain families completed in {time.time() - t0:.1f}s")
+
+
+def cmd_eva_compare():
+    """Run Phase 21.4: EVA-to-historical stroke comparison."""
+    from voynich.phases.eva_stroke_compare import run_eva_stroke_compare
+    t0 = time.time()
+    run_eva_stroke_compare()
+    print(f"\nEVA stroke comparison completed in {time.time() - t0:.1f}s")
+
+
+def cmd_family_syllable():
+    """Run Phase 21.5: sign family to syllable mapping."""
+    from voynich.phases.family_to_syllable import run_family_to_syllable
+    t0 = time.time()
+    run_family_to_syllable()
+    print(f"\nFamily-to-syllable mapping completed in {time.time() - t0:.1f}s")
+
+
+def cmd_cappelli_mod():
+    """Run Phase 21.6: Cappelli modifier identification."""
+    from voynich.phases.cappelli_modifier import run_cappelli_modifier
+    t0 = time.time()
+    run_cappelli_modifier()
+    print(f"\nCappelli modifier analysis completed in {time.time() - t0:.1f}s")
+
+
+def cmd_paleo_table():
+    """Run Phase 21.7: paleographic table assembly."""
+    from voynich.phases.paleo_table import run_paleo_table
+    t0 = time.time()
+    run_paleo_table()
+    print(f"\nPaleographic table assembled in {time.time() - t0:.1f}s")
+
+
+def cmd_paleo_decode():
+    """Run Phase 21.8: corpus decode with paleographic table."""
+    from voynich.phases.paleo_decode import run_paleo_decode
+    t0 = time.time()
+    run_paleo_decode()
+    print(f"\nPaleographic decode completed in {time.time() - t0:.1f}s")
+
+
+def cmd_paleo_validate():
+    """Run Phase 21.9: 15-test validation battery."""
+    from voynich.phases.paleo_validate import run_paleo_validate
+    t0 = time.time()
+    run_paleo_validate()
+    print(f"\nPaleographic validation completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase21_integrate():
+    """Run Phase 21.10: integration and verdict."""
+    from voynich.phases.phase21_integrate import run_phase21_integrate
+    t0 = time.time()
+    run_phase21_integrate()
+    print(f"\nPhase 21 integration completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase21():
+    """Run full Phase 21 pipeline: paleographic sign comparison."""
+    print("=" * 70)
+    print("PHASE 21: Paleographic Sign Comparison")
+    print("=" * 70)
+    cmd_paleo_ingest()
+    print("\n" + "=" * 70 + "\n")
+    cmd_fontana_families()
+    print("\n" + "=" * 70 + "\n")
+    cmd_chatelain_families()
+    print("\n" + "=" * 70 + "\n")
+    cmd_eva_compare()
+    print("\n" + "=" * 70 + "\n")
+    cmd_family_syllable()
+    print("\n" + "=" * 70 + "\n")
+    cmd_cappelli_mod()
+    print("\n" + "=" * 70 + "\n")
+    cmd_paleo_table()
+    print("\n" + "=" * 70 + "\n")
+    cmd_paleo_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_paleo_validate()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase21_integrate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -1776,6 +1886,18 @@ def main():
         'tachy-validate': cmd_tachy_validate,
         'phase20-integrate': cmd_phase20_integrate,
         'phase20': cmd_phase20,
+        # Phase 21: Paleographic Sign Comparison
+        'paleo-ingest': cmd_paleo_ingest,
+        'fontana-families': cmd_fontana_families,
+        'chatelain-families': cmd_chatelain_families,
+        'eva-compare': cmd_eva_compare,
+        'family-syllable': cmd_family_syllable,
+        'cappelli-mod': cmd_cappelli_mod,
+        'paleo-table': cmd_paleo_table,
+        'paleo-decode': cmd_paleo_decode,
+        'paleo-validate': cmd_paleo_validate,
+        'phase21-integrate': cmd_phase21_integrate,
+        'phase21': cmd_phase21,
     }
 
     if len(sys.argv) < 2:

@@ -2179,6 +2179,123 @@ VALID_GLYPH_CLASSES = {'bench', 'compound', 'gallows', 'minim', 'rare', 'suffix'
 VALID_MODIFIER_MARKS = {'dot', 'tick', 'thickening', 'angle_change', 'serif', 'crossbar_added'}
 VALID_CONFIDENCES = {'high', 'medium', 'low'}
 
+# ---------------------------------------------------------------------------
+# Phase 21: Stroke Normalization Maps
+# ---------------------------------------------------------------------------
+# Two-tier mapping: raw stroke term → canonical form → category.
+# Canonical forms are used for exact matching; categories for fuzzy matching.
+
+STROKE_CANONICAL_MAP: Dict[str, str] = {
+    # Direct matches (shared terms between EVA and historical)
+    'ascender': 'ascender',
+    'connector': 'connector',
+    'crossbar': 'crossbar',
+    'descender': 'descender',
+    'sigmoid': 'sigmoid',
+    # Historical-specific terms
+    'vertical_stroke': 'vertical_stroke',
+    'horizontal_stroke': 'horizontal_stroke',
+    'diagonal_right': 'diagonal_right',
+    'diagonal_left': 'diagonal_left',
+    'open_curve_right': 'open_curve_right',
+    'open_curve_left': 'open_curve_left',
+    'open_curve_center': 'open_curve_center',
+    'open_curve_up': 'open_curve_up',
+    'hook_up': 'hook_up',
+    'hook_down': 'hook_down',
+    'hook_right': 'hook_right',
+    'hook_left': 'hook_left',
+    'closed_loop': 'closed_loop',
+    'loop_added': 'loop_added',
+    'dot': 'dot',
+    'tick': 'tick',
+    # EVA-specific terms → canonical
+    'loop': 'closed_loop',
+    'hook': 'hook',
+    'open_curve': 'open_curve',
+    'plume': 'plume',
+    'tail': 'tail',
+    'vertical': 'vertical_stroke',
+}
+
+STROKE_CATEGORY_MAP: Dict[str, str] = {
+    'vertical_stroke': 'straight',
+    'horizontal_stroke': 'straight',
+    'diagonal_right': 'straight',
+    'diagonal_left': 'straight',
+    'ascender': 'ascender',
+    'descender': 'descender',
+    'closed_loop': 'loop',
+    'loop_added': 'loop',
+    'open_curve': 'curve',
+    'open_curve_right': 'curve',
+    'open_curve_left': 'curve',
+    'open_curve_center': 'curve',
+    'open_curve_up': 'curve',
+    'hook': 'hook',
+    'hook_up': 'hook',
+    'hook_down': 'hook',
+    'hook_right': 'hook',
+    'hook_left': 'hook',
+    'sigmoid': 'curve',
+    'connector': 'connector',
+    'crossbar': 'straight',
+    'plume': 'ascender',
+    'tail': 'descender',
+    'dot': 'modifier',
+    'tick': 'modifier',
+}
+
+
+def normalize_stroke(raw: str) -> str:
+    """Normalize a raw stroke name to its canonical form.
+
+    Returns the canonical form if mapped, otherwise returns the raw string.
+    """
+    if not raw:
+        return ''
+    return STROKE_CANONICAL_MAP.get(raw, raw)
+
+
+def stroke_category(canonical: str) -> str:
+    """Return the broad category for a canonical stroke name.
+
+    Returns 'unknown' if the stroke is not in the category map.
+    """
+    if not canonical:
+        return 'unknown'
+    return STROKE_CATEGORY_MAP.get(canonical, 'unknown')
+
+
+def infer_glyph_class(first_stroke: str, middle_count: int, sign_complexity: str) -> str:
+    """Infer glyph_class from stroke pattern (for historical signs that lack it).
+
+    Uses the same classification logic as EVA_VISUAL_COMPONENTS:
+    - ascender first_stroke → gallows
+    - loop/closed_loop first_stroke with 0 middle → bench
+    - vertical/vertical_stroke first_stroke with 0 middle → minim
+    - Compound if middle_count > 0
+    - Otherwise rare
+    """
+    canon = normalize_stroke(first_stroke)
+    cat = stroke_category(canon)
+
+    if sign_complexity == 'compound' or middle_count > 0:
+        return 'compound'
+
+    if cat == 'ascender':
+        return 'gallows'
+    if cat == 'loop':
+        return 'bench'
+    if cat in ('straight', 'connector') or canon == 'vertical_stroke':
+        return 'minim'
+    if cat == 'curve':
+        return 'bench'
+    if cat == 'hook':
+        return 'minim'
+
+    return 'rare'
+
 
 def validate_stroke_fields(entry: Dict[str, Any]) -> List[str]:
     """Validate stroke vocabulary fields in a paleographic sign entry.
