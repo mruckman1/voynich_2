@@ -115,6 +115,10 @@ Usage:
     voynich token-gram        # Phase 24.15: word grammar exploitation
     voynich phase24-integrate # Phase 24.16: combined verdict
     voynich phase24           # Run full Phase 24 pipeline
+    voynich boustro           # Step 25.1: boustrophedon re-ordering test
+    voynich f6r-exam          # Step 25.2: folio f6r manual examination
+    voynich phase25-verdict   # Step 25.3: combined verdict
+    voynich phase25           # Run full Phase 25 pipeline
 """
 import sys
 import time
@@ -2012,6 +2016,42 @@ def cmd_phase24_integrate():
     print(f"\nStep 24.16 completed in {time.time() - t0:.1f}s")
 
 
+def cmd_boustro():
+    """Run Step 25.1: boustrophedon re-ordering test."""
+    from voynich.phases.boustrophedon import run_boustrophedon
+    t0 = time.time()
+    run_boustrophedon()
+    print(f"\nStep 25.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_f6r_exam():
+    """Run Step 25.2: folio f6r manual examination."""
+    from voynich.phases.f6r_manual import run_f6r_manual
+    t0 = time.time()
+    run_f6r_manual()
+    print(f"\nStep 25.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase25_verdict():
+    """Run Step 25.3: combined Phase 25 verdict."""
+    from voynich.phases.phase25_verdict import run_phase25_verdict
+    t0 = time.time()
+    run_phase25_verdict()
+    print(f"\nStep 25.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase25():
+    """Run full Phase 25 pipeline: reading direction test + f6r examination."""
+    print("=" * 70)
+    print("PHASE 25: Reading Direction Test and Folio f6r Examination")
+    print("=" * 70)
+    cmd_boustro()
+    print("\n" + "=" * 70 + "\n")
+    cmd_f6r_exam()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase25_verdict()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -2274,6 +2314,11 @@ def main():
         'token-gram': cmd_token_gram,
         'phase24-integrate': cmd_phase24_integrate,
         'phase24': cmd_phase24,
+        # Phase 25: Reading Direction Test and f6r Examination
+        'boustro': cmd_boustro,
+        'f6r-exam': cmd_f6r_exam,
+        'phase25-verdict': cmd_phase25_verdict,
+        'phase25': cmd_phase25,
     }
 
     if len(sys.argv) < 2:
