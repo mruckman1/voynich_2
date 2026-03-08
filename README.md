@@ -1,10 +1,10 @@
 # Voynich Manuscript: Syllabary & Information-Theoretic Analysis
 
-A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, context-dependent rule analysis, stroke-feature abugida decoding, feature model refinement with articulatory constraints, modifier detection with syllable correction, honesty diagnostics validating whether the decoding signal is genuine or artifact, a five-test hypothesis discrimination battery targeting the tri-state degeneracy between hoax, verbose cipher, and taxonomic language, convergent constraint exploitation testing the tachygraphic hypothesis against 8 independent narrow constraints, and tachygraphic table construction attempting full corpus decoding at EVA-character granularity. Twenty complementary approaches across nineteen phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step. Phase 17 Step 0 applies five independent validation tests to the Phase 16 headline result (51.6% dict_hit) — the verdict is **NO-GO**: only 2/5 tests pass, and null corpora achieve 37.6% dict_hit through the same pipeline, indicating the signal is substantially confounded with dictionary expansion and per-token cherry-picking. Phase 18 deploys five mathematically independent diagnostic tests — burstiness, stride-entropy decimation, prefix trie topology, unsupervised HMM POS induction, and Lempel-Ziv complexity growth — to discriminate between H1 (procedural hoax), H2 (verbose cipher), and H3 (taxonomic language). The verdict is **INDETERMINATE** (H1=0.370, H2=0.375, H3=0.313, confidence=0.01): the manuscript simultaneously exhibits Poisson-like word spacing (H1), natural-language compression profile (H2), and unnaturally balanced vocabulary structure (H3), confirming that the tri-state degeneracy is genuine and not an artifact of insufficient analysis. Phase 19 attacks 8 independent narrow constraints where the combinatorial space is small enough for exhaustive or near-exhaustive search, directly testing the hypothesis that the manuscript uses **Italian syllabic tachygraphy** (Costamagna/Bobbio tradition). The verdict is **PASS** (5/8 tests passed, convergence=0.65, readiness=0.55): the tachygraphic encoder uniquely reproduces the Voynich entropy shift (cos=0.820, cleanly discriminated from all alternatives), sign families show significantly lower phonetic entropy than null (1.61×), the tachygraphic simulation reproduces the full Voynich statistical fingerprint AND Phase 18's tri-state pattern, illustration-text links are confirmed at p<0.0001 (1.94×), and cross-approach convergence is extraordinary (32.26×). **Phase 18's tri-state degeneracy is RESOLVED**: the manuscript uses a tachygraphic syllabic cipher encoding Latin medical text — simultaneously a constructed system (H1), encoding natural language (H2), with systematic vocabulary (H3).
+A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, context-dependent rule analysis, stroke-feature abugida decoding, feature model refinement with articulatory constraints, modifier detection with syllable correction, honesty diagnostics validating whether the decoding signal is genuine or artifact, a five-test hypothesis discrimination battery targeting the tri-state degeneracy between hoax, verbose cipher, and taxonomic language, convergent constraint exploitation testing the tachygraphic hypothesis against 8 independent narrow constraints, tachygraphic table construction attempting full corpus decoding at EVA-character granularity, and first-syllable extraction testing whether historical Tironian word signs were repurposed as syllable signs. Twenty-two complementary approaches across twenty-two phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step. Phase 17 Step 0 applies five independent validation tests to the Phase 16 headline result (51.6% dict_hit) — the verdict is **NO-GO**: only 2/5 tests pass, and null corpora achieve 37.6% dict_hit through the same pipeline, indicating the signal is substantially confounded with dictionary expansion and per-token cherry-picking. Phase 18 deploys five mathematically independent diagnostic tests — burstiness, stride-entropy decimation, prefix trie topology, unsupervised HMM POS induction, and Lempel-Ziv complexity growth — to discriminate between H1 (procedural hoax), H2 (verbose cipher), and H3 (taxonomic language). The verdict is **INDETERMINATE** (H1=0.370, H2=0.375, H3=0.313, confidence=0.01): the manuscript simultaneously exhibits Poisson-like word spacing (H1), natural-language compression profile (H2), and unnaturally balanced vocabulary structure (H3), confirming that the tri-state degeneracy is genuine and not an artifact of insufficient analysis. Phase 19 attacks 8 independent narrow constraints where the combinatorial space is small enough for exhaustive or near-exhaustive search, directly testing the hypothesis that the manuscript uses **Italian syllabic tachygraphy** (Costamagna/Bobbio tradition). The verdict is **PASS** (5/8 tests passed, convergence=0.65, readiness=0.55): the tachygraphic encoder uniquely reproduces the Voynich entropy shift (cos=0.820, cleanly discriminated from all alternatives), sign families show significantly lower phonetic entropy than null (1.61×), the tachygraphic simulation reproduces the full Voynich statistical fingerprint AND Phase 18's tri-state pattern, illustration-text links are confirmed at p<0.0001 (1.94×), and cross-approach convergence is extraordinary (32.26×). **Phase 18's tri-state degeneracy is RESOLVED**: the manuscript uses a tachygraphic syllabic cipher encoding Latin medical text — simultaneously a constructed system (H1), encoding natural language (H2), with systematic vocabulary (H3).
 
 **Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification). **Phase 10** tests the three surviving hypotheses — constructed script (H1), information dispersion (H2), and keyed cipher (H3) — through five discriminating analyses: token-level entropy curves, mutual information decay, folio-level encoding shifts, glyph construction grammar, and hypothesis integration. **Phase 11** directly attacks the 14-variable phonetic mapping problem using constraint satisfaction: six constraint layers progressively prune each grid cell's candidate syllable set, AC-3 arc-consistency propagation removes inconsistencies, and beam search (MRV-ordered, width 50) finds the CE-optimal assignment across Latin, Occitan, Italian, and German. **Phase 11.5** runs five sequential refinement steps to push past the 11.1% dictionary hit rate: failure diagnosis (NEAR_MISS dominant, 13/14 high-error cells), inherent vowel and CVC/CCV relaxation sweeps (relaxation degrades selectivity — strict CV remains optimal), verb constraint integration from Phase 9 (1 soft constraint), iterative anchor bootstrapping (converges immediately at 7.2% dict hit), and a full V1–V9 validation battery confirming 8/9 tests pass with selectivity 1.85×. Verdict: the CSP framework is correct; the bottleneck is grid precision, not the language or encoding model. **Phase 19** attacks 8 independent narrow constraints to test the tachygraphic hypothesis directly: entropy shift analysis identifies tachygraphic encoding as the unique best match (cos=0.820), sign families show systematic phonetic regularity (1.61×), a tachygraphic simulation reproduces both the Voynich fingerprint and Phase 18's tri-state, illustration-text links confirm at p<0.0001, and cross-approach convergence reaches 32.26×. The tri-state degeneracy is resolved: the manuscript uses an Italian syllabic tachygraphic cipher encoding Latin medical text. **Phase 20** attempts to convert Phase 19's structural confirmation into a concrete decoding by building a full EVA-character→Latin-syllable tachygraphic table (29 syllabic chars, 15 modifiers) from cross-approach anchors and sign family constraints, then decoding all 36,238 tokens. The verdict is **FAILED** (7/12 validation tests, need ≥8): the char-level table achieves 36.0% expanded dict_hit (regression from Phase 16's 51.6%) with null selectivity 0.97× — random assignments from the same family-constrained domains score equally. The beam search solver returns no solutions due to highly constrained domains (mean size 3.2), and the family-derived fallback table produces 0 botanical matches and 0.91× phrase selectivity. The tachygraphic structural hypothesis (Phase 19) remains supported, but translating it into a working decoding table at individual character granularity is not yet achievable.
 
-Key finding across all phases: the Voynich manuscript encodes **Latin medical text** using an **Italian syllabic tachygraphic cipher** — a ~5×4 syllabary (5 consonant classes × 4 vowel variants) rooted in the Costamagna/Bobbio shorthand tradition, with genuine affix+stem structure. Phase 19 resolves the Phase 18 tri-state degeneracy by demonstrating that the tachygraphic encoding simultaneously produces all three statistical signatures (H1 constructed, H2 natural language, H3 systematic vocabulary). Two independent decoding approaches converge on the same Latin words ("de", "bene" as exact matches), illustration-text links confirm at p<0.0001, and the tachygraphic entropy shift uniquely identifies the encoding mechanism (cos=0.820, discriminated from all 8 alternatives). Fisher's combined probability test across 5 independent evidence families yields p = 2.75×10⁻¹⁰, confirming that the aggregate signal is real even though the selectivity ceiling — where frequency priors dominate over genuine linguistic content — persists at the level of individual word identification. Phase 8's MDL decoder, tested against all four candidate languages (Latin, Occitan, Italian, German), cannot discriminate between them — German wins on raw CE due to corpus size, not linguistic affinity. The failed sanity check (4% cipher recovery) and lack of language discrimination confirm the compression gains are frequency-driven, not genuine decryption.
+Key finding across all phases: the Voynich manuscript encodes **Latin medical text** using an **Italian syllabic tachygraphic cipher** — a ~5×4 syllabary (5 consonant classes × 4 vowel variants) rooted in the Costamagna/Bobbio shorthand tradition, with genuine affix+stem structure. Phase 19 resolves the Phase 18 tri-state degeneracy by demonstrating that the tachygraphic encoding simultaneously produces all three statistical signatures (H1 constructed, H2 natural language, H3 systematic vocabulary). Two independent decoding approaches converge on the same Latin words ("de", "bene" as exact matches), illustration-text links confirm at p<0.0001, and the tachygraphic entropy shift uniquely identifies the encoding mechanism (cos=0.820, discriminated from all 8 alternatives). Fisher's combined probability test across 5 independent evidence families yields p = 2.75×10⁻¹⁰, confirming that the aggregate signal is real even though the selectivity ceiling — where frequency priors dominate over genuine linguistic content — persists at the level of individual word identification. Phase 8's MDL decoder, tested against all four candidate languages (Latin, Occitan, Italian, German), cannot discriminate between them — German wins on raw CE due to corpus size, not linguistic affinity. The failed sanity check (4% cipher recovery) and lack of language discrimination confirm the compression gains are frequency-driven, not genuine decryption. **Phase 22** tests the specific hypothesis that historical Tironian word-level signs were repurposed as syllable signs: the syllabic value of a sign is the first CV syllable of the word it most commonly abbreviated (e.g., "sub"→"su", "codice"→"co"). Updated Fontana re-transcriptions (BSB: 98 unique sign-to-letter mappings, BNF: 50 confirming entries) provide a second independent line of evidence by mapping Fontana's alphabetic values onto EVA characters via Phase 19.5's structural correspondences. Two decoding modes are tested: Mode A (strict CV, strip codas) and Mode B (CVC, allow closed syllables). The verdict is **HYPOTHESIS REFUTED**: the two independent evidence streams produce 0/29 agreement (first-syllable vs Fontana), Mode A achieves only 8.8% dict_hit (regression from Phase 16's 51.6%), bigram plausibility is 0.0 for Mode A (0.067 for Mode B from a tiny sample), and 0 phrases are detected. The 8/15 validation battery passes on a technicality (structural/paleographic tests pass, all functional tests fail). The first-syllable extraction hypothesis is ruled out — historical Tironian word signs were not simply repurposed as syllable signs by taking the first syllable.
 
 Phase 9's fundamental reassessment rules out three specific encoding models: **no homophonic signal** (zero distributional clusters at cosine > 0.8, Voynich vocabulary is actually smaller than references), **no nomenclator-specific bimodality** (Voynich is bimodal but so are all reference languages), and **no position-dependent encoding** (positional JSD matches random shuffling). The four candidate languages remain statistically indistinguishable at matched corpus sizes (11K tokens, overlapping CIs). The text typology classifier identifies the Voynich as **encoded natural language** (confidence 1.0) — not glossolalia, not constructed — with an anomalously high entropy floor (0.978 bits/char vs 0.33–0.51 for reference languages), indicating the encoding preserves more redundancy than any tested plaintext.
 
@@ -180,6 +180,17 @@ voynich paleo-decode      # Phase 21.8: decode full corpus with paleographic tab
 voynich paleo-validate    # Phase 21.9: 15-test validation battery (12 original + 3 paleographic)
 voynich phase21-integrate # Phase 21.10: final verdict, progression, gap analysis
 voynich phase21           # Run full Phase 21 pipeline (all 10 steps)
+
+# Phase 22: First-Syllable Extraction and Fontana-Constrained Decode
+voynich first-syl         # Phase 22.1: extract first CV/CVC syllable from historical word matches
+voynich fontana-phon      # Phase 22.2: map Fontana cipher key onto EVA chars via structural correspondences
+voynich table-merge       # Phase 22.3: merge first-syllable + Fontana + anchors + Phase 15 fallbacks
+voynich decode-22         # Phase 22.4: full corpus decode (36K tokens) with merged table + Viterbi segmentation
+voynich read-22           # Phase 22.5: readability assessment (bigram plausibility, POS, domain coherence)
+voynich phrases-22        # Phase 22.6: phrase detection + botanical cross-check (28 folios)
+voynich validate-22       # Phase 22.7: 15-test validation battery (V1–V15)
+voynich phase22-integrate # Phase 22.8: final verdict, mode comparison, progression, gap analysis
+voynich phase22           # Run full Phase 22 pipeline (all 8 steps)
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -323,7 +334,15 @@ voynich_2/
 │       ├── paleo_table.py        # Phase 21.7: paleographic decoding table assembly
 │       ├── paleo_decode.py       # Phase 21.8: full corpus decode with paleographic table
 │       ├── paleo_validate.py     # Phase 21.9: 15-test validation battery (12 + 3 paleographic)
-│       └── phase21_integrate.py  # Phase 21.10: final verdict, progression, gap analysis
+│       ├── phase21_integrate.py  # Phase 21.10: final verdict, progression, gap analysis
+│       ├── first_syllable.py    # Phase 22.1: first CV/CVC syllable extraction from historical matches
+│       ├── fontana_phonetic.py  # Phase 22.2: Fontana cipher key → EVA syllable mapping
+│       ├── table_merge.py       # Phase 22.3: evidence priority merge (7 tiers)
+│       ├── decode_22.py         # Phase 22.4: corpus decode + Viterbi word segmentation
+│       ├── readability_22.py    # Phase 22.5: bigram plausibility + readability assessment
+│       ├── phrases_22.py        # Phase 22.6: phrase detection + botanical cross-check
+│       ├── validate_22.py       # Phase 22.7: 15-test validation battery
+│       └── phase22_integrate.py # Phase 22.8: final verdict, mode comparison, gap analysis
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   ├── 2Translate/              # Transcribed historical sources (Chatelain, Schmitz, Cappelli, Fontana)
@@ -2197,6 +2216,139 @@ Phase 21 represents a fundamentally different approach from Phases 11–20: exte
 | Phase 20 | FAILED — 36.0% dict_hit, 0.97× selectivity, 7/12 V-battery |
 | **Phase 21** | **PALEOGRAPHIC CONSTRAINTS — 2.4% dict_hit, 20/44 P1-3, 5/15 V-battery** |
 
+## Phase 22: First-Syllable Extraction and Fontana-Constrained Decode
+
+Phase 21 found real stroke-level correspondences between EVA characters and historical Tironian signs (Fontana structural match 14.81×, gallows rotation confirmed, `s→se` exact), but the historical sources catalog WORD-level values, not syllable-level values — producing gibberish when applied to the corpus. Phase 22 tests a specific, falsifiable hypothesis: in the Italian syllabic tachygraphic tradition, word-level Tironian signs were repurposed as syllable signs, where the syllabic value is the **first CV syllable** of the word that sign most commonly abbreviated (e.g., "sub"→"su", "codice"→"co", "se"→"se"). A second independent line of evidence comes from updated Fontana re-transcriptions (BSB: 142 consolidated signs with letter_value fields, BNF: 72 confirming entries), which provide alphabetic values that can be mapped onto EVA characters via Phase 19.5's structural family correspondences.
+
+### Eight-Step Pipeline
+
+| Step | CLI Command | Goal | Key Result | Gate |
+|------|-------------|------|------------|------|
+| 22.1 | `first-syl` | Extract first CV/CVC syllable from historical word matches | 39/44 chars assigned, 85.4% family consonant agreement, 4/8 anchor compat | — |
+| 22.2 | `fontana-phon` | Map Fontana cipher key onto EVA chars | 29 syllables derived, **0/29 agree** with first-syllable | **FAIL** |
+| 22.3 | `table-merge` | Merge all evidence sources (7-tier priority) | P2=19, P3=8, P4=11, P5=6; 18 conflicts; 90% edit distance from Phase 15 | — |
+| 22.4 | `decode-22` | Decode full corpus + Viterbi segmentation | Mode A=8.8% dict_hit, Mode B=3.4% | — |
+| 22.5 | `read-22` | Readability assessment (bigram, POS, domain) | Mode A bigram=0.0, Mode B bigram=0.067; gate PASS on technicality | — |
+| 22.6 | `phrases-22` | Phrase detection + botanical cross-check | 0 phrases, 3 template hits ("in","ad"), botanical p=1.0 | **FAIL** |
+| 22.7 | `validate-22` | 15-test validation battery | 8/15 passed (borderline PASS) | PASS |
+| 22.8 | `phase22-integrate` | Final verdict and progression | **HYPOTHESIS REFUTED** | — |
+
+### Step 22.1 — First-Syllable Extraction
+
+Loaded per-EVA-char historical matches from Phase 21.4 (`eva_stroke_compare.json`). For each Latin word value, extracted the first CV syllable using Latin syllabification rules (maximal onset):
+- `_extract_first_cv(word)` — strict CV: strip all codas (e.g., "sub"→"su", "codice"→"co", "denarius"→"de")
+- `_extract_first_cvc(word)` — allow CVC for closed first syllables (e.g., "sub"→"sub", "ad"→"ad")
+
+Built two candidate tables (Mode A = strict CV, Mode B = CVC), each covering 44 EVA characters. Family consistency check across 6 sign families: **85.4% family consonant agreement** (5/6 families share a consonant onset within family members). Cross-reference with Phase 19.8 anchors: **4/8 compatible** (de, bene confirmed; te, ne, terra, rosa, sal, sali partially compatible).
+
+35/44 chars have historical word matches; 39/44 receive syllable assignments (Phase 15 fallback fills 4 gaps). 5 chars remain with "?" assignments.
+
+### Step 22.2 — Fontana Phonetic Mapping
+
+Loaded updated Fontana cipher key from BSB (142 consolidated signs) and BNF (72 unique signs). Key family structure:
+- **Circle family** (vowels): tick_up→a, tick_right→e, tick_down→i, tick_left→o, tick_northeast→u
+- **Vertical_stroke family** (consonants): rotation/mirror distinguishes b, d, p, q, m, h, t, k, etc.
+
+Mapped Fontana families onto Voynich sign families via Phase 19.5/21.2 structural correspondences. For each EVA char, derived a hypothesized syllable using Fontana's consonant (from family) + vowel (from modification direction).
+
+**Critical finding — 0/29 agreement** between first-syllable and Fontana approaches. Root cause: the Fontana circle family's only consonant is "q", so the bench family (24/44 chars, all mapped to circle via `closed_loop` first_stroke) gets assigned "qa"/"qe"/"qi"/"qo"/"qu" — degenerate and incorrect.
+
+### Step 22.3 — Table Merge
+
+Merged four evidence sources using 7-tier priority hierarchy:
+1. First-syl + Fontana agree (Priority 1) — **0 chars** (none agree)
+2. Cross-approach anchor confirmed (Priority 2) — **19 chars**
+3. Fontana phonetic alone (Priority 3) — **8 chars**
+4. First-syllable alone (Priority 4) — **11 chars**
+5. Phase 15 fallback (Priority 5) — **6 chars**
+
+18 conflicts between sources. Family coherence post-processing applied (if ≥75% of family agrees on consonant, override minority unless P≤3). Mode A and Mode B tables both produced.
+
+### Step 22.4 — Corpus Decode
+
+Decoded 36,238 tokens through both Mode A (strict CV) and Mode B (CVC) merged tables. Applied R3 combined modifier strategy (Phase 16). Viterbi word segmentation using Latin unigram word model (30.0 unknown word penalty).
+
+**Mode A:** 8.8% expanded dict_hit, 1.7% Viterbi segmented dict_hit. Decoded text is gibberish (e.g., `fachys` → "aqaciise", `shol` → "suqi").
+
+**Mode B:** 3.4% expanded dict_hit. Worse across all metrics.
+
+### Step 22.5 — Readability Assessment
+
+Bigram plausibility: Mode A = **0.0** (no consecutive word pairs found in Latin reference bigrams). Mode B = **0.067** (from a tiny 15-word sample, not meaningful). Cross-entropy, POS trigram validity, and domain coherence all at or near zero. Gate passes on technicality because null baselines are also zero.
+
+### Step 22.6 — Phrase Detection
+
+Sliding window phrase detection (3-8 words) on Viterbi-segmented text found **0 phrases**. 3 template hits ("in", "ad" — trivially short Latin prepositions matching by coincidence). Botanical cross-check: p = **1.0** (no herbal-botanical enrichment).
+
+### Step 22.7 — Validation Battery (V1–V15)
+
+| # | Test | Result | Detail |
+|---|------|--------|--------|
+| V1 | Null discrimination | **FAIL** | selectivity=0.24× |
+| V2 | Bigram plausibility | **PASS** | inf× (degenerate — both real and null are ~0) |
+| V3 | Phrase detection | **FAIL** | 0 phrases |
+| V4 | Cross-approach agreement | **PASS** | 17 matches (exact=2, edit2=8, skeleton=7) |
+| V5 | Illustration-text match | **FAIL** | p=1.0 |
+| V6 | Section coherence | **FAIL** | 0 sections >10% dict-hit |
+| V7 | Language A/B discrimination | **PASS** | ratio=2.15× |
+| V8 | POS validity | **FAIL** | selectivity=0.34× |
+| V9 | Anchor fidelity | **PASS** | 19/19 preserved (100%) |
+| V10 | Family consonant coherence | **PASS** | 5/6 families coherent |
+| V11 | Table stability (A vs B) | **FAIL** | 39% agreement |
+| V12 | Improvement over Phase 16 | **FAIL** | 3.4% vs 51.6% |
+| V13 | Paleographic coverage | **PASS** | 39/44 chars (89%) |
+| V14 | Historical consistency | **PASS** | 35/44 chars (80%) |
+| V15 | Fontana alignment | **PASS** | 4/4 gallows |
+
+**Score:** 8/15 (PASS — meets minimum threshold, but all functional decoding tests fail). The passing tests are structural/paleographic — the same ones that passed in Phase 21. Every test measuring actual decoded-text quality fails.
+
+### Step 22.8 — Integration and Verdict
+
+**Outcome: HYPOTHESIS REFUTED**
+
+The first-syllable hypothesis — that Tironian word-level signs were repurposed as syllable signs by extracting the first CV syllable — does not produce readable Latin text. Four root causes:
+
+1. **Zero convergence between independent evidence streams.** First-syllable extraction and Fontana phonetic mapping produce 0/29 agreement. If the hypothesis were correct, two independent derivations of the same underlying phonetic system should converge.
+
+2. **Fontana family mapping is degenerate.** The bench family (24/44 EVA chars) maps to Fontana's circle family, whose only consonant is "q". This assigns "qa"/"qe"/"qi"/"qo"/"qu" to the majority of EVA characters — phonetically implausible for any natural language.
+
+3. **Stroke-triple collision prevents discrimination.** Many EVA chars share the same `(first_stroke, last_stroke, glyph_class)` triple, so they receive the same historical match and the same first-syllable extraction. The historical comparison can't differentiate between characters that look similar at the stroke level.
+
+4. **Dict-hit regression from Phase 16.** Mode A achieves 8.8% vs Phase 16's 51.6%. The derived table is worse than the statistically optimized table by every metric.
+
+### Phase 22 Findings Summary
+
+Phase 22 represents the most rigorous test of a specific linguistic hypothesis: deriving a decoding table from historical evidence rather than statistical optimization. The hypothesis is cleanly falsified.
+
+**What works:**
+- First-syllable extraction produces phonetically plausible assignments for many individual chars (s→"se", c→"co", x→"de")
+- Family consonant agreement is high (85.4%) — sign families do share onset consonants
+- Anchor compatibility is reasonable (4/8 anchors match)
+- Paleographic structural tests (V13/V14/V15) continue to pass
+
+**What doesn't:**
+- The two independent evidence streams (first-syllable + Fontana) produce zero agreement
+- Decoded text is gibberish with 0.0 bigram plausibility
+- 0 phrases detected, 0 botanical matches
+- 8.8% dict_hit is a massive regression from Phase 16's 51.6%
+
+**Implications:** The Voynich script's syllabic values are NOT simply the first syllable of the Latin word each historical Tironian sign abbreviated. The syllabic layer of the tachygraphic tradition — if it exists — uses a different assignment mechanism than first-syllable extraction. Fontana's alphabetic cipher key, while structurally related to the Voynich sign system (14.81× selectivity confirmed in Phase 21), does not provide usable phonetic values when mapped via structural correspondence.
+
+### Progression
+
+| Phase | Result |
+|---|---|
+| Phase 11 | 11.1% dict_hit (1.92×) |
+| Phase 14 | 19.4% dict_hit (3.00×) — sub-cell feature model breakthrough |
+| Phase 15 | 35.4% dict_hit (2.55×) — medieval dictionary expansion |
+| Phase 16 | 51.6% dict_hit (3.38×) — modifier detection |
+| Phase 17 | NO-GO (2/5 honesty tests) — null corpus achieves 37.6% |
+| Phase 18 | INDETERMINATE (H1=0.370, H2=0.375, H3=0.313) |
+| Phase 19 | 5/8 convergent tests, readiness=0.55 — tri-state RESOLVED |
+| Phase 20 | FAILED — 36.0% dict_hit, 0.97× selectivity, 7/12 V-battery |
+| Phase 21 | PALEOGRAPHIC CONSTRAINTS — 2.4% dict_hit, 20/44 P1-3, 5/15 V-battery |
+| **Phase 22** | **HYPOTHESIS REFUTED — 8.8% dict_hit, 0/29 convergence, 8/15 V-battery** |
+
 ## Data
 
 ### Voynich Corpus
@@ -2969,7 +3121,7 @@ Verb candidates do not show the same coherence (ratio 0.96x), likely because the
 
 ## Results Files
 
-Analysis outputs are saved as JSON to `results/` (148 files total):
+Analysis outputs are saved as JSON to `results/` (156 files total):
 
 **Phase 1 — Stroke Analysis:**
 - `stroke_positional.json` — Stroke positional distributions and MI
@@ -3168,6 +3320,16 @@ Analysis outputs are saved as JSON to `results/` (148 files total):
 - `paleo_decode.json` — 36,238 tokens; 3,970 cleanly decoded (10.9%); original dict_hit 0.0%, **expanded dict_hit 2.4%**; high-confidence subset (3,970 tokens) at **22.3%**; top words: a(885), se(576), sub(474)
 - `paleo_validate.json` — V-battery 5/15 (**FAIL**); V2 PASS (bigram), V12 PASS (improvement), **V13 PASS (45% P1-3)**, **V14 PASS (100% historical consistency)**, **V15 PASS (4/4 gallows)**; strong pass=false
 - `phase21_integrate.json` — Verdict **PALEOGRAPHIC CONSTRAINTS**; 20/44 Priority 1-3; 11 unassigned chars (h-series + connector-based); progression Phase 11→21 tracked
+
+**Phase 22 — First-Syllable Extraction and Fontana-Constrained Decode:**
+- `first_syllable_table.json` — 44 EVA chars; 39/44 with syllable assignments; Mode A (strict CV) and Mode B (CVC) tables; family consonant agreement 85.4%; anchor compatibility 4/8; 35 historical matches, 5 Phase 15 fallbacks
+- `fontana_phonetic.json` — 142 Fontana signs consolidated (BSB+BNF); 29 syllable hypotheses derived; **0/29 agreement** with first-syllable table; bench→circle family degenerate (all "q" consonant)
+- `merged_table.json` — 7-tier priority merge; P1=0, P2=19, P3=8, P4=11, P5=6; 18 conflicts; Mode A and Mode B tables; 90% edit distance from Phase 15
+- `corpus_decode_22.json` — 36,238 tokens; Mode A: **8.8% expanded dict_hit**, 1.7% Viterbi; Mode B: 3.4%; per-section and per-folio breakdown; decoded samples
+- `readability_22.json` — Mode A bigram=0.0, Mode B bigram=0.067; POS selectivity=0.34×; 0 domain hits (Mode A); 5 null baselines; gate PASS (technicality)
+- `phrases_22.json` — 0 phrases detected; 3 template hits ("in","ad" — trivially short); botanical p=1.0, selectivity=0.0×; gate **FAIL**
+- `validate_22.json` — V-battery **8/15 PASS** (borderline); V2/V4/V7/V9/V10/V13/V14/V15 pass (structural); V1/V3/V5/V6/V8/V11/V12 fail (functional); strong_pass=false
+- `phase22_integrate.json` — Verdict **HYPOTHESIS REFUTED**; 0/29 first-syl↔Fontana convergence; Mode A outperforms Mode B (open syllable system); progression Phase 11→22 tracked
 
 ## Background
 

@@ -1719,6 +1719,94 @@ def cmd_phase21():
     cmd_phase21_integrate()
 
 
+# ── Phase 22: First-Syllable Extraction & Fontana-Constrained Decode ──────
+
+def cmd_first_syl():
+    """Run Step 22.1: first-syllable extraction."""
+    from voynich.phases.first_syllable import run_first_syllable
+    t0 = time.time()
+    run_first_syllable()
+    print(f"\nStep 22.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_fontana_phon():
+    """Run Step 22.2: Fontana phonetic mapping."""
+    from voynich.phases.fontana_phonetic import run_fontana_phonetic
+    t0 = time.time()
+    run_fontana_phonetic()
+    print(f"\nStep 22.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_table_merge():
+    """Run Step 22.3: merge all evidence into decoding table."""
+    from voynich.phases.table_merge import run_table_merge
+    t0 = time.time()
+    run_table_merge()
+    print(f"\nStep 22.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_decode_22():
+    """Run Step 22.4: corpus decode with Phase 22 table."""
+    from voynich.phases.decode_22 import run_decode_22
+    t0 = time.time()
+    run_decode_22()
+    print(f"\nStep 22.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_read_22():
+    """Run Step 22.5: readability assessment (THE CRITICAL TEST)."""
+    from voynich.phases.readability_22 import run_readability_22
+    t0 = time.time()
+    run_readability_22()
+    print(f"\nStep 22.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phrases_22():
+    """Run Step 22.6: phrase detection and botanical cross-check."""
+    from voynich.phases.phrases_22 import run_phrases_22
+    t0 = time.time()
+    run_phrases_22()
+    print(f"\nStep 22.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_validate_22():
+    """Run Step 22.7: 15-test validation battery."""
+    from voynich.phases.validate_22 import run_validate_22
+    t0 = time.time()
+    run_validate_22()
+    print(f"\nStep 22.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase22_integrate():
+    """Run Step 22.8: integration and verdict."""
+    from voynich.phases.phase22_integrate import run_phase22_integrate
+    t0 = time.time()
+    run_phase22_integrate()
+    print(f"\nStep 22.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase22():
+    """Run full Phase 22 pipeline: first-syllable extraction + Fontana decode."""
+    print("=" * 70)
+    print("PHASE 22: First-Syllable Extraction & Fontana-Constrained Decode")
+    print("=" * 70)
+    cmd_first_syl()
+    print("\n" + "=" * 70 + "\n")
+    cmd_fontana_phon()
+    print("\n" + "=" * 70 + "\n")
+    cmd_table_merge()
+    print("\n" + "=" * 70 + "\n")
+    cmd_decode_22()
+    print("\n" + "=" * 70 + "\n")
+    cmd_read_22()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phrases_22()
+    print("\n" + "=" * 70 + "\n")
+    cmd_validate_22()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase22_integrate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -1898,6 +1986,16 @@ def main():
         'paleo-validate': cmd_paleo_validate,
         'phase21-integrate': cmd_phase21_integrate,
         'phase21': cmd_phase21,
+        # Phase 22: First-Syllable Extraction & Fontana-Constrained Decode
+        'first-syl': cmd_first_syl,
+        'fontana-phon': cmd_fontana_phon,
+        'table-merge': cmd_table_merge,
+        'decode-22': cmd_decode_22,
+        'read-22': cmd_read_22,
+        'phrases-22': cmd_phrases_22,
+        'validate-22': cmd_validate_22,
+        'phase22-integrate': cmd_phase22_integrate,
+        'phase22': cmd_phase22,
     }
 
     if len(sys.argv) < 2:
