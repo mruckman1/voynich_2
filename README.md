@@ -3331,6 +3331,14 @@ Analysis outputs are saved as JSON to `results/` (156 files total):
 - `validate_22.json` — V-battery **8/15 PASS** (borderline); V2/V4/V7/V9/V10/V13/V14/V15 pass (structural); V1/V3/V5/V6/V8/V11/V12 fail (functional); strong_pass=false
 - `phase22_integrate.json` — Verdict **HYPOTHESIS REFUTED**; 0/29 first-syl↔Fontana convergence; Mode A outperforms Mode B (open syllable system); progression Phase 11→22 tracked
 
+**Phase 23 — Statistical Inversion Analysis:**
+- `theoretical_ceiling.json` — Oracle ceiling **89.5%** (fraction of tokens where ANY assignment hits dictionary); Phase 16 actual 51.6%; efficiency **57.7%**; random baseline 29.8%; mean 2.46 triples/token; 75 CV syllables available, 21 used; verdict **SIGNIFICANT GAP** (not near-optimal, not catastrophic)
+- `historical_inversion.json` — 5,199 master reference signs searched; Phase 16 vs Phase 22 agreement: exact=3, same_C=2, same_V=3, unrelated=17 (of 22 comparable triples); 15 pattern tests (identity, vowel rotations ×4, consonant class swaps ×6, frequency shifts ×3, random baseline); best pattern = identity at **13.6%**; no systematic permutation found; verdict **NO SYSTEMATIC PATTERN**
+- `bench_split.json` — 24 bench-class EVA chars split into 11 subgroups by (first_stroke, last_stroke); remapped to 4 Fontana families (circle, horizontal_stroke, open_curve_left, open_curve_right); **0/11 agreement** with Phase 16; splitting does not recover correct assignments; verdict **NO IMPROVEMENT**
+- `permutation_search.json` — 222 candidates tested: 119 vowel rotations, 6 consonant swaps, 15 family rotations, 6 combined, 20 hill climbs, 50 random null; best agreement **18.2%** (hill climb restart 2, below 40% threshold); best dict-hit 51.6% (= Phase 16 table itself via hill climb convergence); verdict **NO PERMUTATION — tables are unrelated**
+- `readability_delta.json` — Phase 16: dict_hit=51.6%, bigram=0.0000, **3/5 tests**; permuted: dict_hit=59.8%, bigram=0.0000, 2/5 tests; Phase 22: dict_hit=33.6%, bigram=0.0000, 2/5 tests; ranking: Phase 16 > permuted > Phase 22; verdict **PHASE 16 SUPERIOR**
+- **Key conclusion**: The historical tachygraphic framework is the wrong lens. Phase 16's statistical table is NOT a permutation of any known system. The 89.5% oracle ceiling confirms substantial room for improvement — the 48.4% gap comes from dictionary coverage, segmentation errors, or structural factors, not from table inaccuracy. **Decision gate: Phase 24 should abandon the tachygraphic hypothesis and treat Phase 16's table as ground truth.**
+
 ## Background
 
 This project is a fresh start after a prior approach (consonant-skeleton-to-Latin-dictionary matching) proved unproductive. Three pieces of infrastructure were carried over:

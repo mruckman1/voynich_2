@@ -1807,6 +1807,64 @@ def cmd_phase22():
     cmd_phase22_integrate()
 
 
+# ── Phase 23: Statistical Inversion Analysis ──────────────────────────────
+
+def cmd_ceiling():
+    """Run Step 23.1: theoretical ceiling analysis."""
+    from voynich.phases.theoretical_ceiling import run_theoretical_ceiling
+    t0 = time.time()
+    run_theoretical_ceiling()
+    print(f"\nStep 23.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_hist_invert():
+    """Run Step 23.2: historical inversion mapping."""
+    from voynich.phases.historical_inversion import run_historical_inversion
+    t0 = time.time()
+    run_historical_inversion()
+    print(f"\nStep 23.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_bench_split():
+    """Run Step 23.3: bench family split analysis."""
+    from voynich.phases.bench_split import run_bench_split
+    t0 = time.time()
+    run_bench_split()
+    print(f"\nStep 23.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_perm_search():
+    """Run Step 23.4: permutation search."""
+    from voynich.phases.permutation_search import run_permutation_search
+    t0 = time.time()
+    run_permutation_search()
+    print(f"\nStep 23.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_read_delta():
+    """Run Step 23.5: readability delta test."""
+    from voynich.phases.readability_delta import run_readability_delta
+    t0 = time.time()
+    run_readability_delta()
+    print(f"\nStep 23.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase23():
+    """Run full Phase 23 pipeline: statistical inversion analysis."""
+    print("=" * 70)
+    print("PHASE 23: Statistical Inversion Analysis")
+    print("=" * 70)
+    cmd_ceiling()
+    print("\n" + "=" * 70 + "\n")
+    cmd_hist_invert()
+    print("\n" + "=" * 70 + "\n")
+    cmd_bench_split()
+    print("\n" + "=" * 70 + "\n")
+    cmd_perm_search()
+    print("\n" + "=" * 70 + "\n")
+    cmd_read_delta()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -1996,6 +2054,13 @@ def main():
         'validate-22': cmd_validate_22,
         'phase22-integrate': cmd_phase22_integrate,
         'phase22': cmd_phase22,
+        # Phase 23: Statistical Inversion Analysis
+        'ceiling': cmd_ceiling,
+        'hist-invert': cmd_hist_invert,
+        'bench-split': cmd_bench_split,
+        'perm-search': cmd_perm_search,
+        'read-delta': cmd_read_delta,
+        'phase23': cmd_phase23,
     }
 
     if len(sys.argv) < 2:
