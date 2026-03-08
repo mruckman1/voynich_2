@@ -2052,6 +2052,96 @@ def cmd_phase25():
     cmd_phase25_verdict()
 
 
+# -----------------------------------------------------------------------
+# Phase 26: Zodiac Known-Plaintext Attack
+# -----------------------------------------------------------------------
+
+def cmd_zodiac_map():
+    """Run Step 26.1: zodiac folio mapping and label catalog."""
+    from voynich.phases.zodiac_map import run_zodiac_map
+    t0 = time.time()
+    run_zodiac_map()
+    print(f"\nStep 26.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_month_crib():
+    """Run Step 26.2: multi-language month name crib analysis."""
+    from voynich.phases.month_crib import run_month_crib
+    t0 = time.time()
+    run_month_crib()
+    print(f"\nStep 26.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_astro_crib():
+    """Run Step 26.3: full zodiac description crib search."""
+    from voynich.phases.astro_crib import run_astro_crib
+    t0 = time.time()
+    run_astro_crib()
+    print(f"\nStep 26.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_label_decode():
+    """Run Step 26.4: per-label exhaustive CSP decode."""
+    from voynich.phases.zodiac_label_decode import run_label_decode
+    t0 = time.time()
+    run_label_decode()
+    print(f"\nStep 26.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_zodiac_tab():
+    """Run Step 26.5: zodiac-derived assignment table."""
+    from voynich.phases.zodiac_table import run_zodiac_table
+    t0 = time.time()
+    run_zodiac_table()
+    print(f"\nStep 26.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_zodiac_decode():
+    """Run Step 26.6: full corpus decode with zodiac-merged table."""
+    from voynich.phases.zodiac_decode import run_zodiac_decode
+    t0 = time.time()
+    run_zodiac_decode()
+    print(f"\nStep 26.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase26_validate():
+    """Run Step 26.7: Phase 26 validation battery (V1-V12)."""
+    from voynich.phases.phase26_validate import run_phase26_validate
+    t0 = time.time()
+    run_phase26_validate()
+    print(f"\nStep 26.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase26_verdict():
+    """Run Step 26.8: Phase 26 verdict."""
+    from voynich.phases.phase26_verdict import run_phase26_verdict
+    t0 = time.time()
+    run_phase26_verdict()
+    print(f"\nStep 26.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase26():
+    """Run full Phase 26 pipeline: Zodiac Known-Plaintext Attack."""
+    print("=" * 70)
+    print("PHASE 26: Zodiac Known-Plaintext Attack")
+    print("=" * 70)
+    cmd_zodiac_map()
+    print("\n" + "=" * 70 + "\n")
+    cmd_month_crib()
+    print("\n" + "=" * 70 + "\n")
+    cmd_astro_crib()
+    print("\n" + "=" * 70 + "\n")
+    cmd_label_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_zodiac_tab()
+    print("\n" + "=" * 70 + "\n")
+    cmd_zodiac_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase26_validate()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase26_verdict()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -2319,6 +2409,16 @@ def main():
         'f6r-exam': cmd_f6r_exam,
         'phase25-verdict': cmd_phase25_verdict,
         'phase25': cmd_phase25,
+        # Phase 26: Zodiac Known-Plaintext Attack
+        'zodiac-map': cmd_zodiac_map,
+        'month-crib': cmd_month_crib,
+        'astro-crib': cmd_astro_crib,
+        'label-decode': cmd_label_decode,
+        'zodiac-tab': cmd_zodiac_tab,
+        'zodiac-decode': cmd_zodiac_decode,
+        'phase26-validate': cmd_phase26_validate,
+        'phase26-verdict': cmd_phase26_verdict,
+        'phase26': cmd_phase26,
     }
 
     if len(sys.argv) < 2:

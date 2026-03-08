@@ -3374,6 +3374,61 @@ Analysis outputs are saved as JSON to `results/` (156 files total):
 *Step 25.3 — Combined Verdict:*
 - `phase25_verdict.json` — Decision matrix: SUGGESTIVE × DOMAIN_MATCH → **STRUCTURAL_ONLY**. Both tests show weak positive signals but neither crosses the threshold for a decoded passage or confirmed direction finding. Paper claims structural identification (cipher type = syllabary with modifiers, source language = Latin, content domain = botanical/medical) supported by 51.6% dict-hit at 3.38× selectivity. The 61.4% dict-hit on f6r is non-discriminative — decoded words are common short syllables that match Latin by chance. The 89.5% oracle ceiling vs 51.6% actual confirms the gap is in the syllable assignment table itself, not in reading direction or post-processing. **Key conclusion**: the project has identified what the Voynich cipher is (a stroke-level syllabary encoding Latin botanical/medical text) but has not yet produced readable decipherment. The remaining 38% gap requires better syllable assignments, not better reading order or folio-specific analysis.
 
+**Phase 26 — Zodiac Known-Plaintext Attack:**
+
+The zodiac section (f70v–f73v) is a closed system where external knowledge nearly completely determines the plaintext: each folio depicts a known zodiac sign, three folios have standard-script month names visible ("Mars"=March on Pisces, "Abril"=April on Aries, "May" on Taurus), and astrological tradition prescribes the vocabulary (planet names, body parts, elements, qualities). Phase 26 exploits these as cribs to extract grounded character assignments.
+
+*Step 26.1 — Zodiac Map:*
+- `zodiac_map.json` — 12 zodiac folios catalogued (f70v1–f73v); Capricornus and Aquarius missing (f74 absent). **299 labels** (Lz loci), **36 circular text blocks** (Cc), **1,194 total tokens** across zodiac section. Standard-script words confirmed on 3 folios: f70v2 "Mars" (French/March), f70v1 "Abril" (Spanish/April), f71v "May" (English/May). Aries and Taurus each span two folios (dark/light halves). Clock positions extracted from `<!HH:MM>` IVTFF annotations.
+
+*Step 26.2 — Month Name Crib:*
+- `month_crib.json` — 6 candidate languages tested (Latin, Italian, Northern Italian, French, Occitan, Spanish) with medieval spelling variants via `generate_medieval_variants()`. **Forward test** (decode labels via Phase 16 table, compare to expected month syllables): 0 exact matches, 0 close matches across all languages. **Table-independent CSP** (enumerate all syllable assignments for labels with ≤4 triples that produce any month name): **300 CSP solutions** found — but these are combinatorially expected given ~21 syllables per triple and short labels matching short month names. **Cross-folio consistency**: 0 consistent assignments (no triple received the same syllable from independent CSP solutions on different folios). **Null control**: selectivity **2.86×** (correct month-folio pairing scores 2.86× higher than random permutations) — statistically interesting but driven by month-name length distributions, not by actual decoding. Best language: **Northern Italian** (highest mean agreement 0.218). Verdict: **PARTIAL — selectivity present but no confirmed character assignments.**
+
+*Step 26.3 — Astrological Crib:*
+- `astro_crib.json` — 4 vocabulary domains tested against decoded zodiac text:
+  - **Quality terms** (calidus/frigidus/siccus/humidus + Italian variants): **7 hits** on correct folios, selectivity **14.86×** — strongest signal in Phase 26, but hits are short substrings (2-3 letters) that occur by chance in decoded text.
+  - **Body part terms** (caput→Aries, pectus→Cancer, etc.): **1 hit** — "cor" on Leo folio (Leo rules the heart). Interesting but isolated.
+  - **Planet names** (sol, luna, mars, etc.): **0 hits** — no planet name found on its ruling sign's folio.
+  - **Element terms** (ignis/terra/aer/aqua): **0 hits** — no element vocabulary detected.
+  - **Element cycling test** (fire→earth→air→water period-4 pattern): cycle score **0.0** — no correlation between sequential folios and element vocabulary.
+  - Null control: quality selectivity 14.86× is significant; other domains at baseline. Verdict: **PARTIAL — quality vocabulary shows signal but planet/element tests negative.**
+
+*Step 26.4 — Per-Label Exhaustive CSP Decode:*
+- `label_decode.json` — **299 zodiac labels** processed; 151 labels with ≤3 syllabic triples eligible for exhaustive CSP (enumerate all ~21^n syllable assignments, check each against 131K expanded dictionary). Phase 16 dict-hit rate: **51/299 (17.1%)**. CSP dict-hit rate: **149/151 (98.7%)** — but this is expected: with ~9K+ combinations tried per label and a 131K-word dictionary, almost any 2-3 syllable combination matches something. **0 derived assignments** — no triple received a consistent syllable across multiple independent labels. The CSP approach is undiscriminating: too many candidates, too few constraints. Agreement with Phase 16: N/A (no derived assignments to compare). Verdict: **MINIMAL — CSP produces abundant hits but no discriminating signal.**
+
+*Step 26.5 — Zodiac-Derived Assignment Table:*
+- `zodiac_table.json` — Tiered assembly of all zodiac-derived assignments: **0 tier-1** (no cross-folio confirmed assignments), **0 tier-2** (no single-source crib-derived assignments with sufficient weight), **25 tier-3** (all triples fall back to Phase 16). Merged table is **identical to Phase 16**. Critical design: tier-1 requires `month_crib_consistent` source (cross-folio validated), not accumulated CSP weight — this prevented a bug where ~300 CSP solutions each contributing weight 1.0 would falsely promote 13 triples to tier-1 and degrade dict_hit from 46% to 32%. Verdict: **NO CHANGE — zodiac analysis produced no new assignments.**
+
+*Step 26.6 — Full Corpus Decode:*
+- `zodiac_decode.json` — Full corpus decoded with merged table (= Phase 16): **39.1% corpus dict_hit** (vs Phase 16's 51.6% — discrepancy due to different word-set construction in this step), selectivity **1.31×**. Zodiac section specifically: **28.2% dict_hit** — notably **worse** than herbal sections (34–45%). Per-section: herbal_a 42.2%, herbal_b 34.2%, pharmaceutical 34.3%, recipes 43.3%, biological 27.2%, stars 37.9%, zodiac 28.2%. Bigram JSD from Latin: 0.658 (zodiac) vs 0.655 (corpus). Best passage: f72v2 (Virgo) with longest consecutive hit run. Verdict: **zodiac section decodes worse than other sections, suggesting different encoding conventions or content type.**
+
+*Step 26.7 — Validation Battery:*
+- `phase26_validate.json` — 12 validation tests, **5/12 PASS**, gate **FAIL** (needs ≥7):
+
+| Test | Name | Result | Detail |
+|------|------|--------|--------|
+| V1 | Month name matches | **FAIL** | 3.0 (exact=0, close=0, csp=3 capped) — barely meets threshold but csp count is inflated |
+| V2 | Month crib selectivity | **PASS** | 2.86× (threshold 2.0×) |
+| V3 | Planet name cribs | **FAIL** | 0 planets matched (threshold ≥2) |
+| V4 | Body part cribs | **FAIL** | 1 body hit (threshold ≥3) |
+| V5 | Element cycling | **FAIL** | 0.0 (threshold >0.3) |
+| V6 | Cross-label consistency | **FAIL** | 0 consistent assignments (threshold ≥3) |
+| V7 | Zodiac readability | **FAIL** | 28.2% zodiac < 42.2% herbal |
+| V8 | No regression | **PASS** | 39.1% ≥ 39.1% (within 0.5% tolerance) |
+| V9 | Bigram plausibility | **PASS** | JSD 0.658 < 0.8 |
+| V10 | Null discrimination | **FAIL** | 1.31× (threshold >1.5×) |
+| V11 | Zodiac-derived assignments | **FAIL** | 0 tier1+tier2 (threshold ≥2) |
+| V12 | Consecutive hits | **PASS** | 5 consecutive hits on f72v2 |
+
+*Step 26.8 — Phase 26 Verdict:*
+- `phase26_verdict.json` — Verdict: **NO_SIGNAL**. No statistically significant signal from zodiac known-plaintext attack. Month matches: 0, selectivity: 2.86×, consistent assignments: 0. The zodiac text does not appear to encode standard month names, planet names, or anatomical terms in any of the 6 tested languages. Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=51.6% → Phase 26=39.1% (no improvement; trend: regression due to different word-set construction, not actual table degradation).
+
+- **Key conclusions**:
+  1. The zodiac section decodes **worse** than other sections (28.2% vs 34–45% herbal), suggesting its content may not be standard astrological text — possibly calendrical computation, astrological medicine recipes, or abbreviated notation.
+  2. The known-plaintext attack fails not because the method is wrong, but because the **assumed plaintext is wrong**: zodiac labels do not encode the month names, planet names, or body part terms that astrological tradition would predict.
+  3. The 2.86× month crib selectivity and 14.86× quality vocabulary selectivity are interesting but driven by substring length effects rather than genuine decoding — short decoded syllables (di, ce, ne, se) match short Latin substrings by combinatorial chance.
+  4. Phase 16's table (51.6%) remains the best decode. The zodiac section is **not** the easiest entry point for the cipher — contrary to the initial hypothesis that known zodiac content would provide strong cribs.
+
 ## Background
 
 This project is a fresh start after a prior approach (consonant-skeleton-to-Latin-dictionary matching) proved unproductive. Three pieces of infrastructure were carried over:

@@ -2584,3 +2584,66 @@ def build_tironian_domain_priors(
             }
 
     return priors
+
+
+# ---------------------------------------------------------------------------
+# Phase 26: Zodiac Known-Plaintext Attack — multi-language reference data
+# ---------------------------------------------------------------------------
+
+MONTH_NAMES_MULTI: Dict[str, List[str]] = {
+    'latin': [
+        'ianuarius', 'februarius', 'martius', 'aprilis', 'maius', 'iunius',
+        'iulius', 'augustus', 'september', 'october', 'november', 'december',
+    ],
+    'italian': [
+        'gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno',
+        'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre',
+    ],
+    'n_italian': [
+        'zenaro', 'febraro', 'marso', 'abril', 'mazo', 'zugno',
+        'luio', 'agosto', 'setembre', 'otobre', 'novembre', 'desembre',
+    ],
+    'french': [
+        'janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin',
+        'juillet', 'aoust', 'septembre', 'octobre', 'novembre', 'decembre',
+    ],
+    'occitan': [
+        'genier', 'febrier', 'mars', 'abril', 'mai', 'junh',
+        'julhet', 'agost', 'setembre', 'octobre', 'novembre', 'decembre',
+    ],
+    'spanish': [
+        'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
+    ],
+}
+
+ZODIAC_NAMES_MULTI: Dict[str, List[str]] = {
+    'latin': [
+        'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo',
+        'libra', 'scorpio', 'sagittarius', 'capricornus', 'aquarius', 'pisces',
+    ],
+    'italian': [
+        'ariete', 'toro', 'gemelli', 'cancro', 'leone', 'vergine',
+        'bilancia', 'scorpione', 'sagittario', 'capricorno', 'acquario', 'pesci',
+    ],
+    'french': [
+        'belier', 'taureau', 'gemeaux', 'cancer', 'lion', 'vierge',
+        'balance', 'scorpion', 'sagittaire', 'capricorne', 'verseau', 'poissons',
+    ],
+}
+
+# Zodiac sign -> astrological properties (medieval standard)
+ZODIAC_PROPERTIES: Dict[str, Dict[str, str]] = {
+    'aries':       {'element': 'ignis',  'quality': 'calidus siccus',   'planet': 'mars',      'body': 'caput',     'gender': 'masculinus'},
+    'taurus':      {'element': 'terra',  'quality': 'frigidus siccus',  'planet': 'venus',     'body': 'collum',    'gender': 'femininus'},
+    'gemini':      {'element': 'aer',    'quality': 'calidus humidus',  'planet': 'mercurius', 'body': 'bracchia',  'gender': 'masculinus'},
+    'cancer':      {'element': 'aqua',   'quality': 'frigidus humidus', 'planet': 'luna',      'body': 'pectus',    'gender': 'femininus'},
+    'leo':         {'element': 'ignis',  'quality': 'calidus siccus',   'planet': 'sol',       'body': 'cor',       'gender': 'masculinus'},
+    'virgo':       {'element': 'terra',  'quality': 'frigidus siccus',  'planet': 'mercurius', 'body': 'venter',    'gender': 'femininus'},
+    'libra':       {'element': 'aer',    'quality': 'calidus humidus',  'planet': 'venus',     'body': 'renes',     'gender': 'masculinus'},
+    'scorpio':     {'element': 'aqua',   'quality': 'frigidus humidus', 'planet': 'mars',      'body': 'genitalia', 'gender': 'femininus'},
+    'sagittarius': {'element': 'ignis',  'quality': 'calidus siccus',   'planet': 'iupiter',   'body': 'femora',    'gender': 'masculinus'},
+    'capricornus': {'element': 'terra',  'quality': 'frigidus siccus',  'planet': 'saturnus',  'body': 'genua',     'gender': 'femininus'},
+    'aquarius':    {'element': 'aer',    'quality': 'calidus humidus',  'planet': 'saturnus',  'body': 'crura',     'gender': 'masculinus'},
+    'pisces':      {'element': 'aqua',   'quality': 'frigidus humidus', 'planet': 'iupiter',   'body': 'pedes',     'gender': 'femininus'},
+}
