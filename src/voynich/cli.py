@@ -2142,6 +2142,42 @@ def cmd_phase26():
     cmd_phase26_verdict()
 
 
+def cmd_gibberish_test():
+    """Run Step 27.1: gibberish typology control test."""
+    from voynich.phases.gibberish_typology import run_gibberish_typology
+    t0 = time.time()
+    run_gibberish_typology()
+    print(f"\nStep 27.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_naibbe_test():
+    """Run Step 27.2: Naibbe dice cipher entropy test."""
+    from voynich.phases.naibbe_entropy import run_naibbe_entropy
+    t0 = time.time()
+    run_naibbe_entropy()
+    print(f"\nStep 27.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase27_verdict():
+    """Run Step 27.3: Phase 27 peer review verdict."""
+    from voynich.phases.phase27_verdict import run_phase27_verdict
+    t0 = time.time()
+    run_phase27_verdict()
+    print(f"\nStep 27.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase27():
+    """Run full Phase 27 pipeline: Peer Review Controls."""
+    print("=" * 70)
+    print("PHASE 27: Peer Review Controls")
+    print("=" * 70)
+    cmd_gibberish_test()
+    print("\n" + "=" * 70 + "\n")
+    cmd_naibbe_test()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase27_verdict()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -2419,6 +2455,11 @@ def main():
         'phase26-validate': cmd_phase26_validate,
         'phase26-verdict': cmd_phase26_verdict,
         'phase26': cmd_phase26,
+        # Phase 27: Peer Review Controls
+        'gibberish-test': cmd_gibberish_test,
+        'naibbe-test': cmd_naibbe_test,
+        'phase27-verdict': cmd_phase27_verdict,
+        'phase27': cmd_phase27,
     }
 
     if len(sys.argv) < 2:

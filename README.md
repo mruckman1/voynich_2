@@ -3429,6 +3429,35 @@ The zodiac section (f70v–f73v) is a closed system where external knowledge nea
   3. The 2.86× month crib selectivity and 14.86× quality vocabulary selectivity are interesting but driven by substring length effects rather than genuine decoding — short decoded syllables (di, ce, ne, se) match short Latin substrings by combinatorial chance.
   4. Phase 16's table (51.6%) remains the best decode. The zodiac section is **not** the easiest entry point for the cipher — contrary to the initial hypothesis that known zodiac content would provide strong cribs.
 
+**Phase 27 — Peer Review Controls: Gibberish Classification and Naibbe Entropy Shift:**
+
+Two focused validation tests to close the two specific peer-review vulnerabilities identified in the paper: (1) the Phase 9.5 text typology classifier was never tested against known gibberish or self-citation text, and (2) the Phase 19.2 entropy shift ranking never tested the Naibbe dice cipher with Greshko's 2025 published parameters.
+
+*Step 27.1 — Gibberish and Self-Citation Typology Classification:*
+- `gibberish_typology.json` — 38 Gaskell-Bowern gibberish transcriptions + 28 Timm-Schinner self-citation samples (10 default + 18 sensitivity grid) run through Phase 9.5 classifier.
+  - **Gibberish**: **23/38 (60.5%)** classified as `encoded_natural` — the same label given to Voynich. 14/38 glossolalia, 1/38 constructed. Mean H2/H1=0.779 (high enough to trigger "anomalous" indicator), mean Zipf R²=0.681, mean TTR=0.733.
+  - **Timm-Schinner**: **28/28 (100%)** classified as `encoded_natural` at every parameter setting (p_copy ∈ {0.6,0.7,0.8}, p_mutate ∈ {0.05,0.10,0.15}, buffer_size ∈ {50,100,200}). The copy-from-buffer algorithm perfectly reproduces Zipfian distributions (R²~0.930) and normal TTR (~0.353).
+  - **Key discriminant the classifier misses**: entropy floor — Voynich **0.978** vs gibberish **0.048** (0/38 elevated above 0.6) vs Timm-Schinner 0.227. The entropy floor is the single most distinctive Voynich property but is not used in the classification rules.
+  - Discriminant power: **0.227** (only 22.7% of control samples correctly excluded).
+  - Comparison table: Voynich (encoded_natural, H2/H1=0.622, floor=0.978) vs Latin (encoded_natural, H2/H1=0.865, floor=0.386) vs gibberish mean (encoded_natural, H2/H1=0.779, floor=0.048) vs Timm-Schinner (encoded_natural, H2/H1=0.991, floor=0.227).
+  - Methodological note: Gaskell-Bowern (2022) used word-length autocorrelation, triple-repeat rates, and character placement biases — largely non-overlapping features from Phase 9.5's entropy ratios and Zipf R².
+  - Verdict: **CLASSIFIER_COMPROMISED** — the `encoded_natural` label cannot distinguish Voynich from deliberate gibberish or mechanically-generated self-citation text.
+
+*Step 27.2 — Naibbe Dice Cipher Entropy Shift Test:*
+- `naibbe_entropy.json` — Naibbe dice cipher implemented with Greshko's 2025 parameters (n_tables=2, bigram_prob=0.20, word_len_range=(3,6), prefix_prob=0.20, suffix_prob=0.30); Latin reference text encoded through 20 random instantiations; entropy shift vector compared to observed Voynich shift via cosine similarity.
+  - **Greshko default cosine**: **-0.8427** (CI: [-0.868, -0.816]) — the Naibbe shifts entropy in exactly the **opposite direction** from Voynich. Where Voynich entropy rises at high orders (+0.80, +1.10, +0.99 at orders 4-6), Naibbe entropy falls (-0.48, -0.30, -0.18).
+  - **Parameter grid search**: 81 configurations (n_tables ∈ {1,2,3} × bigram ∈ {0.10,0.20,0.30} × prefix ∈ {0.10,0.20,0.30} × suffix ∈ {0.20,0.30,0.40}) × 5 seeds each. **Every configuration produces a negative cosine.** Best grid result: -0.8117 (nt=3, bp=0.20, pp=0.10, sp=0.30). Refined with 20 seeds: **-0.8259** (CI: [-0.852, -0.803]).
+  - **Updated ranking** (11 mechanisms): tachygraphic **0.8202** > homophonic 0.5664 > nomenclator 0.2889 > simple_substitution 0.0 > polyalphabetic -0.8024 > naibbe_best_grid -0.8259 > syllabic -0.8371 > **naibbe_greshko -0.8427** > syllabic_modifier -0.8580 > null_insertion -0.8754 > abbreviation_heavy -0.9497.
+  - **Discrimination test**: CIs do not overlap — tachygraphic [0.820, 0.820] vs Naibbe [-0.868, -0.816]. **DISCRIMINATED.**
+  - **Phase 18 cross-checks**: burstiness CV 0.847 vs Voynich 1.014 (consistent); LZ compression 0.493 vs 0.330 (inconsistent — Naibbe compresses worse); HMM transition entropy 3.622 vs 1.006 (inconsistent). Tri-state match: **1/3**.
+  - Verdict: **TACHYGRAPHIC_CONFIRMED** — Naibbe ranks 8th of 11, below homophonic. The polyalphabetic substitution with random prefix/suffix additions increases low-order entropy and decreases high-order entropy — the exact opposite of the Voynich pattern.
+
+*Step 27.3 — Combined Verdict:*
+- `phase27_verdict.json` — Verdict: **CLASSIFIER_COMPROMISED_NAIBBE_OK**. One control failed, one passed.
+  - The Phase 9.5 typology classification is unreliable: it cannot distinguish Voynich from deliberate gibberish (23/38) or self-citation text (28/28). The `encoded_natural` label should be interpreted as "text with complex statistical structure" rather than evidence of linguistic encoding. The entropy floor (0.978 vs 0.048) does discriminate but is not part of the classification rules.
+  - The tachygraphic mechanism identification is strongly confirmed: the Naibbe dice cipher produces an entropy shift cosine of -0.843 (opposite direction), ranking 8th of 11 tested mechanisms, definitively outperformed by the tachygraphic model at +0.820 with non-overlapping confidence intervals.
+  - **Paper revision required**: qualify the Phase 9.5 section to acknowledge the classifier does not discriminate Voynich from gibberish. The tachygraphic identification sections require no revision.
+
 ## Background
 
 This project is a fresh start after a prior approach (consonant-skeleton-to-Latin-dictionary matching) proved unproductive. Three pieces of infrastructure were carried over:
