@@ -98,6 +98,23 @@ Usage:
     voynich mod-localize      # Phase 16.5: hit localization padding analysis
     voynich mod-integrate     # Phase 16.6: convergent classification + re-decode
     voynich phase16           # Run full Phase 16 pipeline
+    voynich triple-loo        # Phase 24.1: leave-one-out triple sensitivity
+    voynich error-id          # Phase 24.2: error candidate identification
+    voynich triple-swap       # Phase 24.3: exhaustive single-triple swap
+    voynich bigram-val        # Phase 24.4: bigram plausibility validation
+    voynich corrected-tab     # Phase 24.5: corrected table assembly
+    voynich corrected-decode  # Phase 24.6: full corpus decode with corrected table
+    voynich corrected-read    # Phase 24.7: readability battery
+    voynich word-bound        # Phase 24.8: word boundary re-analysis
+    voynich ligature-test     # Phase 24.9: EVA ligature hypothesis test
+    voynich direction         # Phase 24.10: reading direction analysis
+    voynich crib-search       # Phase 24.11: known-plaintext crib search
+    voynich folio-deep        # Phase 24.12: single-folio deep decode
+    voynich section-xfer      # Phase 24.13: section-trained transfer test
+    voynich reverse-eng       # Phase 24.14: reverse-engineer from confirmed words
+    voynich token-gram        # Phase 24.15: word grammar exploitation
+    voynich phase24-integrate # Phase 24.16: combined verdict
+    voynich phase24           # Run full Phase 24 pipeline
 """
 import sys
 import time
@@ -1865,6 +1882,184 @@ def cmd_phase23():
     cmd_read_delta()
 
 
+# ── Phase 24: Triple Sensitivity & Refinement ──────────────────────────────
+
+def cmd_triple_loo():
+    """Run Step 24.1: leave-one-out triple sensitivity analysis."""
+    from voynich.phases.triple_sensitivity import run_triple_sensitivity
+    t0 = time.time()
+    run_triple_sensitivity()
+    print(f"\nStep 24.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_error_id():
+    """Run Step 24.2: error candidate identification."""
+    from voynich.phases.error_candidates import run_error_candidates
+    t0 = time.time()
+    run_error_candidates()
+    print(f"\nStep 24.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_triple_swap():
+    """Run Step 24.3: exhaustive single-triple swap."""
+    from voynich.phases.targeted_swap import run_targeted_swap
+    t0 = time.time()
+    run_targeted_swap()
+    print(f"\nStep 24.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_bigram_val():
+    """Run Step 24.4: bigram plausibility validation."""
+    from voynich.phases.bigram_filter import run_bigram_filter
+    t0 = time.time()
+    run_bigram_filter()
+    print(f"\nStep 24.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_corrected_tab():
+    """Run Step 24.5: corrected table assembly."""
+    from voynich.phases.corrected_table import run_corrected_table
+    t0 = time.time()
+    run_corrected_table()
+    print(f"\nStep 24.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_corrected_decode():
+    """Run Step 24.6: full corpus decode with corrected table."""
+    from voynich.phases.corrected_decode import run_corrected_decode
+    t0 = time.time()
+    run_corrected_decode()
+    print(f"\nStep 24.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_corrected_read():
+    """Run Step 24.7: readability battery on corrected decode."""
+    from voynich.phases.corrected_readability import run_corrected_readability
+    t0 = time.time()
+    run_corrected_readability()
+    print(f"\nStep 24.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_word_bound():
+    """Run Step 24.8: word boundary re-analysis."""
+    from voynich.phases.word_boundary import run_word_boundary
+    t0 = time.time()
+    run_word_boundary()
+    print(f"\nStep 24.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ligature_test():
+    """Run Step 24.9: EVA ligature hypothesis test."""
+    from voynich.phases.ligature_test import run_ligature_test
+    t0 = time.time()
+    run_ligature_test()
+    print(f"\nStep 24.9 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_direction():
+    """Run Step 24.10: reading direction analysis."""
+    from voynich.phases.directionality import run_directionality
+    t0 = time.time()
+    run_directionality()
+    print(f"\nStep 24.10 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_crib_search():
+    """Run Step 24.11: known-plaintext crib search."""
+    from voynich.phases.known_text_search import run_known_text_search
+    t0 = time.time()
+    run_known_text_search()
+    print(f"\nStep 24.11 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_folio_deep():
+    """Run Step 24.12: single-folio deep decode."""
+    from voynich.phases.folio_isolation import run_folio_isolation
+    t0 = time.time()
+    run_folio_isolation()
+    print(f"\nStep 24.12 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_section_xfer():
+    """Run Step 24.13: section-trained decode transfer test."""
+    from voynich.phases.cross_section import run_cross_section
+    t0 = time.time()
+    run_cross_section()
+    print(f"\nStep 24.13 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_reverse_eng():
+    """Run Step 24.14: reverse-engineer from confirmed words."""
+    from voynich.phases.reverse_engineer import run_reverse_engineer
+    t0 = time.time()
+    run_reverse_engineer()
+    print(f"\nStep 24.14 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_token_gram():
+    """Run Step 24.15: Voynich word grammar exploitation."""
+    from voynich.phases.token_grammar import run_token_grammar
+    t0 = time.time()
+    run_token_grammar()
+    print(f"\nStep 24.15 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase24_integrate():
+    """Run Step 24.16: Phase 24 integration."""
+    from voynich.phases.phase24_integrate import run_phase24_integrate
+    t0 = time.time()
+    run_phase24_integrate()
+    print(f"\nStep 24.16 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase24():
+    """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
+    print("=" * 70)
+    print("PHASE 24: Targeted Error Correction and Exploratory Analysis")
+    print("=" * 70)
+    # Part A: Error Correction
+    print("\n" + "=" * 70)
+    print("PART A: Error Correction")
+    print("=" * 70)
+    cmd_triple_loo()
+    print("\n" + "=" * 70 + "\n")
+    cmd_error_id()
+    print("\n" + "=" * 70 + "\n")
+    cmd_triple_swap()
+    print("\n" + "=" * 70 + "\n")
+    cmd_bigram_val()
+    print("\n" + "=" * 70 + "\n")
+    cmd_corrected_tab()
+    print("\n" + "=" * 70 + "\n")
+    cmd_corrected_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_corrected_read()
+    # Part B: Exploratory Analyses
+    print("\n" + "=" * 70)
+    print("PART B: Exploratory Analyses")
+    print("=" * 70)
+    cmd_word_bound()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ligature_test()
+    print("\n" + "=" * 70 + "\n")
+    cmd_direction()
+    print("\n" + "=" * 70 + "\n")
+    cmd_crib_search()
+    print("\n" + "=" * 70 + "\n")
+    cmd_folio_deep()
+    print("\n" + "=" * 70 + "\n")
+    cmd_section_xfer()
+    print("\n" + "=" * 70 + "\n")
+    cmd_reverse_eng()
+    print("\n" + "=" * 70 + "\n")
+    cmd_token_gram()
+    # Integration
+    print("\n" + "=" * 70)
+    print("INTEGRATION")
+    print("=" * 70)
+    cmd_phase24_integrate()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -2061,6 +2256,24 @@ def main():
         'perm-search': cmd_perm_search,
         'read-delta': cmd_read_delta,
         'phase23': cmd_phase23,
+        # Phase 24: Targeted Error Correction and Exploratory Analysis
+        'triple-loo': cmd_triple_loo,
+        'error-id': cmd_error_id,
+        'triple-swap': cmd_triple_swap,
+        'bigram-val': cmd_bigram_val,
+        'corrected-tab': cmd_corrected_tab,
+        'corrected-decode': cmd_corrected_decode,
+        'corrected-read': cmd_corrected_read,
+        'word-bound': cmd_word_bound,
+        'ligature-test': cmd_ligature_test,
+        'direction': cmd_direction,
+        'crib-search': cmd_crib_search,
+        'folio-deep': cmd_folio_deep,
+        'section-xfer': cmd_section_xfer,
+        'reverse-eng': cmd_reverse_eng,
+        'token-gram': cmd_token_gram,
+        'phase24-integrate': cmd_phase24_integrate,
+        'phase24': cmd_phase24,
     }
 
     if len(sys.argv) < 2:
