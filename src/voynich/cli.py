@@ -2178,6 +2178,102 @@ def cmd_phase27():
     cmd_phase27_verdict()
 
 
+def cmd_crib_extract():
+    """Run Step 28.1: crib extraction from confirmed words."""
+    from voynich.phases.crib_extraction import run_crib_extraction
+    t0 = time.time()
+    run_crib_extraction()
+    print(f"\nStep 28.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_crib_consist():
+    """Run Step 28.2: internal consistency test."""
+    from voynich.phases.consistency_check import run_consistency_check
+    t0 = time.time()
+    run_consistency_check()
+    print(f"\nStep 28.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_family_prop():
+    """Run Step 28.3: family propagation."""
+    from voynich.phases.family_propagation import run_family_propagation
+    t0 = time.time()
+    run_family_propagation()
+    print(f"\nStep 28.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_signal_iso():
+    """Run Step 28.4: signal isolation."""
+    from voynich.phases.signal_isolation import run_signal_isolation
+    t0 = time.time()
+    run_signal_isolation()
+    print(f"\nStep 28.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_crib_local():
+    """Run Step 28.5: crib localization."""
+    from voynich.phases.crib_localization import run_crib_localization
+    t0 = time.time()
+    run_crib_localization()
+    print(f"\nStep 28.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ventris_tab():
+    """Run Step 28.6: Ventris table assembly."""
+    from voynich.phases.ventris_table import run_ventris_table
+    t0 = time.time()
+    run_ventris_table()
+    print(f"\nStep 28.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ventris_decode():
+    """Run Step 28.7: Ventris corpus decode."""
+    from voynich.phases.ventris_decode import run_ventris_decode
+    t0 = time.time()
+    run_ventris_decode()
+    print(f"\nStep 28.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ventris_read():
+    """Run Step 28.8: Ventris readability battery."""
+    from voynich.phases.ventris_readability import run_ventris_readability
+    t0 = time.time()
+    run_ventris_readability()
+    print(f"\nStep 28.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase28_verdict():
+    """Run Step 28.9: Phase 28 verdict."""
+    from voynich.phases.phase28_verdict import run_phase28_verdict
+    t0 = time.time()
+    run_phase28_verdict()
+    print(f"\nStep 28.9 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase28():
+    """Run full Phase 28 pipeline: Ventris-Style Crib Propagation."""
+    print("=" * 70)
+    print("PHASE 28: Ventris-Style Crib Propagation and Signal Isolation")
+    print("=" * 70)
+    cmd_crib_extract()
+    print("\n" + "=" * 70 + "\n")
+    cmd_crib_consist()
+    print("\n" + "=" * 70 + "\n")
+    cmd_family_prop()
+    print("\n" + "=" * 70 + "\n")
+    cmd_signal_iso()
+    print("\n" + "=" * 70 + "\n")
+    cmd_crib_local()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ventris_tab()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ventris_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ventris_read()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase28_verdict()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -2460,6 +2556,17 @@ def main():
         'naibbe-test': cmd_naibbe_test,
         'phase27-verdict': cmd_phase27_verdict,
         'phase27': cmd_phase27,
+        # Phase 28: Ventris-Style Crib Propagation
+        'crib-extract': cmd_crib_extract,
+        'crib-consist': cmd_crib_consist,
+        'family-prop': cmd_family_prop,
+        'signal-iso': cmd_signal_iso,
+        'crib-local': cmd_crib_local,
+        'ventris-tab': cmd_ventris_tab,
+        'ventris-decode': cmd_ventris_decode,
+        'ventris-read': cmd_ventris_read,
+        'phase28-verdict': cmd_phase28_verdict,
+        'phase28': cmd_phase28,
     }
 
     if len(sys.argv) < 2:

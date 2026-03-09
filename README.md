@@ -3458,6 +3458,68 @@ Two focused validation tests to close the two specific peer-review vulnerabiliti
   - The tachygraphic mechanism identification is strongly confirmed: the Naibbe dice cipher produces an entropy shift cosine of -0.843 (opposite direction), ranking 8th of 11 tested mechanisms, definitively outperformed by the tachygraphic model at +0.820 with non-overlapping confidence intervals.
   - **Paper revision required**: qualify the Phase 9.5 section to acknowledge the classifier does not discriminate Voynich from gibberish. The tachygraphic identification sections require no revision.
 
+**Phase 28 — Ventris-Style Crib Propagation and Signal Isolation:**
+
+Phase 28 applies Michael Ventris's decipherment methodology to the Voynich manuscript: take confirmed word identifications from multiple independent sources, extract the character-level assignments they imply, test internal consistency, and attempt to propagate corrections through the assignment table. Unlike prior phases that built tables from scratch (11–16), derived them from historical sources (20–22), or tried perturbation (24), this phase treats confirmed words as "cribs" — known plaintext anchors — and asks whether the assignments they imply are self-consistent across independent pipelines.
+
+*Step 28.1 — Crib Extraction:*
+- `crib_extraction.json` — **27 crib words** extracted from three independent sources: Phase 14 (18 confirmed hits), Phase 19.8 (2 exact matches: de, bene), Phase 26 (2 zodiac-confirmed: sec, cor). Tiered by confidence: **1 Tier-1** (bene — confirmed by both Phase 14 and Phase 19.8), **12 Tier-2** (Phase 14 confirmed, corpus frequency ≥5: codi, sene, dine, sero, sera, seni, coni, rami, nera, radi, dira, dedi), **14 Tier-3** (low-frequency or edit-distance-2 only). Character-level EVA→syllable alignments extracted for all words with corpus tokens. **12/25 triples** covered by Tier 1+2 cribs; 13 triples remain unconfirmed. Gate: **PASS** (13 Tier-1+2 cribs ≥ 10 threshold).
+
+*Step 28.2 — Internal Consistency:*
+- `crib_consistency.json` — Three consistency tests:
+  - **Cross-source**: 3/3 testable triples agree across Phase 14 and Phase 19.8 (ascender,ascender,compound='be'; ascender,ascender,gallows='de'; loop,vertical,bench='ne'). Note: all 18 Phase 14 hits use the same assignment table, so intra-Phase-14 consistency is trivially 100% — only the 3 cross-pipeline triples are meaningful.
+  - **Family typological**: **24/25 (96%)** triples consistent with PHONEME_PLACE_MAP/PHONEME_NUCLEUS_MAP constraints. One inconsistency: `sigmoid,hook,rare='bo'` — onset 'b' not in allowed set ['s','z','sc'] for sigmoid strokes, nucleus 'o' not in ['n','m','a','i'] for hook strokes.
+  - **Null permutation**: 1000 random reassignments yield mean consistency 20.5% ± 7.7%. Real consistency (96%) gives **z = 9.79** — the typological structure is highly non-random.
+  - Gate: **PASS** (family ≥ 90%, cross-source ≥ 50%).
+
+*Step 28.3 — Family Propagation:*
+- `family_propagation.json` — For each of 13 unconfirmed/inconsistent triples, enumerated all typologically valid CV alternatives and scored by dict_hit on a 2000-token sample (baseline: 35.4%). **0 corrections recommended** — no alternative syllable improves dict_hit enough to justify changing the table. The inconsistent triple (`sigmoid,hook,rare='bo'`) has best alternative 'a' with Δ=+0.0000. The table is locally optimal: every confirmed triple is family-consistent, and no unconfirmed triple has a clearly better candidate.
+
+*Step 28.4 — Signal Isolation:*
+- `signal_isolation.json` — Regenerated 5 null corpora (seeds 100–104) using EVA bigram models, decoded all with R3 strategy, compared word frequencies.
+  - **8 genuine signal words** (σ > 2.0): bene (σ=21.2, sel=2.40×), codi (σ=20.1, sel=1.64×), sero (σ=12.2, sel=2.53×), sene (σ=8.3, sel=1.92×), de (σ=7.9, sel=1.40×), raro (σ=6.9, sel=2.59×), dine (σ=4.4, sel=1.29×), cola (σ=3.3, sel=1.13×).
+  - **3 anti-signal words** (appear MORE in null than real): sera (σ=-21.5), dira (σ=-15.6), rara (σ=-13.9) — these are likely false positives from the expanded dictionary, appearing by chance more often in randomly-structured null text than in the structured real corpus.
+  - **Token-level classification**: 5,985 SIGNAL tokens (16.5% of corpus — dict hit on real but miss on ≥4/5 null), 4,294 SHARED_HIT, 20,344 SHARED_MISS, 5,615 ANTI_SIGNAL.
+  - Top SIGNAL folios: f116v (50%), f57v (32%), f40r (30%), f10r (29%).
+  - Gate: **PASS** (8 genuine signal words, mean selectivity 1.86×).
+
+*Step 28.5 — Crib Localization:*
+- `crib_localization.json` — Tests whether confirmed words cluster on domain-appropriate folios (plant terms on herbal pages, pharmaceutical verbs on recipe pages). **2/12 diagnostic words on expected sections (17%)** — most words peak in herbal_a regardless of semantic domain because herbal_a contains 26% of all tokens. Chi-squared values are very high (codi: 903.6, de: 345.2) showing highly non-uniform distributions, but peak sections don't match domain expectations. Best passage: f57v (59 consecutive hits). Gate: **FAIL** (accuracy < 40%).
+
+*Step 28.6 — Ventris Table Assembly:*
+- `ventris_table.json` — Confidence-tiered table assembled from all upstream evidence: **3 Tier-1** (cross-source confirmed), **7 Tier-2** (Phase 14 crib-confirmed + family-consistent), **15 Tier-3** (unconfirmed or signal-downgraded). **0 corrections applied** — Phase 15 assignment table passes through unchanged. Signal-based filtering downgraded some Tier-2 candidates to Tier-3 (triples exercised only by anti-signal words). Verdict: **TABLE_TIERED** (confidence tiers assigned, no changes made).
+
+*Step 28.7 — Full Corpus Decode:*
+- `ventris_decode.json` — 36,238 tokens decoded with Ventris table + R3 modifier handling. **43.63% expanded dict_hit** (15,812 hits), **29.20% base dict_hit** (17K original words). Phase 16 full-corpus baseline: **43.63%** (identical — same table, 0 corrections). **Critical correction**: Phase 16's reported 51.6% was computed on a 2000-token subsample (predominantly herbal_a, the highest-performing section at 49.8%); the fair full-corpus figure is 43.6%. Per-section: herbal_a 49.8%, biological 46.4%, unknown 47.1%, pharmaceutical 42.3%, cosmological 41.9%, recipes 39.3%, herbal_b 35.9%, astronomical 33.9%. Longest consecutive hit run: **59 tokens on f57v**. Gate: **PASS** (no regression).
+
+*Step 28.8 — Readability Battery:*
+- `ventris_readability.json` — 8-point validation:
+
+| Test | Value | Threshold | Result |
+|------|-------|-----------|--------|
+| V1: dict_hit ≥ 0.40 | 0.4363 | 0.40 | **PASS** |
+| V2: bigram JSD vs Latin < 0.5 | 0.8386 | 0.50 | **FAIL** |
+| V3: section variation χ² > 3.84 | 237.73 | 3.84 | **PASS** |
+| V4: mean signal σ > 2.0 | 1.03 | 2.0 | **FAIL** |
+| V5: domain accuracy ≥ 0.50 | 0.167 | 0.50 | **FAIL** |
+| V6: consecutive run > 5 | 59 | 5 | **PASS** |
+| V7: modifier fraction 0.20–0.50 | 0.341 | 0.0 | **PASS** |
+| V8: no regression vs Phase 16 | 0.000 | -0.02 | **PASS** |
+
+  - **5/8 passed** (gate requires 6). Three failures: decoded text doesn't resemble Latin bigram statistics (V2), mean signal across all crib words diluted by anti-signal words (V4), domain localization fails due to section size imbalance (V5). Gate: **FAIL**.
+
+*Step 28.9 — Phase 28 Verdict:*
+- `phase28_verdict.json` — Verdict: **TABLE_TIERED**. Confidence tiers assigned (3+7+15), 0 corrections applied, table unchanged.
+
+- **Key conclusions**:
+  1. **The table is locally optimal.** No single-triple swap improves dict_hit. The Ventris approach confirms the Phase 15/16 table rather than correcting it — 0 of 13 unconfirmed triples have a better alternative.
+  2. **8 of 27 crib words are genuine signal.** The strongest (bene σ=21.2, codi σ=20.1) are robust discriminators between real and null corpus. But 3 words (sera σ=-21.5, dira σ=-15.6, rara σ=-13.9) are anti-signal — they appear far more in null corpora, suggesting they're artifacts of the expanded dictionary.
+  3. **Cross-source validation is extremely limited.** Only 3 triples (from de and bene) are testable across independent pipelines. The other 22 rest on Phase 14 alone.
+  4. **Typological consistency is real.** 96% of assignments respect stroke→phoneme constraints with z=9.79 vs random — the strongest evidence that the table captures genuine structure rather than statistical coincidence.
+  5. **The 51.6% figure was inflated.** Phase 16's R3 dict_hit was computed on a 2000-token subsample (predominantly herbal_a). The fair full-corpus figure is **43.6%**, making the gap to the oracle ceiling (89.5%) 46 percentage points rather than 38.
+  6. **Next steps require structural changes**: expanding beyond CV syllables (CVC, CCV), improving segmentation, or finding new external constraints. The current CV syllabary model has been thoroughly explored.
+  7. Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=43.6% (full corpus) → **Phase 28=43.6%** (table confirmed, no improvement).
+
 ## Background
 
 This project is a fresh start after a prior approach (consonant-skeleton-to-Latin-dictionary matching) proved unproductive. Three pieces of infrastructure were carried over:
