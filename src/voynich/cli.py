@@ -3146,6 +3146,96 @@ def cmd_phase35():
     cmd_phase35_verdict()
 
 
+# ---------------------------------------------------------------------------
+# Phase 36: Full Signal Pipeline at 10K Dictionary
+# ---------------------------------------------------------------------------
+
+def cmd_decode_10k():
+    """Run Step 36.1: Phase 16 decode with 10K matching."""
+    from voynich.phases.decode_10k import run_decode_10k
+    t0 = time.time()
+    run_decode_10k()
+    print(f"\nStep 36.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_signal_10k():
+    """Run Step 36.2: Signal isolation at 10K."""
+    from voynich.phases.signal_10k import run_signal_10k
+    t0 = time.time()
+    run_signal_10k()
+    print(f"\nStep 36.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_bigram_10k():
+    """Run Step 36.3: Bigram plausibility at 10K."""
+    from voynich.phases.bigrams_10k import run_bigrams_10k
+    t0 = time.time()
+    run_bigrams_10k()
+    print(f"\nStep 36.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_context_10k():
+    """Run Step 36.4: Context analysis at 10K."""
+    from voynich.phases.context_10k import run_context_10k
+    t0 = time.time()
+    run_context_10k()
+    print(f"\nStep 36.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_boot_10k():
+    """Run Step 36.5: Ventris bootstrap at 10K."""
+    from voynich.phases.bootstrap_10k import run_bootstrap_10k
+    t0 = time.time()
+    run_bootstrap_10k()
+    print(f"\nStep 36.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_folio_10k():
+    """Run Step 36.6: Folio examination at 10K."""
+    from voynich.phases.folio_10k import run_folio_10k
+    t0 = time.time()
+    run_folio_10k()
+    print(f"\nStep 36.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_read_10k():
+    """Run Step 36.7: Full readability battery at 10K."""
+    from voynich.phases.readability_10k import run_readability_10k
+    t0 = time.time()
+    run_readability_10k()
+    print(f"\nStep 36.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase36_verdict():
+    """Run Step 36.8: Phase 36 verdict."""
+    from voynich.phases.phase36_verdict import run_phase36_verdict
+    t0 = time.time()
+    run_phase36_verdict()
+    print(f"\nStep 36.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase36():
+    """Run full Phase 36 pipeline: Full Signal Pipeline at 10K Dictionary."""
+    print("=" * 70)
+    print("PHASE 36: Full Signal Pipeline at 10K Dictionary")
+    print("=" * 70)
+    cmd_decode_10k()
+    print("\n" + "=" * 70 + "\n")
+    cmd_signal_10k()
+    print("\n" + "=" * 70 + "\n")
+    cmd_bigram_10k()
+    print("\n" + "=" * 70 + "\n")
+    cmd_context_10k()
+    print("\n" + "=" * 70 + "\n")
+    cmd_boot_10k()
+    print("\n" + "=" * 70 + "\n")
+    cmd_folio_10k()
+    print("\n" + "=" * 70 + "\n")
+    cmd_read_10k()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase36_verdict()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -3534,6 +3624,16 @@ def main():
         'comb-read': cmd_comb_read,
         'phase35-verdict': cmd_phase35_verdict,
         'phase35': cmd_phase35,
+        # Phase 36: Full Signal Pipeline at 10K Dictionary
+        'decode-10k': cmd_decode_10k,
+        'signal-10k': cmd_signal_10k,
+        'bigram-10k': cmd_bigram_10k,
+        'context-10k': cmd_context_10k,
+        'boot-10k': cmd_boot_10k,
+        'folio-10k': cmd_folio_10k,
+        'read-10k': cmd_read_10k,
+        'phase36-verdict': cmd_phase36_verdict,
+        'phase36': cmd_phase36,
     }
 
     if len(sys.argv) < 2:
