@@ -2274,6 +2274,62 @@ def cmd_phase28():
     cmd_phase28_verdict()
 
 
+def cmd_signal_bigram():
+    """Run Step 29.1: signal-filtered bigram plausibility."""
+    from voynich.phases.signal_bigrams import run_signal_bigrams
+    t0 = time.time()
+    run_signal_bigrams()
+    print(f"\nStep 29.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_signal_context():
+    """Run Step 29.2: context of confirmed signal words."""
+    from voynich.phases.signal_context import run_signal_context
+    t0 = time.time()
+    run_signal_context()
+    print(f"\nStep 29.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_signal_folio():
+    """Run Step 29.3: signal folio deep examination."""
+    from voynich.phases.signal_folio_read import run_signal_folio_read
+    t0 = time.time()
+    run_signal_folio_read()
+    print(f"\nStep 29.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_signal_phrase():
+    """Run Step 29.4: signal phrase extraction."""
+    from voynich.phases.signal_phrases import run_signal_phrases
+    t0 = time.time()
+    run_signal_phrases()
+    print(f"\nStep 29.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase29_verdict():
+    """Run Step 29.5: Phase 29 verdict."""
+    from voynich.phases.phase29_verdict import run_phase29_verdict
+    t0 = time.time()
+    run_phase29_verdict()
+    print(f"\nStep 29.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase29():
+    """Run full Phase 29 pipeline: Signal-Filtered Readability."""
+    print("=" * 70)
+    print("PHASE 29: Signal-Filtered Readability and Context Exploitation")
+    print("=" * 70)
+    cmd_signal_bigram()
+    print("\n" + "=" * 70 + "\n")
+    cmd_signal_context()
+    print("\n" + "=" * 70 + "\n")
+    cmd_signal_folio()
+    print("\n" + "=" * 70 + "\n")
+    cmd_signal_phrase()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase29_verdict()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -2567,6 +2623,13 @@ def main():
         'ventris-read': cmd_ventris_read,
         'phase28-verdict': cmd_phase28_verdict,
         'phase28': cmd_phase28,
+        # Phase 29: Signal-Filtered Readability
+        'signal-bigram': cmd_signal_bigram,
+        'signal-context': cmd_signal_context,
+        'signal-folio': cmd_signal_folio,
+        'signal-phrase': cmd_signal_phrase,
+        'phase29-verdict': cmd_phase29_verdict,
+        'phase29': cmd_phase29,
     }
 
     if len(sys.argv) < 2:
