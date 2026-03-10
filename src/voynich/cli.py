@@ -3400,6 +3400,113 @@ def cmd_phase37():
     cmd_phase37_integrate()
 
 
+# Phase 38: Macaronic Signal Pipeline
+def cmd_merged_dict():
+    """Run Step 38.1: Merged Dictionary Construction."""
+    from voynich.phases.merged_dict import run_merged_dict
+    t0 = time.time()
+    run_merged_dict()
+    print(f"\nStep 38.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_merged_decode():
+    """Run Step 38.2: Merged Dictionary Decode Matching."""
+    from voynich.phases.merged_decode import run_merged_decode
+    t0 = time.time()
+    run_merged_decode()
+    print(f"\nStep 38.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_merged_signal():
+    """Run Step 38.3: Merged Signal Isolation."""
+    from voynich.phases.merged_signal import run_merged_signal
+    t0 = time.time()
+    run_merged_signal()
+    print(f"\nStep 38.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_merged_bigram():
+    """Run Step 38.4: Merged Bigram Plausibility."""
+    from voynich.phases.merged_bigrams import run_merged_bigrams
+    t0 = time.time()
+    run_merged_bigrams()
+    print(f"\nStep 38.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_merged_context():
+    """Run Step 38.5: Macaronic Context Analysis."""
+    from voynich.phases.merged_context import run_merged_context
+    t0 = time.time()
+    run_merged_context()
+    print(f"\nStep 38.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_merged_boot():
+    """Run Step 38.6: Macaronic Ventris Bootstrap."""
+    from voynich.phases.merged_bootstrap import run_merged_bootstrap
+    t0 = time.time()
+    run_merged_bootstrap()
+    print(f"\nStep 38.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_merged_concat():
+    """Run Step 38.7: Macaronic Concatenation Test."""
+    from voynich.phases.merged_concat import run_merged_concat
+    t0 = time.time()
+    run_merged_concat()
+    print(f"\nStep 38.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_merged_folio():
+    """Run Step 38.8: Macaronic Folio Examination."""
+    from voynich.phases.merged_folio import run_merged_folio
+    t0 = time.time()
+    run_merged_folio()
+    print(f"\nStep 38.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_merged_read():
+    """Run Step 38.9: Full Readability Battery."""
+    from voynich.phases.merged_readability import run_merged_readability
+    t0 = time.time()
+    run_merged_readability()
+    print(f"\nStep 38.9 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase38_verdict():
+    """Run Step 38.10: Phase 38 Verdict."""
+    from voynich.phases.phase38_verdict import run_phase38_verdict
+    t0 = time.time()
+    run_phase38_verdict()
+    print(f"\nStep 38.10 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase38():
+    """Run full Phase 38 pipeline: Macaronic Signal Pipeline."""
+    print("=" * 70)
+    print("PHASE 38: Macaronic Signal Pipeline")
+    print("=" * 70)
+    cmd_merged_dict()
+    print("\n" + "=" * 70 + "\n")
+    cmd_merged_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_merged_signal()
+    print("\n" + "=" * 70 + "\n")
+    cmd_merged_bigram()
+    print("\n" + "=" * 70 + "\n")
+    cmd_merged_context()
+    print("\n" + "=" * 70 + "\n")
+    cmd_merged_boot()
+    print("\n" + "=" * 70 + "\n")
+    cmd_merged_concat()
+    print("\n" + "=" * 70 + "\n")
+    cmd_merged_folio()
+    print("\n" + "=" * 70 + "\n")
+    cmd_merged_read()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase38_verdict()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -3815,6 +3922,18 @@ def main():
         'ital-signal': cmd_ital_signal,
         'phase37-integrate': cmd_phase37_integrate,
         'phase37': cmd_phase37,
+        # Phase 38: Macaronic Signal Pipeline
+        'merged-dict': cmd_merged_dict,
+        'merged-decode': cmd_merged_decode,
+        'merged-signal': cmd_merged_signal,
+        'merged-bigram': cmd_merged_bigram,
+        'merged-context': cmd_merged_context,
+        'merged-boot': cmd_merged_boot,
+        'merged-concat': cmd_merged_concat,
+        'merged-folio': cmd_merged_folio,
+        'merged-read': cmd_merged_read,
+        'phase38-verdict': cmd_phase38_verdict,
+        'phase38': cmd_phase38,
     }
 
     if len(sys.argv) < 2:
