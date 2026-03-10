@@ -3507,6 +3507,189 @@ def cmd_phase38():
     cmd_phase38_verdict()
 
 
+# Phase 39: Edit-Distance Bridge, Vowel Recovery, and Macaronic Crib Exploitation
+def cmd_ed1_decomp():
+    """Run Step 39.1: ED1 Decomposition of CC Bigrams."""
+    from voynich.phases.ed1_decomposition import run_ed1_decomposition
+    t0 = time.time()
+    run_ed1_decomposition()
+    print(f"\nStep 39.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_vowel_map():
+    """Run Step 39.2: Vowel Error Map."""
+    from voynich.phases.vowel_error_map import run_vowel_error_map
+    t0 = time.time()
+    run_vowel_error_map()
+    print(f"\nStep 39.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_vowel_fix():
+    """Run Step 39.3: Targeted Vowel Fix."""
+    from voynich.phases.targeted_vowel_fix import run_targeted_vowel_fix
+    t0 = time.time()
+    run_targeted_vowel_fix()
+    print(f"\nStep 39.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_corrected_sig():
+    """Run Step 39.4: Corrected Table Signal Pipeline."""
+    from voynich.phases.corrected_signal import run_corrected_signal
+    t0 = time.time()
+    run_corrected_signal()
+    print(f"\nStep 39.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phrase_crib():
+    """Run Step 39.5: Phrase-Level Crib Extraction."""
+    from voynich.phases.phrase_cribs import run_phrase_cribs
+    t0 = time.time()
+    run_phrase_cribs()
+    print(f"\nStep 39.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phrase_align():
+    """Run Step 39.6: Phrase Template Alignment."""
+    from voynich.phases.phrase_alignment import run_phrase_alignment
+    t0 = time.time()
+    run_phrase_alignment()
+    print(f"\nStep 39.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phrase_corr():
+    """Run Step 39.7: Phrase-Derived Corrections."""
+    from voynich.phases.phrase_corrections import run_phrase_corrections
+    t0 = time.time()
+    run_phrase_corrections()
+    print(f"\nStep 39.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ital_plant():
+    """Run Step 39.8: Italian Plant Name Dictionary."""
+    from voynich.phases.italian_plant_names import run_italian_plant_names
+    t0 = time.time()
+    run_italian_plant_names()
+    print(f"\nStep 39.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ital_bot_csp():
+    """Run Step 39.9: Italian Botanical CSP."""
+    from voynich.phases.italian_botanical_csp import run_italian_botanical_csp
+    t0 = time.time()
+    run_italian_botanical_csp()
+    print(f"\nStep 39.9 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_bot_prop():
+    """Run Step 39.10: Botanical Propagation."""
+    from voynich.phases.botanical_propagate import run_botanical_propagate
+    t0 = time.time()
+    run_botanical_propagate()
+    print(f"\nStep 39.10 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_venetian_lex():
+    """Run Step 39.11: Venetian Lexicon."""
+    from voynich.phases.venetian_lexicon import run_venetian_lexicon
+    t0 = time.time()
+    run_venetian_lexicon()
+    print(f"\nStep 39.11 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_venetian_dec():
+    """Run Step 39.12: Venetian Decode Test."""
+    from voynich.phases.venetian_decode import run_venetian_decode
+    t0 = time.time()
+    run_venetian_decode()
+    print(f"\nStep 39.12 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_venetian_phr():
+    """Run Step 39.13: Venetian Pharmaceutical Phrases."""
+    from voynich.phases.venetian_phrases import run_venetian_phrases
+    t0 = time.time()
+    run_venetian_phrases()
+    print(f"\nStep 39.13 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_amp_dict():
+    """Run Step 39.14: Signal-Calibrated Dictionary."""
+    from voynich.phases.amplified_dict import run_amplified_dict
+    t0 = time.time()
+    run_amplified_dict()
+    print(f"\nStep 39.14 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_amp_signal():
+    """Run Step 39.15: Signal Isolation at Calibrated Dictionary."""
+    from voynich.phases.amplified_signal import run_amplified_signal
+    t0 = time.time()
+    run_amplified_signal()
+    print(f"\nStep 39.15 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_amp_bigram():
+    """Run Step 39.16: Amplified Bigram Test."""
+    from voynich.phases.amplified_bigrams import run_amplified_bigrams
+    t0 = time.time()
+    run_amplified_bigrams()
+    print(f"\nStep 39.16 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase39_integrate():
+    """Run Step 39.17: Phase 39 Integration."""
+    from voynich.phases.phase39_integrate import run_phase39_integrate
+    t0 = time.time()
+    run_phase39_integrate()
+    print(f"\nStep 39.17 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase39():
+    """Run full Phase 39 pipeline: Edit-Distance Bridge and Macaronic Crib Exploitation."""
+    print("=" * 70)
+    print("PHASE 39: Edit-Distance Bridge, Vowel Recovery, and Macaronic Crib Exploitation")
+    print("=" * 70)
+    # Track A: Edit-Distance Bridge
+    cmd_ed1_decomp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_vowel_map()
+    print("\n" + "=" * 70 + "\n")
+    cmd_vowel_fix()
+    print("\n" + "=" * 70 + "\n")
+    cmd_corrected_sig()
+    print("\n" + "=" * 70 + "\n")
+    # Track B: Medical Phrase Cribs
+    cmd_phrase_crib()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phrase_align()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phrase_corr()
+    print("\n" + "=" * 70 + "\n")
+    # Track C: Italian Botanical
+    cmd_ital_plant()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ital_bot_csp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_bot_prop()
+    print("\n" + "=" * 70 + "\n")
+    # Track D: Venetian
+    cmd_venetian_lex()
+    print("\n" + "=" * 70 + "\n")
+    cmd_venetian_dec()
+    print("\n" + "=" * 70 + "\n")
+    cmd_venetian_phr()
+    print("\n" + "=" * 70 + "\n")
+    # Track E: Amplified
+    cmd_amp_dict()
+    print("\n" + "=" * 70 + "\n")
+    cmd_amp_signal()
+    print("\n" + "=" * 70 + "\n")
+    cmd_amp_bigram()
+    print("\n" + "=" * 70 + "\n")
+    # Integration
+    cmd_phase39_integrate()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -3934,6 +4117,31 @@ def main():
         'merged-read': cmd_merged_read,
         'phase38-verdict': cmd_phase38_verdict,
         'phase38': cmd_phase38,
+        # Phase 39: Edit-Distance Bridge, Vowel Recovery, Macaronic Crib Exploitation
+        # Track A
+        'ed1-decomp': cmd_ed1_decomp,
+        'vowel-map': cmd_vowel_map,
+        'vowel-fix': cmd_vowel_fix,
+        'corrected-sig': cmd_corrected_sig,
+        # Track B
+        'phrase-crib': cmd_phrase_crib,
+        'phrase-align': cmd_phrase_align,
+        'phrase-corr': cmd_phrase_corr,
+        # Track C
+        'ital-plant': cmd_ital_plant,
+        'ital-bot-csp': cmd_ital_bot_csp,
+        'bot-prop': cmd_bot_prop,
+        # Track D
+        'venetian-lex': cmd_venetian_lex,
+        'venetian-dec': cmd_venetian_dec,
+        'venetian-phr': cmd_venetian_phr,
+        # Track E
+        'amp-dict': cmd_amp_dict,
+        'amp-signal': cmd_amp_signal,
+        'amp-bigram': cmd_amp_bigram,
+        # Integration
+        'phase39-integrate': cmd_phase39_integrate,
+        'phase39': cmd_phase39,
     }
 
     if len(sys.argv) < 2:
