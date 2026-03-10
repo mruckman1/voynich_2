@@ -2516,6 +2516,94 @@ def cmd_phase31():
     cmd_phase31_integrate()
 
 
+    # ── Phase 32: Compound-Sign Signal Pipeline ──
+
+def cmd_comp_decode():
+    """Run Step 32.1: Compound-sign corpus decode."""
+    from voynich.phases.compound_decode import run_compound_decode
+    t0 = time.time()
+    run_compound_decode()
+    print(f"\nStep 32.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comp_signal():
+    """Run Step 32.2: Compound signal classification."""
+    from voynich.phases.compound_signal import run_compound_signal
+    t0 = time.time()
+    run_compound_signal()
+    print(f"\nStep 32.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comp_bigram():
+    """Run Step 32.3: Compound bigram plausibility."""
+    from voynich.phases.compound_bigrams import run_compound_bigrams
+    t0 = time.time()
+    run_compound_bigrams()
+    print(f"\nStep 32.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comp_context():
+    """Run Step 32.4: Compound context analysis."""
+    from voynich.phases.compound_context import run_compound_context
+    t0 = time.time()
+    run_compound_context()
+    print(f"\nStep 32.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comp_bootstrap():
+    """Run Step 32.5: Compound bootstrap loop."""
+    from voynich.phases.compound_bootstrap import run_compound_bootstrap
+    t0 = time.time()
+    run_compound_bootstrap()
+    print(f"\nStep 32.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comp_folio():
+    """Run Step 32.6: Compound folio annotations."""
+    from voynich.phases.compound_folio import run_compound_folio
+    t0 = time.time()
+    run_compound_folio()
+    print(f"\nStep 32.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comp_read():
+    """Run Step 32.7: Compound readability battery."""
+    from voynich.phases.compound_readability import run_compound_readability
+    t0 = time.time()
+    run_compound_readability()
+    print(f"\nStep 32.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase32_verdict():
+    """Run Step 32.8: Phase 32 verdict."""
+    from voynich.phases.phase32_verdict import run_phase32_verdict
+    t0 = time.time()
+    run_phase32_verdict()
+    print(f"\nStep 32.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase32():
+    """Run full Phase 32 pipeline: Compound-Sign Signal Pipeline."""
+    print("=" * 70)
+    print("PHASE 32: Compound-Sign Signal Pipeline")
+    print("=" * 70)
+    cmd_comp_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comp_signal()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comp_bigram()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comp_context()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comp_bootstrap()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comp_folio()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comp_read()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase32_verdict()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -2836,6 +2924,16 @@ def main():
         'reseg-test': cmd_reseg_test,
         'phase31-integrate': cmd_phase31_integrate,
         'phase31': cmd_phase31,
+        # Phase 32: Compound-Sign Signal Pipeline
+        'comp-decode': cmd_comp_decode,
+        'comp-signal': cmd_comp_signal,
+        'comp-bigram': cmd_comp_bigram,
+        'comp-context': cmd_comp_context,
+        'comp-bootstrap': cmd_comp_bootstrap,
+        'comp-folio': cmd_comp_folio,
+        'comp-read': cmd_comp_read,
+        'phase32-verdict': cmd_phase32_verdict,
+        'phase32': cmd_phase32,
     }
 
     if len(sys.argv) < 2:
