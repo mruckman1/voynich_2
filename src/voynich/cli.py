@@ -119,6 +119,38 @@ Usage:
     voynich f6r-exam          # Step 25.2: folio f6r manual examination
     voynich phase25-verdict   # Step 25.3: combined verdict
     voynich phase25           # Run full Phase 25 pipeline
+    voynich dict-cal          # Step 34.18: dictionary right-sizing (Track G)
+    voynich sigla-dict        # Step 34.1: medieval abbreviation dictionary (Track A)
+    voynich abjad-csp         # Step 34.2: abjad consonant-only CSP (Track A)
+    voynich sigla-decode      # Step 34.3: sigla-specific decode (Track A)
+    voynich abjad-signal      # Step 34.4: abjad signal isolation (Track A)
+    voynich slot-vars         # Step 34.5: slot-conditioned variable fork (Track B)
+    voynich slot-csp          # Step 34.6: position-conditioned CSP solve (Track B)
+    voynich slot-signal       # Step 34.7: slot-conditioned signal isolation (Track B)
+    voynich mixed-lm          # Step 34.8: mixed Latin-Italian LM (Track C)
+    voynich dialect-decode    # Step 34.9: dialect-conditioned decode (Track C)
+    voynich dialect-signal    # Step 34.10: dialect signal isolation (Track C)
+    voynich continua          # Step 34.11: space stripping + character stream (Track D)
+    voynich reseg-decode      # Step 34.12: Viterbi re-segmentation (Track D)
+    voynich reseg-signal      # Step 34.13: re-segmented signal isolation (Track D)
+    voynich gallows-geom      # Step 34.14: gallows-bench spatial geometry (Track E)
+    voynich spatial-decode    # Step 34.15: spatial-tagged decode (Track E)
+    voynich vowel-ptr         # Step 34.16: vowel pointer hypothesis test (Track F)
+    voynich vowel-decode      # Step 34.17: vowel-pointed decode (Track F)
+    voynich phase34-integrate # Step 34.19: phase 34 integration
+    voynich phase34           # Run full Phase 34 pipeline
+
+    # Phase 35: Spatial Conditioning + 10K Dictionary
+    voynich spatial-pre       # Step 35.1: spatial gallows preprocessing
+    voynich comb-decode       # Step 35.2: combined spatial+10K decode
+    voynich comb-signal       # Step 35.3: combined signal isolation
+    voynich comb-bigram       # Step 35.4: combined bigram plausibility
+    voynich comb-context      # Step 35.5: combined context analysis
+    voynich comb-bootstrap    # Step 35.6: combined Ventris bootstrap
+    voynich comb-folio        # Step 35.7: combined folio transliterations
+    voynich comb-read         # Step 35.8: combined readability battery
+    voynich phase35-verdict   # Step 35.9: Phase 35 verdict
+    voynich phase35           # Run full Phase 35 pipeline
 """
 import sys
 import time
@@ -2791,6 +2823,329 @@ def cmd_phase33():
     cmd_phase33_integrate()
 
 
+# ── Phase 34: Encoding Model Reformation ──
+
+def cmd_dict_cal():
+    """Run Step 34.18: Dictionary right-sizing (Track G)."""
+    from voynich.phases.dict_calibration import run_dict_calibration
+    t0 = time.time()
+    run_dict_calibration()
+    print(f"\nStep 34.18 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_sigla_dict():
+    """Run Step 34.1: Medieval abbreviation dictionary (Track A)."""
+    from voynich.phases.sigla_dictionary import run_sigla_dictionary
+    t0 = time.time()
+    run_sigla_dictionary()
+    print(f"\nStep 34.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_abjad_csp():
+    """Run Step 34.2: Abjad consonant-only CSP (Track A)."""
+    from voynich.phases.abjad_csp import run_abjad_csp
+    t0 = time.time()
+    run_abjad_csp()
+    print(f"\nStep 34.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_sigla_decode():
+    """Run Step 34.3: Sigla-specific decode (Track A)."""
+    from voynich.phases.sigla_decode import run_sigla_decode
+    t0 = time.time()
+    run_sigla_decode()
+    print(f"\nStep 34.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_abjad_signal():
+    """Run Step 34.4: Abjad signal isolation (Track A)."""
+    from voynich.phases.abjad_signal import run_abjad_signal
+    t0 = time.time()
+    run_abjad_signal()
+    print(f"\nStep 34.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_slot_vars():
+    """Run Step 34.5: Slot-conditioned variable fork (Track B)."""
+    from voynich.phases.slot_variables import run_slot_variables
+    t0 = time.time()
+    run_slot_variables()
+    print(f"\nStep 34.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_slot_csp():
+    """Run Step 34.6: Position-conditioned CSP solve (Track B)."""
+    from voynich.phases.slot_csp import run_slot_csp
+    t0 = time.time()
+    run_slot_csp()
+    print(f"\nStep 34.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_slot_signal():
+    """Run Step 34.7: Slot-conditioned signal isolation (Track B)."""
+    from voynich.phases.slot_signal import run_slot_signal
+    t0 = time.time()
+    run_slot_signal()
+    print(f"\nStep 34.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_mixed_lm():
+    """Run Step 34.8: Mixed Latin-Italian language model (Track C)."""
+    from voynich.phases.mixed_lm import run_mixed_lm
+    t0 = time.time()
+    run_mixed_lm()
+    print(f"\nStep 34.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_dialect_decode():
+    """Run Step 34.9: Dialect-conditioned decode (Track C)."""
+    from voynich.phases.dialect_decode import run_dialect_decode
+    t0 = time.time()
+    run_dialect_decode()
+    print(f"\nStep 34.9 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_dialect_signal():
+    """Run Step 34.10: Dialect signal isolation (Track C)."""
+    from voynich.phases.dialect_signal import run_dialect_signal
+    t0 = time.time()
+    run_dialect_signal()
+    print(f"\nStep 34.10 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_continua():
+    """Run Step 34.11: Space stripping and character stream (Track D)."""
+    from voynich.phases.continua_stream import run_continua_stream
+    t0 = time.time()
+    run_continua_stream()
+    print(f"\nStep 34.11 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_reseg_decode():
+    """Run Step 34.12: Viterbi re-segmentation (Track D)."""
+    from voynich.phases.resegment_decode import run_resegment_decode
+    t0 = time.time()
+    run_resegment_decode()
+    print(f"\nStep 34.12 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_reseg_signal():
+    """Run Step 34.13: Re-segmented signal isolation (Track D)."""
+    from voynich.phases.resegment_signal import run_resegment_signal
+    t0 = time.time()
+    run_resegment_signal()
+    print(f"\nStep 34.13 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_gallows_geom():
+    """Run Step 34.14: Gallows-bench spatial geometry (Track E)."""
+    from voynich.phases.gallows_geometry import run_gallows_geometry
+    t0 = time.time()
+    run_gallows_geometry()
+    print(f"\nStep 34.14 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_spatial_decode():
+    """Run Step 34.15: Spatial-tagged decode (Track E)."""
+    from voynich.phases.spatial_decode import run_spatial_decode
+    t0 = time.time()
+    run_spatial_decode()
+    print(f"\nStep 34.15 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_vowel_ptr():
+    """Run Step 34.16: Vowel pointer hypothesis test (Track F)."""
+    from voynich.phases.vowel_pointer import run_vowel_pointer
+    t0 = time.time()
+    run_vowel_pointer()
+    print(f"\nStep 34.16 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_vowel_decode():
+    """Run Step 34.17: Vowel-pointed decode (Track F)."""
+    from voynich.phases.vowel_decode import run_vowel_decode
+    t0 = time.time()
+    run_vowel_decode()
+    print(f"\nStep 34.17 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase34_integrate():
+    """Run Step 34.19: Phase 34 integration."""
+    from voynich.phases.phase34_integrate import run_phase34_integrate
+    t0 = time.time()
+    run_phase34_integrate()
+    print(f"\nStep 34.19 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase34():
+    """Run full Phase 34 pipeline: Encoding Model Reformation."""
+    print("=" * 70)
+    print("PHASE 34: Encoding Model Reformation")
+    print("=" * 70)
+    # Track G: Dictionary Right-Sizing
+    print("\n" + "=" * 70)
+    print("TRACK G: Dictionary Right-Sizing")
+    print("=" * 70)
+    cmd_dict_cal()
+    # Track A: Abbreviated Latin / Abjad Attack
+    print("\n" + "=" * 70)
+    print("TRACK A: Abbreviated Latin / Abjad Attack")
+    print("=" * 70)
+    cmd_sigla_dict()
+    print("\n" + "=" * 70 + "\n")
+    cmd_abjad_csp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_sigla_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_abjad_signal()
+    # Track B: Position-Conditioned Encoding
+    print("\n" + "=" * 70)
+    print("TRACK B: Position-Conditioned Encoding")
+    print("=" * 70)
+    cmd_slot_vars()
+    print("\n" + "=" * 70 + "\n")
+    cmd_slot_csp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_slot_signal()
+    # Track F: Vowel Pointer / Matres Lectionis
+    print("\n" + "=" * 70)
+    print("TRACK F: Vowel Pointer / Matres Lectionis")
+    print("=" * 70)
+    cmd_vowel_ptr()
+    print("\n" + "=" * 70 + "\n")
+    cmd_vowel_decode()
+    # Track C: Code-Switching Language Model
+    print("\n" + "=" * 70)
+    print("TRACK C: Code-Switching Language Model")
+    print("=" * 70)
+    cmd_mixed_lm()
+    print("\n" + "=" * 70 + "\n")
+    cmd_dialect_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_dialect_signal()
+    # Track D: Scripta Continua Re-Segmentation
+    print("\n" + "=" * 70)
+    print("TRACK D: Scripta Continua Re-Segmentation")
+    print("=" * 70)
+    cmd_continua()
+    print("\n" + "=" * 70 + "\n")
+    cmd_reseg_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_reseg_signal()
+    # Track E: 2D Spatial Encoding
+    print("\n" + "=" * 70)
+    print("TRACK E: 2D Spatial Encoding")
+    print("=" * 70)
+    cmd_gallows_geom()
+    print("\n" + "=" * 70 + "\n")
+    cmd_spatial_decode()
+    # Integration
+    print("\n" + "=" * 70)
+    print("INTEGRATION")
+    print("=" * 70)
+    cmd_phase34_integrate()
+
+
+# -----------------------------------------------------------------------
+# Phase 35: Spatial Conditioning + 10K Dictionary
+# -----------------------------------------------------------------------
+
+def cmd_spatial_pre():
+    """Run Step 35.1: Spatial gallows preprocessing."""
+    from voynich.phases.spatial_preprocess import run_spatial_preprocess
+    t0 = time.time()
+    run_spatial_preprocess()
+    print(f"\nStep 35.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comb_decode():
+    """Run Step 35.2: Combined spatial+10K corpus decode."""
+    from voynich.phases.combined_decode import run_combined_decode
+    t0 = time.time()
+    run_combined_decode()
+    print(f"\nStep 35.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comb_signal():
+    """Run Step 35.3: Combined signal isolation."""
+    from voynich.phases.combined_signal import run_combined_signal
+    t0 = time.time()
+    run_combined_signal()
+    print(f"\nStep 35.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comb_bigram():
+    """Run Step 35.4: Combined bigram plausibility."""
+    from voynich.phases.combined_bigrams import run_combined_bigrams
+    t0 = time.time()
+    run_combined_bigrams()
+    print(f"\nStep 35.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comb_context():
+    """Run Step 35.5: Combined context analysis."""
+    from voynich.phases.combined_context import run_combined_context
+    t0 = time.time()
+    run_combined_context()
+    print(f"\nStep 35.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comb_bootstrap():
+    """Run Step 35.6: Combined Ventris bootstrap."""
+    from voynich.phases.combined_bootstrap import run_combined_bootstrap
+    t0 = time.time()
+    run_combined_bootstrap()
+    print(f"\nStep 35.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comb_folio():
+    """Run Step 35.7: Combined folio transliterations."""
+    from voynich.phases.combined_folio import run_combined_folio
+    t0 = time.time()
+    run_combined_folio()
+    print(f"\nStep 35.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_comb_read():
+    """Run Step 35.8: Combined readability battery."""
+    from voynich.phases.combined_readability import run_combined_readability
+    t0 = time.time()
+    run_combined_readability()
+    print(f"\nStep 35.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase35_verdict():
+    """Run Step 35.9: Phase 35 verdict."""
+    from voynich.phases.phase35_verdict import run_phase35_verdict
+    t0 = time.time()
+    run_phase35_verdict()
+    print(f"\nStep 35.9 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase35():
+    """Run full Phase 35 pipeline: Spatial Conditioning + 10K Dictionary."""
+    print("=" * 70)
+    print("PHASE 35: Spatial Conditioning + 10K Dictionary")
+    print("=" * 70)
+    cmd_spatial_pre()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comb_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comb_signal()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comb_bigram()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comb_context()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comb_bootstrap()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comb_folio()
+    print("\n" + "=" * 70 + "\n")
+    cmd_comb_read()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase35_verdict()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -3139,6 +3494,46 @@ def main():
         'distrib-validate': cmd_distrib_validate,
         'phase33-integrate': cmd_phase33_integrate,
         'phase33': cmd_phase33,
+        # Phase 34: Encoding Model Reformation
+        # Track G
+        'dict-cal': cmd_dict_cal,
+        # Track A
+        'sigla-dict': cmd_sigla_dict,
+        'abjad-csp': cmd_abjad_csp,
+        'sigla-decode': cmd_sigla_decode,
+        'abjad-signal': cmd_abjad_signal,
+        # Track B
+        'slot-vars': cmd_slot_vars,
+        'slot-csp': cmd_slot_csp,
+        'slot-signal': cmd_slot_signal,
+        # Track C
+        'mixed-lm': cmd_mixed_lm,
+        'dialect-decode': cmd_dialect_decode,
+        'dialect-signal': cmd_dialect_signal,
+        # Track D
+        'continua': cmd_continua,
+        'reseg-decode': cmd_reseg_decode,
+        'reseg-signal': cmd_reseg_signal,
+        # Track E
+        'gallows-geom': cmd_gallows_geom,
+        'spatial-decode': cmd_spatial_decode,
+        # Track F
+        'vowel-ptr': cmd_vowel_ptr,
+        'vowel-decode': cmd_vowel_decode,
+        # Integration
+        'phase34-integrate': cmd_phase34_integrate,
+        'phase34': cmd_phase34,
+        # Phase 35: Spatial Conditioning + 10K Dictionary
+        'spatial-pre': cmd_spatial_pre,
+        'comb-decode': cmd_comb_decode,
+        'comb-signal': cmd_comb_signal,
+        'comb-bigram': cmd_comb_bigram,
+        'comb-context': cmd_comb_context,
+        'comb-bootstrap': cmd_comb_bootstrap,
+        'comb-folio': cmd_comb_folio,
+        'comb-read': cmd_comb_read,
+        'phase35-verdict': cmd_phase35_verdict,
+        'phase35': cmd_phase35,
     }
 
     if len(sys.argv) < 2:
