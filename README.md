@@ -3572,6 +3572,99 @@ Phase 29 executes the test that Phase 28 set up but didn't perform: measuring re
   6. **What was measured vs what was found.** Phase 29 answered one precise question: do the SIGNAL tokens form word sequences at a rate above chance? The answer is unambiguously yes (z=6.14). Whether those sequences are meaningful Latin medical text or an artifact of partial correct decoding mixed with structured noise is a question for further phases.
   7. Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=43.6% (full corpus) → Phase 28=43.6% (table confirmed) → **Phase 29: SIGNAL bigram z=6.14 (first significant readability result)**.
 
+**Phase 30 — Iterative Ventris Bootstrap:**
+
+Phase 30 automates the core step of Michael Ventris's Linear B decipherment: take words identified by context analysis (Phase 29.2), subject each to 4 independent checks, promote those that pass all checks, then re-decode the corpus and re-measure all metrics. This is the final computational phase — it answers whether the confirmed vocabulary can self-extend through internal consistency.
+
+*Step 30.1 — Bootstrap Loop:*
+- `bootstrap_loop.json` — Iterative candidate confirmation with 4 checks per word. **33 candidates** tested from Phase 29.2 context analysis (16 PMI-identified cribs) and Phase 29.3 SIGNAL-run fragments (62 run words, deduplicated). Each candidate must pass all 4 checks:
+  - **Check 1 — Triple consistency**: proposed syllable aligns with existing triple assignments (100% pass — 33/33).
+  - **Check 2 — Signal position**: ≥50% of corpus occurrences classified as SIGNAL, not SHARED_HIT (6% pass — **2/33**). This was the critical bottleneck: 31 candidates had signal position rates of 0.31–0.45, meaning they appear at similar rates in both real and null corpora.
+  - **Check 3 — Context reciprocity**: bidirectional PMI with confirmed signal words, requiring reciprocal_count ≥ 1 and min_reciprocal_pmi ≥ 0.3 (94% pass — 31/33).
+  - **Check 4 — Typological**: syllable within PHONEME_PLACE_MAP × PHONEME_NUCLEUS_MAP envelope (100% pass — 33/33).
+  - **2 words confirmed**: `dico` (Latin "I say/speak", signal position 0.52) and `ci` (signal position 0.52, 3 reciprocal associations).
+  - **0 new triple assignments** — both confirmed words use triples already in the assignment table, so the table is unchanged.
+  - Converged in **2 iterations** (single_burst trajectory): iteration 1 confirmed 2, iteration 2 confirmed 0 → stop.
+  - dict_hit: 0.4363 → 0.4363 (Δ=+0.0000). Gate: **PASS** (convergence reached).
+
+*Step 30.2 — Post-Bootstrap Signal Re-Isolation:*
+- `bootstrap_signal.json` — Re-runs full signal isolation with expanded 10-word vocabulary (8 original + 2 bootstrap) against 5 fresh null corpora (seeds 100–104).
+  - **9 genuine signal words** (σ > 2.0): bene (21.2), codi (20.1), **ci (16.1)**, sero (12.2), sene (8.3), de (7.9), raro (6.9), dine (4.4), cola (3.3).
+  - **`ci` is the strongest bootstrap discovery** — selectivity 4.10× (highest of all confirmed words), appearing 64 times in real corpus vs 15.6 in null. It is unambiguously genuine signal.
+  - **`dico` is ANTI_SIGNAL** (σ=-14.7) — appears 48 times in real corpus but 179 times in null corpora. It passed the bootstrap's 4 checks (its occurrences cluster near SIGNAL words) but is more common in random text than structured Voynich, likely a dictionary collision.
+  - Token classification unchanged: 5,985 SIGNAL (16.5%), 4,294 SHARED_HIT, 20,344 SHARED_MISS, 5,615 ANTI_SIGNAL.
+  - Verdict: **SIGNAL_MAINTAINED** (9 genuine, Δrate=-0.0000). Gate: **PASS**.
+
+*Step 30.3 — Post-Bootstrap Bigram Plausibility:*
+- `bootstrap_bigrams.json` — Re-runs bigram plausibility with the bootstrap assignment. This file becomes the new per-token cache (parallel arrays: `token_folios`, `token_evas`, `token_decoded`, `token_classifications`, `token_dict_hits`) for all downstream steps.
+  - **1,127 SIGNAL-SIGNAL pairs**, **5 exact bigram hits** (de de, si se, de la), **93 relaxed hits** (edit distance ≤ 1).
+  - **Null permutation test** (1,000 relabelings): z-score = **6.14**, p = 0.0000 — unchanged from Phase 29.
+  - 0 trigram hits (0/212 SIGNAL triples).
+  - Comparison to Phase 29: Δz = +0.00, Δexact = +0, Δrelaxed = +0 — the 6σ bigram result is completely stable under the bootstrap.
+  - Verdict: **BIGRAM_STRONG** (z=6.14). Gate: **PASS**.
+
+*Step 30.4 — Post-Bootstrap Context Analysis:*
+- `bootstrap_context.json` — Re-runs context analysis with expanded 10-word confirmed vocabulary (adding `ci` and `dico` to the 8 original signal words). Feeds back into the bootstrap loop for potential further iterations.
+  - **18 new crib candidates** (up from 16 in Phase 29): `se` (9 associations, PMI=0.75), `di` (9, PMI=0.62), `cone` (7, PMI=1.07), `du` (6, PMI=1.56), `ce` (5, PMI=1.78), `rade` (5, PMI=0.71), `cu` (4, PMI=2.35), `bela` (4, PMI=1.35), `sera` (4, PMI=1.02), `co` (4, PMI=0.88).
+  - **696 chains** of length ≥3 (longest = 10 on f75r): `se dise be cu so bela codi du`.
+  - **20 confirmed-confirmed pairs** — two independently confirmed words appearing adjacent in the corpus: `codi codi` (14×), `de codi` (10×), `de de` (9×), `sene sene` (8×), `codi de` (8×). These pairs are significant because both members were independently verified as above-null; their adjacency is expected in real language.
+  - Verdict: **CONTEXT_STABLE** (18 new cribs). Gate: **PASS**.
+
+*Step 30.5 — Post-Bootstrap Folio Examination:*
+- `bootstrap_folio.json` — Annotated folio examination with bootstrap-aware token tags: `[CONFIRMED-ORIG]` (Phase 28 signal words), `[CONFIRMED-BOOT]` (bootstrap-confirmed words), `[SIGNAL]`, `[CANDIDATE]`, `[SHARED]`, `[MISS]`, `[ANTI]`.
+  - Top folios by signal rate: f57v (32.0%, 175 tokens, 11 runs, max=4), f40r (29.9%, 97 tokens, 7 runs, max=3), f10r (29.1%, 86 tokens, 4 runs, max=2), f15v (28.4%, 67 tokens, 3 runs, max=3), f6r (22.9%, 83 tokens, 3 runs, max=2).
+  - Across all folios: **915 SIGNAL runs**, **169 of length ≥3**, **longest = 9** consecutive SIGNAL tokens (up from 4 in Phase 29).
+  - Best fragment: `nera cora bi cu` on f114r (parse_score=0.667: NOUN_NOM + NOUN_NOM + GEN + UNK).
+  - Verdict: **FOLIO_STRONG** (longest_run=9). Gate: **PASS**.
+
+*Step 30.6 — Post-Bootstrap Readability Battery:*
+- `bootstrap_readability.json` — 10-point validation comparing all prior baselines:
+
+| Test | Name | Value | Threshold | Result |
+|------|------|-------|-----------|--------|
+| V1 | dict_hit ≥ 0.43 | 0.4363 | 0.43 | **PASS** |
+| V2 | bigram JSD < 0.5 | 0.5163 | 0.50 | **FAIL** |
+| V3 | section χ² > 3.84 | 161.37 | 3.84 | **PASS** |
+| V4 | signal σ mean ≥ 2.0 | 11.15 | 2.0 | **PASS** |
+| V5 | n_genuine ≥ 8 | 9 | 8 | **PASS** |
+| V6 | longest run > 4 | 9 | 4 | **PASS** |
+| V7 | modifier frac 0.20–0.50 | 0.341 | 0.0 | **PASS** |
+| V8 | bigram z ≥ 4.0 | 6.14 | 4.0 | **PASS** |
+| V9 | no regression vs P28 | +0.0003 | -0.005 | **PASS** |
+| V10 | new signal/bigram ≥ 1 | 1 | 1 | **PASS** |
+
+  - **9/10 passed** (gate requires 7). Only V2 marginally failed — bigram JSD of SIGNAL words vs Latin reference (0.5163 vs 0.50 threshold) indicates the character-level distribution is slightly more divergent from Latin than ideal, but just barely.
+  - Cross-phase progression:
+
+| Phase | dict_hit | Signal rate | Bigram z | Confirmed words | Triples confirmed |
+|-------|----------|-------------|----------|-----------------|-------------------|
+| Phase 16 | 0.436 | — | — | — | — |
+| Phase 28 | 0.436 | 16.5% | — | 8 | 12 |
+| Phase 29 | 0.436 | 16.5% | 6.14 | 8 | 12 |
+| Phase 30 | 0.436 | 16.5% | 6.14 | 10 | 12 |
+
+  - Verdict: **READABILITY_STRONG** (9/10). Gate: **PASS**.
+
+*Step 30.7 — Phase 30 Verdict:*
+- `phase30_verdict.json` — Verdict: **BOOTSTRAP_MARGINAL**.
+
+- **Convergence trajectory**: single_burst — 2 words confirmed in iteration 1, 0 in iteration 2, immediate convergence. The system is at equilibrium: no further candidates can pass the 50% signal-position threshold.
+
+- **Gap analysis**: 12/25 triples confirmed, 13 remain unconfirmed. **59% of corpus tokens are "dark"** (contain at least one unconfirmed triple). Top unconfirmed triples by token frequency:
+  - `loop,sigmoid,bench` → 'ne' (7,599 tokens, EVA glyphs: r, ar, or)
+  - `vertical,descender,suffix` → 'du' (6,968 tokens, EVA glyph: dy)
+  - `ascender,crossbar,gallows` → 'te' (5,383 tokens, EVA glyphs: t, f)
+  - `loop,tail,bench` → 'la' (4,049 tokens, EVA glyph: a)
+  - `ascender,plume,gallows` → 'ga' (1,465 tokens, EVA glyph: p)
+
+- **Key conclusions**:
+  1. **The signal is real but narrow.** Only 2/33 candidates passed Check 2 (≥50% SIGNAL rate). The other 31 have signal rates of 0.31–0.45 — they appear in both real and null corpora at similar rates, meaning they could be dictionary collisions. The genuine Latin signal is concentrated in a small vocabulary fraction.
+  2. **`ci` is the strongest bootstrap discovery.** Selectivity 4.10× and σ=16.1 make it the most statistically robust signal word found — more discriminating than even `bene` (2.40×) or `codi` (1.64×). In contrast, `dico` turned out to be anti-signal (σ=-14.7), demonstrating the value of post-hoc signal verification.
+  3. **The 6σ bigram result is robust.** It survived the bootstrap completely unchanged — SIGNAL tokens form Latin bigram sequences at rates far exceeding chance regardless of whether the 2 bootstrap words are included.
+  4. **59% dark vocabulary is the core bottleneck.** The 13 unconfirmed triples cover the most frequent EVA glyphs (r, dy, t, f, a, p). Until these are resolved — through external evidence, CVC/CCV model expansion, or alternative segmentation — the system cannot advance further.
+  5. **The system is at equilibrium.** The Ventris bootstrap converged almost immediately. The existing statistical table has been optimized within the constraints of the CV phonotactic model and the expanded dictionary. Further progress requires structural changes: expanding the syllable model, finding new external cribs, or reconsidering script directionality.
+  6. Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=43.6% (full corpus) → Phase 28=43.6% (table confirmed) → Phase 29: z=6.14 (first significant readability) → **Phase 30: BOOTSTRAP_MARGINAL (2 words, 9/10 validations, system at equilibrium)**.
+
 ## Background
 
 This project is a fresh start after a prior approach (consonant-skeleton-to-Latin-dictionary matching) proved unproductive. Three pieces of infrastructure were carried over:

@@ -2330,6 +2330,84 @@ def cmd_phase29():
     cmd_phase29_verdict()
 
 
+# ── Phase 30: Iterative Ventris Bootstrap ──
+
+def cmd_bootstrap():
+    """Run Step 30.1: Iterative Ventris bootstrap loop."""
+    from voynich.phases.bootstrap_loop import run_bootstrap_loop
+    t0 = time.time()
+    run_bootstrap_loop()
+    print(f"\nStep 30.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_boot_signal():
+    """Run Step 30.2: Re-isolate signal post-bootstrap."""
+    from voynich.phases.bootstrap_signal import run_bootstrap_signal
+    t0 = time.time()
+    run_bootstrap_signal()
+    print(f"\nStep 30.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_boot_bigram():
+    """Run Step 30.3: Re-run bigram plausibility post-bootstrap."""
+    from voynich.phases.bootstrap_bigrams import run_bootstrap_bigrams
+    t0 = time.time()
+    run_bootstrap_bigrams()
+    print(f"\nStep 30.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_boot_context():
+    """Run Step 30.4: Re-run context analysis post-bootstrap."""
+    from voynich.phases.bootstrap_context import run_bootstrap_context
+    t0 = time.time()
+    run_bootstrap_context()
+    print(f"\nStep 30.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_boot_folio():
+    """Run Step 30.5: Annotated folio examination post-bootstrap."""
+    from voynich.phases.bootstrap_folio import run_bootstrap_folio
+    t0 = time.time()
+    run_bootstrap_folio()
+    print(f"\nStep 30.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_boot_read():
+    """Run Step 30.6: Full readability battery post-bootstrap."""
+    from voynich.phases.bootstrap_readability import run_bootstrap_readability
+    t0 = time.time()
+    run_bootstrap_readability()
+    print(f"\nStep 30.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase30_verdict():
+    """Run Step 30.7: Phase 30 verdict and convergence analysis."""
+    from voynich.phases.phase30_verdict import run_phase30_verdict
+    t0 = time.time()
+    run_phase30_verdict()
+    print(f"\nStep 30.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase30():
+    """Run full Phase 30 pipeline: Iterative Ventris Bootstrap."""
+    print("=" * 70)
+    print("PHASE 30: Iterative Ventris Bootstrap")
+    print("=" * 70)
+    cmd_bootstrap()
+    print("\n" + "=" * 70 + "\n")
+    cmd_boot_signal()
+    print("\n" + "=" * 70 + "\n")
+    cmd_boot_bigram()
+    print("\n" + "=" * 70 + "\n")
+    cmd_boot_context()
+    print("\n" + "=" * 70 + "\n")
+    cmd_boot_folio()
+    print("\n" + "=" * 70 + "\n")
+    cmd_boot_read()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase30_verdict()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -2630,6 +2708,15 @@ def main():
         'signal-phrase': cmd_signal_phrase,
         'phase29-verdict': cmd_phase29_verdict,
         'phase29': cmd_phase29,
+        # Phase 30: Iterative Ventris Bootstrap
+        'bootstrap': cmd_bootstrap,
+        'boot-signal': cmd_boot_signal,
+        'boot-bigram': cmd_boot_bigram,
+        'boot-context': cmd_boot_context,
+        'boot-folio': cmd_boot_folio,
+        'boot-read': cmd_boot_read,
+        'phase30-verdict': cmd_phase30_verdict,
+        'phase30': cmd_phase30,
     }
 
     if len(sys.argv) < 2:
