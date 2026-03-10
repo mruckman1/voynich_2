@@ -2604,6 +2604,193 @@ def cmd_phase32():
     cmd_phase32_verdict()
 
 
+    # ── Phase 33: Multi-Vector Error Correction ──
+
+def cmd_anti_diag():
+    """Run Step 33.1: Anti-signal diagnosis."""
+    from voynich.phases.anti_signal_diagnosis import run_anti_signal_diagnosis
+    t0 = time.time()
+    run_anti_signal_diagnosis()
+    print(f"\nStep 33.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_triple_rates():
+    """Run Step 33.2: Per-triple SIGNAL rate analysis."""
+    from voynich.phases.triple_signal_rates import run_triple_signal_rates
+    t0 = time.time()
+    run_triple_signal_rates()
+    print(f"\nStep 33.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_signal_swap():
+    """Run Step 33.3: SIGNAL-guided triple swap."""
+    from voynich.phases.signal_guided_swap import run_signal_guided_swap
+    t0 = time.time()
+    run_signal_guided_swap()
+    print(f"\nStep 33.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_signal_correct():
+    """Run Step 33.4: Corrected table decode and validation."""
+    from voynich.phases.signal_corrected_decode import run_signal_corrected_decode
+    t0 = time.time()
+    run_signal_corrected_decode()
+    print(f"\nStep 33.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_latin_lm():
+    """Run Step 33.5: Latin character language model."""
+    from voynich.phases.latin_lm import run_latin_lm
+    t0 = time.time()
+    run_latin_lm()
+    print(f"\nStep 33.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ppl_search():
+    """Run Step 33.6: Perplexity-optimal triple search."""
+    from voynich.phases.perplexity_search import run_perplexity_search
+    t0 = time.time()
+    run_perplexity_search()
+    print(f"\nStep 33.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ppl_validate():
+    """Run Step 33.7: Perplexity vs SIGNAL cross-validation."""
+    from voynich.phases.perplexity_validate import run_perplexity_validate
+    t0 = time.time()
+    run_perplexity_validate()
+    print(f"\nStep 33.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_suffix_gram():
+    """Run Step 33.8: Suffix-to-grammar mapping."""
+    from voynich.phases.suffix_grammar import run_suffix_grammar
+    t0 = time.time()
+    run_suffix_grammar()
+    print(f"\nStep 33.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_suffix_search():
+    """Run Step 33.9: Suffix-constrained triple search."""
+    from voynich.phases.suffix_constrained_search import run_suffix_constrained_search
+    t0 = time.time()
+    run_suffix_constrained_search()
+    print(f"\nStep 33.9 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_long_crib():
+    """Run Step 33.10: Long botanical crib target selection."""
+    from voynich.phases.long_crib_targets import run_long_crib_targets
+    t0 = time.time()
+    run_long_crib_targets()
+    print(f"\nStep 33.10 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_long_csp():
+    """Run Step 33.11: Long crib exhaustive alignment."""
+    from voynich.phases.long_crib_csp import run_long_crib_csp
+    t0 = time.time()
+    run_long_crib_csp()
+    print(f"\nStep 33.11 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_long_prop():
+    """Run Step 33.12: Long crib assignment propagation."""
+    from voynich.phases.long_crib_propagate import run_long_crib_propagate
+    t0 = time.time()
+    run_long_crib_propagate()
+    print(f"\nStep 33.12 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_pair_freq():
+    """Run Step 33.13: Token-pair frequency tables."""
+    from voynich.phases.token_pair_freq import run_token_pair_freq
+    t0 = time.time()
+    run_token_pair_freq()
+    print(f"\nStep 33.13 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_distrib_match():
+    """Run Step 33.14: Distributional token-to-word matching."""
+    from voynich.phases.distributional_match import run_distributional_match
+    t0 = time.time()
+    run_distributional_match()
+    print(f"\nStep 33.14 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_distrib_validate():
+    """Run Step 33.15: Distributional validation."""
+    from voynich.phases.distributional_validate import run_distributional_validate
+    t0 = time.time()
+    run_distributional_validate()
+    print(f"\nStep 33.15 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase33_integrate():
+    """Run Step 33.16: Phase 33 integration."""
+    from voynich.phases.phase33_integrate import run_phase33_integrate
+    t0 = time.time()
+    run_phase33_integrate()
+    print(f"\nStep 33.16 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase33():
+    """Run full Phase 33 pipeline: Multi-Vector Error Correction."""
+    print("=" * 70)
+    print("PHASE 33: Multi-Vector Error Correction and Orthogonal Attack")
+    print("=" * 70)
+    # Approach 1+2: Anti-Signal Diagnosis and Signal-Guided Swap
+    print("\n" + "=" * 70)
+    print("APPROACH 1+2: Anti-Signal Diagnosis and Signal-Guided Swap")
+    print("=" * 70)
+    cmd_anti_diag()
+    print("\n" + "=" * 70 + "\n")
+    cmd_triple_rates()
+    print("\n" + "=" * 70 + "\n")
+    cmd_signal_swap()
+    print("\n" + "=" * 70 + "\n")
+    cmd_signal_correct()
+    # Approach 3: Latin Perplexity Optimization
+    print("\n" + "=" * 70)
+    print("APPROACH 3: Latin Perplexity Optimization")
+    print("=" * 70)
+    cmd_latin_lm()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ppl_search()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ppl_validate()
+    # Approach 4: Suffix-Constrained Root Search
+    print("\n" + "=" * 70)
+    print("APPROACH 4: Suffix-Constrained Root Search")
+    print("=" * 70)
+    cmd_suffix_gram()
+    print("\n" + "=" * 70 + "\n")
+    cmd_suffix_search()
+    # Approach 5: Long Botanical Crib Attack
+    print("\n" + "=" * 70)
+    print("APPROACH 5: Long Botanical Crib Attack")
+    print("=" * 70)
+    cmd_long_crib()
+    print("\n" + "=" * 70 + "\n")
+    cmd_long_csp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_long_prop()
+    # Approach 6: Token-Pair Distributional Isomorphism
+    print("\n" + "=" * 70)
+    print("APPROACH 6: Token-Pair Distributional Isomorphism")
+    print("=" * 70)
+    cmd_pair_freq()
+    print("\n" + "=" * 70 + "\n")
+    cmd_distrib_match()
+    print("\n" + "=" * 70 + "\n")
+    cmd_distrib_validate()
+    # Integration
+    print("\n" + "=" * 70)
+    print("INTEGRATION")
+    print("=" * 70)
+    cmd_phase33_integrate()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -2934,6 +3121,24 @@ def main():
         'comp-read': cmd_comp_read,
         'phase32-verdict': cmd_phase32_verdict,
         'phase32': cmd_phase32,
+        # Phase 33: Multi-Vector Error Correction
+        'anti-diag': cmd_anti_diag,
+        'triple-rates': cmd_triple_rates,
+        'signal-swap': cmd_signal_swap,
+        'signal-correct': cmd_signal_correct,
+        'latin-lm': cmd_latin_lm,
+        'ppl-search': cmd_ppl_search,
+        'ppl-validate': cmd_ppl_validate,
+        'suffix-gram': cmd_suffix_gram,
+        'suffix-search': cmd_suffix_search,
+        'long-crib': cmd_long_crib,
+        'long-csp': cmd_long_csp,
+        'long-prop': cmd_long_prop,
+        'pair-freq': cmd_pair_freq,
+        'distrib-match': cmd_distrib_match,
+        'distrib-validate': cmd_distrib_validate,
+        'phase33-integrate': cmd_phase33_integrate,
+        'phase33': cmd_phase33,
     }
 
     if len(sys.argv) < 2:
