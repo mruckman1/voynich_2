@@ -2408,6 +2408,114 @@ def cmd_phase30():
     cmd_phase30_verdict()
 
 
+# ── Phase 31: Botanical Anchors + Structural Reframing ──
+
+def cmd_consensus_plants():
+    """Run Step 31.1: Consensus plant identification."""
+    from voynich.phases.consensus_plants import run_consensus_plants
+    t0 = time.time()
+    run_consensus_plants()
+    print(f"\nStep 31.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_plant_csp():
+    """Run Step 31.2: Plant name CSP on folio labels."""
+    from voynich.phases.plant_csp import run_plant_csp
+    t0 = time.time()
+    run_plant_csp()
+    print(f"\nStep 31.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_plant_prop():
+    """Run Step 31.3: Plant-derived assignment propagation."""
+    from voynich.phases.plant_propagate import run_plant_propagate
+    t0 = time.time()
+    run_plant_propagate()
+    print(f"\nStep 31.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_bot_signal():
+    """Run Step 31.4: Botanical signal validation."""
+    from voynich.phases.botanical_signal import run_botanical_signal
+    t0 = time.time()
+    run_botanical_signal()
+    print(f"\nStep 31.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_determ_test():
+    """Run Step 31.5: Gallows as determinatives test."""
+    from voynich.phases.determinative_test import run_determinative_test
+    t0 = time.time()
+    run_determinative_test()
+    print(f"\nStep 31.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_compound_test():
+    """Run Step 31.6: Compound sign hypothesis test."""
+    from voynich.phases.compound_sign_test import run_compound_sign
+    t0 = time.time()
+    run_compound_sign()
+    print(f"\nStep 31.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_interleave_test():
+    """Run Step 31.7: Interleaved text separation test."""
+    from voynich.phases.interleaved_test import run_interleaved_test
+    t0 = time.time()
+    run_interleaved_test()
+    print(f"\nStep 31.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_reseg_test():
+    """Run Step 31.8: EVA re-segmentation test."""
+    from voynich.phases.resegmentation_test import run_resegmentation_test
+    t0 = time.time()
+    run_resegmentation_test()
+    print(f"\nStep 31.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase31_integrate():
+    """Run Step 31.9: Phase 31 integration."""
+    from voynich.phases.phase31_integrate import run_phase31_integrate
+    t0 = time.time()
+    run_phase31_integrate()
+    print(f"\nStep 31.9 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase31():
+    """Run full Phase 31 pipeline: Botanical Anchors + Structural Reframing."""
+    print("=" * 70)
+    print("PHASE 31: Botanical Anchors + Structural Reframing")
+    print("=" * 70)
+    # Path 2: Botanical Anchors
+    print("\n" + "=" * 70)
+    print("PATH 2: Botanical Anchor Attack")
+    print("=" * 70)
+    cmd_consensus_plants()
+    print("\n" + "=" * 70 + "\n")
+    cmd_plant_csp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_plant_prop()
+    print("\n" + "=" * 70 + "\n")
+    cmd_bot_signal()
+    # Path 4: Structural Reframing
+    print("\n" + "=" * 70)
+    print("PATH 4: Structural Reframing")
+    print("=" * 70)
+    cmd_determ_test()
+    print("\n" + "=" * 70 + "\n")
+    cmd_compound_test()
+    print("\n" + "=" * 70 + "\n")
+    cmd_interleave_test()
+    print("\n" + "=" * 70 + "\n")
+    cmd_reseg_test()
+    # Integration
+    print("\n" + "=" * 70)
+    print("INTEGRATION")
+    print("=" * 70)
+    cmd_phase31_integrate()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -2717,6 +2825,17 @@ def main():
         'boot-read': cmd_boot_read,
         'phase30-verdict': cmd_phase30_verdict,
         'phase30': cmd_phase30,
+        # Phase 31: Botanical Anchors + Structural Reframing
+        'consensus-plants': cmd_consensus_plants,
+        'plant-csp': cmd_plant_csp,
+        'plant-prop': cmd_plant_prop,
+        'bot-signal': cmd_bot_signal,
+        'determ-test': cmd_determ_test,
+        'compound-test': cmd_compound_test,
+        'interleave-test': cmd_interleave_test,
+        'reseg-test': cmd_reseg_test,
+        'phase31-integrate': cmd_phase31_integrate,
+        'phase31': cmd_phase31,
     }
 
     if len(sys.argv) < 2:
