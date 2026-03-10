@@ -4501,6 +4501,106 @@ The single failure — V10, zero content-content bigrams — is the most informa
 
 - Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=43.6% → Phase 28=43.6% → Phase 29: z=6.14 → Phase 30: 2 words → Phase 34: Track G z=13.12 → Phase 35: NO_INTERACTION → **Phase 36: 10K_CONFIRMED (z=12.66, 51 signal words, 11/12 validations, bootstrap stalled)**.
 
+## Phase 37: Signal Decomposition, Concatenation, and Content Word Recovery
+
+Phase 37 runs five independent investigations to break through the content-word gap identified in Phase 36 (z=12.66, 51 signal words, 1,504 confirmed-confirmed pairs, but 0 content-content bigrams). No model changes — deeper analysis of existing signal along five vectors: (1) consonant-vowel decomposition, (2) signal pair concatenation, (3) multi-triple joint swap, (4) f57v deep examination, (5) Northern Italian dictionary test.
+
+### Pipeline Steps
+
+| Step | Operation | Key Output |
+|------|-----------|------------|
+| 37.1 | Consonant onset grouping | **11 consonant classes**, mean selectivity **5.64×** (C5×V4 prediction=5.0×), 7/11 map to single sign family |
+| 37.2 | CV correlation | Within-class corr=0.1348 > between=0.0955, hypothesis **CONFIRMED** (2/3 evidence) |
+| 37.3 | Vowel confusion search | 6 changes, hit 18.8%→**21.1%** (+2.3%), content 138→**288** (+150), **generalizes**, 0 CC bigrams |
+| 37.4 | Pair concatenation | 510/1504 matches (**33.9%**), z=**22.06**, 510 content words, "codice" found on f2r |
+| 37.5 | Concat signal isolation | 63 signal words (30 merged), merged hit rate 22.3% |
+| 37.6 | Concat bigrams | z=**−6.67** (DROPPED from 12.66), 0 exact hits — merging destroys sequential structure |
+| 37.7 | Joint swap targeting | 13 unconfirmed triples, 59 co-occurring pairs, top: ne+la (score=1124) |
+| 37.8 | Joint swap search | 3 swaps accumulated: hit 18.8%→**20.2%**, content 138→**229** (+91) |
+| 37.9 | Joint swap validation | hit=19.9%, z=**−4.06** (DROPPED), 1 CC bigram ("bene pone" on f104r), **OVERFITS** |
+| 37.10 | f57v EVA diversity | 175 tokens, compression=**0.800**, "di" from 6 EVA tokens (4 triple patterns), **MODERATE_COLLAPSE** |
+| 37.11 | f57v structure | "hi" **207×** enriched, "fa" **145×**, "ha" **118×**; 0 recipe keywords; MODERATE_REPETITION |
+| 37.12 | Italian corpus | Anonimo Veneziano: 10,789 tokens, 1,823 types; 21,090 combined Italian vocabulary |
+| 37.13 | Italian 10K comparison | Italian selectivity **5.45×** vs Latin **1.30×** — **ITALIAN_PREFERRED** |
+| 37.14 | Italian signal | 46 signal words, 22 Italian-only; merged dict (19,363): z=**16.97** (up from 12.66), **MACARONIC** |
+| 37.15 | Phase 37 integration | Best config: **BASELINE** (no investigation improved bigram z + CC simultaneously) |
+
+### Investigation 1: Consonant-Vowel Decomposition — CONFIRMED_NOT_CORRECTABLE
+
+The 51 signal words cluster into 11 consonant classes by decoded onset: d(10), s(10), r(6), c(5), t(5), n(4), b(3), f(2), g(2), h(2), l(2). Mean selectivity of 5.64× matches the C5×V4 theoretical prediction (5.0×) — if 5 consonant sounds each pair with 4 vowels, random vowel assignment yields ~5× selectivity. Within-class folio correlations exceed between-class (0.135 vs 0.096), and 7/11 groups map to a single sign family (s→bench, r→bench, c→bench, n→bench, f→rare, g→gallows, l→bench).
+
+Vowel permutation search found 6 corrections across 3 classes (d: +142 content words, r: +73, n: +39). Joint application raises content words from 138 to 288 and generalizes to held-out folios. However, 0 content-content bigrams are produced — more individual dictionary words, but no adjacent content-word pairs.
+
+### Investigation 2: Signal Pair Concatenation — SIGNIFICANT_NOT_IMPROVED
+
+Of 1,504 confirmed-confirmed adjacent pairs, 510 (33.9%) produce dictionary words when concatenated, vs null baseline of 184 (z=22.06). Top concatenated words: didi(34×), sene(30×), dise(26×), dine(24×), neco(20×). Seven triple concatenations found, including "codice" (di+ce+di) on f2r. Spearman rank correlation with reference frequencies: r=0.605.
+
+Re-tokenizing the corpus with 65 merge rules yields 63 signal words (30 merged), including semantically interesting words: sero(σ=70), sene(σ=55), bene(σ=46), radi(σ=43), dico(σ=13), sine(σ=10), duce(σ=10), nisi(σ=10). However, the merged bigram z drops to −6.67 — naive concatenation destroys sequential structure. EVA words function as syllables (statistically confirmed) but combining them doesn't produce word-level bigram coherence.
+
+### Investigation 3: Multi-Triple Joint Swap — CONTENT_FOUND_NOT_GENERALIZED
+
+Of 13 unconfirmed triples, 10 top pairs were tested exhaustively (~225–784 candidates each). All 10 showed improvement; best: ne+la→ra+ne (+70 content), te+la→pe+ne (+73 content). Three swaps accumulated greedily: content rises from 138 to 229 on sample.
+
+Full corpus validation: corrected hit rate 19.9% (+1.1%), content words 992→1,635. But bigram z drops from −2.02 to −4.06, and train/test split shows overfitting (22.3% vs 17.5%). Five of six syllable changes alter the consonant, not just the vowel — these are NOT vowel corrections.
+
+One content-content bigram found: **"bene pone"** (= "place well") on f104r, in context: *"codiperara radera dicorararaderara bene pone cora rapedesera"*.
+
+### Investigation 4: f57v Deep Examination — MODERATE
+
+f57v has 175 tokens, 80 unique EVA (TTR=0.457), but only 64 unique decoded (TTR=0.366). Compression ratio 0.800 reveals moderate table collapse: "di" decodes from 6 different EVA tokens via 4 different triple patterns; "ne" from 3 EVA tokens via 2 triple patterns. But "ra" (from EVA 'o'), "hi" (from 'v'), "fa" (from 'x'), "ha" (from 'c') each use exactly 1 EVA token — genuinely repeated.
+
+Repeated blocks: `ra ne di ne hi fa de di` repeats 4 times. Lines 4–7 show high signal density (73–80%), while lines 1–3 and 8–9 are lower (33%).
+
+Cross-folio enrichment is dramatic: "hi" appears **207×** more frequently on f57v than corpus average (all 11 occurrences are on f57v), "fa" at **145×** (7/10), "ha" at **118×** (4/7), "ga" at **69×** (2/6), "ra" at **20.5×**. These are effectively f57v-specific vocabulary. Comparison folio f68r1 (signal 3.1%) has compression 0.953 — almost no collapse, confirming f57v is unusual.
+
+No recipe keyword matches (0 on f57v vs 0.22% corpus-wide). Content type: MODERATE_REPETITION — partially genuine, partially from table collapse.
+
+### Investigation 5: Northern Italian 10K — ITALIAN_PREFERRED
+
+The Anonimo Veneziano (medieval Venetian cookbook, 1,882 lines) provides 10,789 tokens and 1,823 types. Combined with synthetic Italian via medieval sound changes applied to the Latin corpus: 21,090 Italian types total.
+
+The headline finding:
+
+| Metric | Italian 10K | Latin 10K |
+|--------|------------|-----------|
+| Hit rate | 20.8% | 24.0% |
+| Null hit rate | 3.82% | 18.4% |
+| **Selectivity** | **5.45×** | **1.30×** |
+
+Italian selectivity is 4.2× higher than Latin selectivity. Latin has more raw hits but its null corpora also hit at 18.4% — most Latin hits are explained by chance. Italian's null rate is only 3.82%, meaning Italian hits are genuine signal. 637 words shared between dictionaries; 36 Italian-only matches appear in the decoded corpus.
+
+Italian signal isolation finds 46 signal words, **22 Italian-only**: be(σ=135), cora(σ=99), dise(σ=78), bela(σ=44), cedi(σ=23), cu(σ=20), didi(σ=19), dice(σ=18), deco(σ=18), cose(σ=16), code(σ=15), dedi(σ=15). Italian-internal bigram z is −0.33 (no sequential structure alone).
+
+The **merged dictionary** (Latin ∪ Italian = 19,363 words) achieves hit rate 31.8%, **bigram z = 16.97** (up from 12.66), 16 exact bigram hits, 1 cross-language bigram. **is_macaronic = YES.** The text appears to mix Latin and Italian vocabulary, consistent with a Northern Italian author writing in a Latin-influenced vernacular.
+
+### Cross-Investigation Interactions
+
+One interaction flagged: **Joint swap + Italian** — the content words from Investigation 3's swaps may be Italian rather than Latin and should be re-evaluated against the Italian dictionary.
+
+The vowel correction + concatenation interaction was NOT triggered because concatenation's merged z was worse, not better.
+
+### Phase 37 Findings Summary
+
+**1. Consonants are likely correct, vowels possibly scrambled.** The 5.64× selectivity across 11 consonant classes matches the C5×V4 prediction. Vowel corrections improve content words by +150 and generalize to held-out data. But vowel correction alone doesn't produce content-content bigrams.
+
+**2. EVA words function as syllables (z=22) but naive concatenation fails.** One-third of adjacent signal pairs concatenate into dictionary words at a rate massively above null. Semantically interesting merged words appear (sero, bene, radi, dico, sine, duce, nisi). But merging tokens destroys the bigram sequential structure established at 10K.
+
+**3. Joint swap finds marginal improvements that don't generalize.** Three swaps raise content words from 138 to 229, but the corrected table overfits and drops bigram z. The swaps change consonants, not just vowels. One content-content bigram found: "bene pone" on f104r.
+
+**4. f57v has unique, formulaic vocabulary.** "hi", "fa", "ha" appear almost exclusively on this folio (enrichment 118–207×). The repetitive decoded pattern (`ra ne di ne hi fa de di`) is partly genuine repetition and partly table collapse (multiple EVA tokens → same decoded syllable). Not a pharmaceutical recipe — no recipe keywords match.
+
+**5. Italian selectivity dramatically exceeds Latin (5.45× vs 1.30×).** The merged Latin+Italian dictionary pushes bigram z from 12.66 to 16.97 — the strongest sequential signal observed in the project. 22 Italian-only signal words (be, cora, bela, dice, cose, code) are semantically coherent. The manuscript appears macaronic.
+
+**6. The 0 content-content bigram barrier persists.** No investigation produced adjacent content-word pairs while maintaining sequential structure. The decoded text produces individual dictionary words and function-word bigrams but no content-word phrases from any approach tested.
+
+| Phase | Dict | Signal | Bigram z | CC bigrams | Advance |
+|-------|------|--------|----------|------------|---------|
+| 29 | 131K | 16.5% | 6.14 | 0 | Bigram discovery |
+| 36 | 10K | 18.5% | 12.66 | 0 | 10K pipeline |
+| 37 | merged 19K | — | 16.97 | 0 | Italian macaronic signal |
+
+- Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=43.6% → Phase 28=43.6% → Phase 29: z=6.14 → Phase 30: 2 words → Phase 34: Track G z=13.12 → Phase 35: NO_INTERACTION → Phase 36: z=12.66 → **Phase 37: BASELINE (consonant-correct confirmed, concatenation z=22, Italian selectivity 5.45×, merged z=16.97, macaronic=YES, CC=0)**.
+
 ## Background
 
 This project is a fresh start after a prior approach (consonant-skeleton-to-Latin-dictionary matching) proved unproductive. Three pieces of infrastructure were carried over:

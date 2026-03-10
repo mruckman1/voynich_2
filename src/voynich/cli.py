@@ -3236,6 +3236,170 @@ def cmd_phase36():
     cmd_phase36_verdict()
 
 
+# ── Phase 37: Signal Decomposition, Concatenation, and Content Word Recovery ──
+
+def cmd_cons_group():
+    """Run Step 37.1: Consonant Onset Grouping."""
+    from voynich.phases.consonant_grouping import run_consonant_grouping
+    t0 = time.time()
+    run_consonant_grouping()
+    print(f"\nStep 37.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_cv_corr():
+    """Run Step 37.2: Within-Class Selectivity Correlation."""
+    from voynich.phases.cv_correlation import run_cv_correlation
+    t0 = time.time()
+    run_cv_correlation()
+    print(f"\nStep 37.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_vowel_conf():
+    """Run Step 37.3: Vowel Confusion Matrix."""
+    from voynich.phases.vowel_confusion import run_vowel_confusion
+    t0 = time.time()
+    run_vowel_confusion()
+    print(f"\nStep 37.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_pair_concat():
+    """Run Step 37.4: Confirmed Pair Concatenation."""
+    from voynich.phases.pair_concat import run_pair_concat
+    t0 = time.time()
+    run_pair_concat()
+    print(f"\nStep 37.4 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_concat_signal():
+    """Run Step 37.5: Concatenated Signal Isolation."""
+    from voynich.phases.concat_signal import run_concat_signal
+    t0 = time.time()
+    run_concat_signal()
+    print(f"\nStep 37.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_concat_bigram():
+    """Run Step 37.6: Concatenated Bigram Test."""
+    from voynich.phases.concat_bigrams import run_concat_bigrams
+    t0 = time.time()
+    run_concat_bigrams()
+    print(f"\nStep 37.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_joint_target():
+    """Run Step 37.7: Joint Swap Targeting."""
+    from voynich.phases.joint_target import run_joint_target
+    t0 = time.time()
+    run_joint_target()
+    print(f"\nStep 37.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_joint_swap():
+    """Run Step 37.8: Exhaustive 2-Triple and Targeted 3-Triple Search."""
+    from voynich.phases.joint_swap import run_joint_swap
+    t0 = time.time()
+    run_joint_swap()
+    print(f"\nStep 37.8 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_joint_val():
+    """Run Step 37.9: Joint Swap Validation."""
+    from voynich.phases.joint_validate import run_joint_validate
+    t0 = time.time()
+    run_joint_validate()
+    print(f"\nStep 37.9 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_f57v_eva():
+    """Run Step 37.10: f57v EVA Token Diversity."""
+    from voynich.phases.f57v_eva import run_f57v_eva
+    t0 = time.time()
+    run_f57v_eva()
+    print(f"\nStep 37.10 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_f57v_struct():
+    """Run Step 37.11: f57v Structural Analysis."""
+    from voynich.phases.f57v_structure import run_f57v_structure
+    t0 = time.time()
+    run_f57v_structure()
+    print(f"\nStep 37.11 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ital_corpus():
+    """Run Step 37.12: Italian Reference Corpus."""
+    from voynich.phases.italian_corpus import run_italian_corpus
+    t0 = time.time()
+    run_italian_corpus()
+    print(f"\nStep 37.12 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ital_10k():
+    """Run Step 37.13: Italian 10K Dictionary."""
+    from voynich.phases.italian_10k import run_italian_10k
+    t0 = time.time()
+    run_italian_10k()
+    print(f"\nStep 37.13 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ital_signal():
+    """Run Step 37.14: Italian Signal Pipeline."""
+    from voynich.phases.italian_signal import run_italian_signal
+    t0 = time.time()
+    run_italian_signal()
+    print(f"\nStep 37.14 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase37_integrate():
+    """Run Step 37.15: Phase 37 Integration."""
+    from voynich.phases.phase37_integrate import run_phase37_integrate
+    t0 = time.time()
+    run_phase37_integrate()
+    print(f"\nStep 37.15 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase37():
+    """Run full Phase 37 pipeline: Signal Decomposition, Concatenation, and Content Word Recovery."""
+    print("=" * 70)
+    print("PHASE 37: Signal Decomposition, Concatenation, and Content Word Recovery")
+    print("=" * 70)
+    # Investigation 1: Consonant-Vowel Decomposition
+    cmd_cons_group()
+    print("\n" + "=" * 70 + "\n")
+    cmd_cv_corr()
+    print("\n" + "=" * 70 + "\n")
+    cmd_vowel_conf()
+    print("\n" + "=" * 70 + "\n")
+    # Investigation 2: Signal Pair Concatenation
+    cmd_pair_concat()
+    print("\n" + "=" * 70 + "\n")
+    cmd_concat_signal()
+    print("\n" + "=" * 70 + "\n")
+    cmd_concat_bigram()
+    print("\n" + "=" * 70 + "\n")
+    # Investigation 3: Multi-Triple Joint Swap
+    cmd_joint_target()
+    print("\n" + "=" * 70 + "\n")
+    cmd_joint_swap()
+    print("\n" + "=" * 70 + "\n")
+    cmd_joint_val()
+    print("\n" + "=" * 70 + "\n")
+    # Investigation 4: f57v Deep Examination
+    cmd_f57v_eva()
+    print("\n" + "=" * 70 + "\n")
+    cmd_f57v_struct()
+    print("\n" + "=" * 70 + "\n")
+    # Investigation 5: Northern Italian 10K Dictionary
+    cmd_ital_corpus()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ital_10k()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ital_signal()
+    print("\n" + "=" * 70 + "\n")
+    # Integration
+    cmd_phase37_integrate()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -3634,6 +3798,23 @@ def main():
         'read-10k': cmd_read_10k,
         'phase36-verdict': cmd_phase36_verdict,
         'phase36': cmd_phase36,
+        # Phase 37: Signal Decomposition, Concatenation, and Content Word Recovery
+        'cons-group': cmd_cons_group,
+        'cv-corr': cmd_cv_corr,
+        'vowel-conf': cmd_vowel_conf,
+        'pair-concat': cmd_pair_concat,
+        'concat-signal': cmd_concat_signal,
+        'concat-bigram': cmd_concat_bigram,
+        'joint-target': cmd_joint_target,
+        'joint-swap': cmd_joint_swap,
+        'joint-val': cmd_joint_val,
+        'f57v-eva': cmd_f57v_eva,
+        'f57v-struct': cmd_f57v_struct,
+        'ital-corpus': cmd_ital_corpus,
+        'ital-10k': cmd_ital_10k,
+        'ital-signal': cmd_ital_signal,
+        'phase37-integrate': cmd_phase37_integrate,
+        'phase37': cmd_phase37,
     }
 
     if len(sys.argv) < 2:
