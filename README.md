@@ -5032,6 +5032,249 @@ This 4× repetition at regular intervals is consistent with a formulaic recipe s
 
 - Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=43.6% → Phase 28=43.6% → Phase 29: z=6.14 → Phase 30: 2 words → Phase 34: Track G z=13.12 → Phase 35: NO_INTERACTION → Phase 36: z=12.66 → Phase 37: merged z=16.97, macaronic=YES, CC=0 → Phase 38: SIGNAL_EXPANDED (z=14.37, CC=31) → Phase 39: VENETIAN_SIGNAL_FOUND (amplified z=19.89, Venetian 4.58×) → **Phase 40: MAINTAINED (Venetian bigram z=319.76, folio reading 47.8% coverage, f57v formulaic 4× repetition, 0 table changes)**.
 
+## Phase 41: Venetian Null Validation, Lexicon Completion, and Inter-Formula Content Recovery
+
+Phase 41 is a corrective phase. Phase 40 reported z=319.76 for the Venetian bigram test — an astronomically high score that, if valid, would be decisive proof of Venetian. Phase 41 was designed to rigorously validate this claim by fixing two known bugs in the null testing methodology, completing the signal word lexicon, reading f57v's inter-formula content zones, and repairing the broken botanical prediction pipeline. Four tracks were run across 16 steps.
+
+### Verdict: VENETIAN_REFUTED
+
+The Venetian bigram z=319.76 was **entirely a measurement artifact**. After fixing the null test to compare like with like, the validated z = **−0.47** (not significant). The Venetian-specific hypothesis is not supported. 5/7 validation checks pass, but the two critical Venetian tests (V1: selectivity, V2: bigram z) both fail.
+
+### Track A: Venetian Null Validation (Steps 41.1–41.4) — The Critical Fix
+
+**The bugs in Phase 40:**
+
+1. **Bigram z-test asymmetry** (`venetian_bigrams.py`): The real corpus counted both exact bigram matches (157) and relaxed/edit-distance-1 matches (3,877), totaling 4,034 hits. But the null permutation test only counted exact hits (~141 per permutation). This compared 4,034 against ~141, producing z=319.76.
+
+2. **Missing null selectivity** (`venetian_match.py`): The code tried to load `decoded_tokens` from null corpus metadata, but that key didn't exist. The null selectivity silently defaulted to 999.0, making any real selectivity appear significant.
+
+**Step 41.1 — Null Venetian Decode**: Regenerated all 5 null corpora (seeds 100–104) through the Phase 15/16 decode pipeline and matched each against the 29,207-word Venetian extended set. This provides proper null baselines:
+
+| Corpus | Venetian Hit Rate | Exact Bigrams | Relaxed Bigrams | Total Bigrams |
+|--------|-------------------|---------------|-----------------|---------------|
+| Real | **36.45%** | 157 | 4,370 | **4,527** |
+| Null seed 100 | 30.52% | 49 | 2,398 | 2,447 |
+| Null seed 101 | 30.99% | 54 | 2,456 | 2,510 |
+| Null seed 102 | 31.02% | 39 | 2,507 | 2,546 |
+| Null seed 103 | 31.25% | 53 | 2,472 | 2,525 |
+| Null seed 104 | 30.97% | 50 | 2,464 | 2,514 |
+| **Null mean** | **30.95%** | **49.0** | **2,459.4** | **2,508.4** |
+
+The real corpus does hit the Venetian dictionary more often than null (36.45% vs 30.95%), but the gap is modest — selectivity 1.18×.
+
+**Step 41.2 — Venetian Validated**: Recomputed the bigram z-score with **fixed** null permutations that count both exact AND relaxed hits (using precomputed edit-distance-1 partner sets for performance, 500 permutations):
+
+| Metric | Phase 40 (buggy) | Phase 41 (corrected) |
+|--------|-----------------|---------------------|
+| Real exact bigram hits | 157 | 157 |
+| Real relaxed bigram hits | 3,877 | 4,370 |
+| Real total hits | 4,034 | 4,527 |
+| Null mean total hits | ~141 (exact only!) | **4,046.26** |
+| Null std | ~12.2 | 25.96 |
+| **Bigram z-score** | **319.76** | **−0.47** |
+
+The validated z-score is **−0.47** — the Venetian bigram signal is indistinguishable from random word order. The z-exact (157 real vs 140.77 null mean) = 1.33 (not significant). The z-relaxed = −1.07 (real slightly *below* null). The entire z=319 was an artifact of comparing exact+relaxed real hits against exact-only null hits.
+
+Venetian selectivity: **1.18×** (well below the 1.5× threshold). The 29,207-word dictionary is so large that ~31% of randomly decoded text matches it. The 5.5 percentage point gap between real and null is too small to confirm Venetian specifically.
+
+Comparison to merged reference:
+
+| Reference | Bigram z (Phase 40) | Bigram z (Phase 41) |
+|-----------|--------------------|--------------------|
+| Latin 10K | — | 12.66 |
+| Merged L+I | 14.37 | 14.37 (unchanged) |
+| Venetian ext | 319.76 (bug) | **−0.47** |
+
+The merged Latin+Italian z=14.37 remains valid (different methodology, not affected by this bug). The Venetian-specific reference performs *worse* than the smaller merged reference.
+
+**Step 41.3 — Venetian Signal Proper**: 4-class signal classification with proper null baseline from 41.1:
+
+| Class | Count | Rate | Definition |
+|-------|-------|------|------------|
+| SHARED_MISS | 23,644 | 65.2% | No hit in real or null |
+| SIGNAL | 6,216 | 17.2% | Real hit, ≤1 null hit |
+| ANTI_SIGNAL | 4,274 | 11.8% | Null hit exceeds real |
+| SHARED_HIT | 2,104 | 5.8% | Hit in both real and null |
+
+49 words show genuine signal (σ > 2.0). Top signal words by sigma:
+
+| Word | σ | Count | Selectivity | Gloss |
+|------|------|-------|-------------|-------|
+| ne | 55.84 | 1,470 | 3.31× | not/nor |
+| ni | 52.95 | 494 | 6.94× | nor/nothing |
+| ce | 25.30 | 353 | 2.40× | this/here |
+| du | 24.45 | 189 | 4.90× | two/of the |
+| si | 23.41 | 170 | 2.90× | yes/self |
+| so | 20.53 | 242 | 2.98× | I am/above |
+| bela | 17.29 | 400 | 1.34× | beautiful |
+| di | 14.21 | 1,353 | 1.50× | of |
+| bi | 13.86 | 342 | 3.49× | (prefix) |
+| sene | 8.56 | 242 | 1.81× | without |
+| de | 7.88 | 471 | 1.40× | of/from |
+| cora | 5.86 | 1,114 | 1.07× | heart |
+
+Notable anti-signal words (appear MORE in null corpora than real): sera (σ = −25.97, 166× real vs 625 expected), co (σ = −12.51), radi (σ = −3.49). These are forms the decode pipeline over-generates from random EVA input.
+
+**Step 41.4 — Venetian Confirmed**: Definitive signal vocabulary — 49 confirmed words. Confidence breakdown: 9 HIGH (σ > 20), 28 MEDIUM (σ 5–20), 12 LOW (σ 2–5). 21 glossed, 28 unglossed. The vocabulary is not coherent with a pharmaceutical text (medical fraction 6/21 glossed, function fraction 8/21).
+
+**Track A conclusion:** The Venetian bigram signal was a statistical artifact caused by an asymmetric null test. After correction, the decoded text does NOT form Venetian word-pairs at above-chance rates. Individual signal words exist (49 at σ > 2), but their sequential structure is random with respect to the Venetian reference.
+
+### Track B: Lexicon Completion (Steps 41.5–41.8)
+
+**Step 41.5 — Unglossed Analysis**: Characterized the 45 unglossed signal words. All 45 were classified as IDENTIFIABLE — each has an exact match in the 29,207-word Venetian extended set. This is expected: these are short 2–4 character decoded forms (te, ga, hi, ra, etc.) that match common Romance syllables in a very large dictionary.
+
+**Step 41.6 — Venetian Dictionary Search**: Systematic lookup across the Venetian extended set, Anonimo Veneziano vocab, Latin/Italian references. All 45 were identified via exact match. Strategies attempted: exact, edit-distance-1, concatenation split, morphological stem analysis — but exact match sufficed for all.
+
+**Step 41.7 — Context Disambiguation**: 8 words with multiple candidate meanings were disambiguated using ±2 token corpus context with domain-specific neighbor detection:
+
+| Word | Candidates | Verdict | Primary Meaning |
+|------|-----------|---------|-----------------|
+| cora | heart / cure | WEAK (62.5% anatomical) | heart |
+| be | well / drink | STRONG (81.2% pharm.) | well (adverb) |
+| sene | without / senna | STRONG (72.1% function) | without |
+| do | I give / two | WEAK (56.1% pharm.) | I give |
+| dose | dose / backs | UNDETERMINED | dose |
+| hi | there / to him | WEAK | there/to him |
+| fe | faith / made | UNDETERMINED | faith |
+| rado | scraped / root | DEFAULT (0 occurrences) | scraped |
+
+**Step 41.8 — Complete Lexicon**: Merged 28 original glosses + 45 new dictionary matches + disambiguation results + validated σ-scores:
+
+| Category | Count |
+|----------|-------|
+| Total words | 73 |
+| Glossed | **73 (100%)** |
+| Original glosses | 28 |
+| New from dict search | 45 |
+| POS known | 28 |
+| POS unknown | 45 |
+
+POS distribution (28 known): verb 6, adverb 5, preposition 4, noun 3, conjunction 2, pronoun 2, adjective 2, article 1, prefix 1, numeral 1, syllable 1. The 45 newly glossed words lack confirmed POS — their "gloss" is simply the matching Venetian dictionary entry.
+
+Anonimo Veneziano overlap: 25/73 (34.25%) appear in the 14th-century Anonimo text. All are common function words: di, se, ne, de, bene, ci, te, la, si, ra, do, re, ti, su, cola, cose, to, ha, code, li, dido, tu, ge, fa.
+
+**Track B conclusion:** The lexicon is formally complete at 73/73, but the 45 new glosses are essentially trivial — short decoded forms matching common syllables in a large dictionary. The 100% gloss rate says more about the dictionary's size (29,207 words) than about the manuscript's language identity.
+
+### Track C: f57v Inter-Formula Content Recovery (Steps 41.9–41.12)
+
+**Step 41.9 — Formula Segmentation**: Folio f57v (175 tokens) was segmented into structural zones based on the repeating pattern discovered in Phase 40:
+
+The 7-token sequence **"ra ne di ne hi fa de"** repeats exactly 4× at positions 48, 62, 76, and 90 with perfectly regular 14-token spacing:
+
+```
+[HEADER: 48 tokens] [FORMULA₁] [CONTENT₁: 7 tokens] [FORMULA₂] [CONTENT₂: 7 tokens]
+[FORMULA₃] [CONTENT₃: 7 tokens] [FORMULA₄] [CONTENT₄: remaining ~78 tokens]
+```
+
+Zone counts: 1 HEADER + 4 FORMULA + 4 CONTENT = 9 zones. 28 formula tokens, 147 content tokens.
+
+Formula glossed: "(syllable) | not/nor | of | not/nor | there/to him | makes/does | of/from" — does not parse as coherent Venetian.
+
+**Step 41.10 — Inter-Formula Tokens**: Deep analysis of the 99 content tokens (excluding header):
+- 55 (55.6%) are SIGNAL tokens — content zones have elevated signal rate vs corpus average (17.2%)
+- 54 (54.5%) are glossed in the complete lexicon
+- 33 unique content-only word types
+- Ingredient candidates identified: 'te', 'ga' (appear in initial content-zone positions)
+
+**Step 41.11 — Ingredient Search**: Matched content tokens against medieval pharmaceutical ingredient references, Anonimo Veneziano vocab, and Venetian extended set:
+- 74 exact dictionary matches (all common function words: di, ne, te, se, etc.)
+- 5 edit-distance-1 matches
+- **0 medieval pharmaceutical ingredient terms** matched
+- The content zones do not contain identifiable ingredient names
+
+**Step 41.12 — f57v Complete Reading**: Assembled a 4-layer annotated reading (EVA → decoded → Venetian → English) with per-token confidence:
+
+| Confidence | Count | Rate |
+|------------|-------|------|
+| GREEN (cross-validated) | 0 | 0.0% |
+| YELLOW (glossed) | 114 | 65.1% |
+| ORANGE (partial) | 5 | 2.9% |
+| RED (unknown) | 56 | 32.0% |
+| **Total glossed** | **119** | **68.0%** |
+
+Best passage (27 consecutive glossed tokens, positions 133–159):
+```
+hi ra hi ne ne di ni di ha te se di ne de fa ne ne ne ra ne la te ne se di di de
+"there (syl) there not not of nor of has you self of not of makes not not not (syl) not the you not self of of of"
+```
+
+This reads as a string of common function words without discernible grammar or meaning. The high coverage (68%) reflects the prevalence of short, common forms in the decoded output rather than genuine comprehension.
+
+**Track C conclusion:** f57v's formula structure is confirmed (4× repetition at 14-token intervals). Content zone coverage is 68% (above the 55% threshold). However, the "reading" consists almost entirely of function words (di, ne, se, de, la) without detectable grammar, ingredient names, or pharmaceutical content. The formulaic structure may be a genuine manuscript feature, but the decoded content does not yet yield meaningful text.
+
+### Track D: Botanical Pipeline Fix (Steps 41.13–41.15)
+
+**Step 41.13 — Botanical Data Fix**: Repaired upstream format mismatches from Phase 40's broken botanical pipeline. 3 format issues identified and fixed. Unified plant-folio mapping: 56 folios total, 21 with Italian plant names, 2 alignment constraints extracted from the Drosera (f56r) CSP result.
+
+**Step 41.14 — Drosera Propagation**: Used the Phase 15 assignment table + Drosera constraints to predict EVA forms of Italian plant names:
+- 40 predictions generated from 21 plants with Italian names
+- 5 high confidence (≥75% known syllables): garofano, garofali, garofalo, ranuncolo, viola
+- 2 medium confidence (50–75%): drosera, rosolida
+
+**Step 41.15 — Botanical Predictions v2**: Searched botanical folios for predicted EVA token sequences:
+
+| Folio | Plant | Known Fraction | Matches (correct) | Matches (wrong) | Selectivity |
+|-------|-------|---------------|-------------------|------------------|-------------|
+| f1r | garofano | 75% | 0 | 0 | 0.0 |
+| f1r | garofali | 75% | 0 | 0 | 0.0 |
+| f1r | garofalo | 75% | 0 | 0 | 0.0 |
+| f2r | ranuncolo | 75% | 0 | 0 | 0.0 |
+| f9v | viola | 75% | 0 | 0 | 0.0 |
+| **f56r** | **drosera** | **67%** | **1** | **0** | **∞** |
+
+The single match on f56r (Drosera) is circular — the constraints used to generate the prediction came from f56r's own alignment. 0 cross-folio confirmed predictions. Overall selectivity 0.43× (matches appear less often on correct folios than wrong ones).
+
+**Track D conclusion:** The botanical prediction pipeline is now functional but does not corroborate the assignment table. The only positive match is self-referential (Drosera on f56r). Plant names are not detectable on their expected folios, suggesting either the table is wrong for botanical content, the plant identifications are wrong, or EVA plant name labels use a different encoding than body text.
+
+### Integration (Step 41.16)
+
+**Validation battery** (5/7 pass):
+
+| # | Test | Value | Threshold | Result |
+|---|------|-------|-----------|--------|
+| V1 | Venetian selectivity (corrected) | 1.18× | ≥ 1.5× | **FAIL** |
+| V2 | Corrected bigram z | −0.47 | ≥ 3.0 | **FAIL** |
+| V3 | Lexicon glossed | 73/73 | ≥ 50/73 | PASS |
+| V4 | f57v coverage | 68% | ≥ 55% | PASS |
+| V5 | Formula pattern detected | 4 | ≥ 1 | PASS |
+| V6 | Botanical soft match | 1 | ≥ 1 | PASS |
+| V7 | Venetian dict-hit (no regression) | 36.45% | ≥ 30% | PASS |
+
+V1 and V2 are the decisive tests for the Venetian hypothesis. Both fail. The verdict requires both V1 AND V2 to pass for VENETIAN_VALIDATED; either alone for VENETIAN_PARTIAL. Neither passes → **VENETIAN_REFUTED**.
+
+### What Phase 41 Establishes
+
+**Refuted:**
+- The Venetian bigram signal (z=319.76 → z=−0.47) — entirely a measurement bug
+- Venetian-specific selectivity (4.58× → 1.18×) — dictionary too large, null corpora also match at ~31%
+- The claim that decoded word sequences match Venetian text patterns better than chance
+- The Phase 40 conclusion that "the underlying language is almost certainly Venetian"
+
+**Still standing (not affected by this bug):**
+- Phase 29's sequential structure (z=6.14) against the merged Latin+Italian reference — different methodology, smaller reference corpus
+- Phase 38's content-content bigram z=14.37 against merged reference — different test, not affected
+- 49 individual signal words appear more often in real text than null corpora (some with very high σ)
+- f57v's 4× formulaic repetition at regular 14-token intervals — a genuine structural feature
+- The assignment table's 43.6% full-corpus dict-hit (vs ~30% null) — the table produces real words at above-chance rates
+- 14 concatenated pairs forming known words (bene, cora, cola, dise, dose, rosa, etc.)
+- Cross-folio decoding consistency (100%)
+
+**The deeper lesson:** The 29,207-word Venetian extended set is so large — built by applying 12 sound-change rules to Latin, Italian, and medieval variants — that random decoded text matches it at ~31%. The 5.5 percentage point real-vs-null gap (36.45% vs 30.95%) is too small to distinguish Venetian from the broader Romance family. The genuine signal in the decoded text (z=6.14 against Latin, z=14.37 against merged L+I) shows it contains real Romance-language words at above-chance sequential rates, but this signal is not specifically Venetian. The language could be Latin, Italian, Venetian, or another Romance variety — Phase 41 cannot discriminate.
+
+### Progression
+
+| Phase | Dict | Signal | Bigram z | Advance |
+|-------|------|--------|----------|---------|
+| 29 | 131K | 16.5% | 6.14 | Bigram discovery |
+| 36 | 10K | 18.5% | 12.66 | 10K pipeline |
+| 37 | merged 19K | — | 16.97 | Italian macaronic signal |
+| 38 | merged 19K (full) | 24.6% | 14.37 | Full macaronic pipeline |
+| 39 | calibrated 1.1K | 32.3% | 19.89 | Venetian confirmed (4.58×) |
+| 40 | Venetian 29K | 33.6% | 319.76 (bug) | Folio reading; formulaic structure |
+| **41** | **Venetian 29K** | **17.2%** | **−0.47 (validated)** | **Venetian refuted; lexicon complete; f57v 68% coverage** |
+
+- Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=43.6% → Phase 28=43.6% → Phase 29: z=6.14 → Phase 30: 2 words → Phase 34: Track G z=13.12 → Phase 35: NO_INTERACTION → Phase 36: z=12.66 → Phase 37: merged z=16.97, macaronic=YES, CC=0 → Phase 38: SIGNAL_EXPANDED (z=14.37, CC=31) → Phase 39: VENETIAN_SIGNAL_FOUND (amplified z=19.89, Venetian 4.58×) → Phase 40: MAINTAINED (Venetian bigram z=319.76 [bug], folio reading 47.8% coverage) → **Phase 41: VENETIAN_REFUTED (validated z=−0.47, lexicon 73/73, f57v 68% coverage, 0 table changes)**.
+
 ## Background
 
 This project is a fresh start after a prior approach (consonant-skeleton-to-Latin-dictionary matching) proved unproductive. Three pieces of infrastructure were carried over:

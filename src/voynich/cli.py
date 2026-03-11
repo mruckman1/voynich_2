@@ -3881,6 +3881,133 @@ def cmd_phase40():
     cmd_phase40_integrate()
 
 
+# ---------------------------------------------------------------------------
+# Phase 41: Venetian Validation, Lexicon Completion, f57v Reading, Botanical Fix
+# ---------------------------------------------------------------------------
+
+# Track A
+def cmd_null_ven():
+    from voynich.phases.null_venetian_decode import run_null_venetian_decode
+    run_null_venetian_decode()
+
+def cmd_ven_valid():
+    from voynich.phases.venetian_validated import run_venetian_validated
+    run_venetian_validated()
+
+def cmd_ven_sig():
+    from voynich.phases.venetian_signal_proper import run_venetian_signal_proper
+    run_venetian_signal_proper()
+
+def cmd_ven_confirm():
+    from voynich.phases.venetian_confirmed import run_venetian_confirmed
+    run_venetian_confirmed()
+
+# Track B
+def cmd_ungloss_analyze():
+    from voynich.phases.unglossed_analysis import run_unglossed_analysis
+    run_unglossed_analysis()
+
+def cmd_ven_dict():
+    from voynich.phases.venetian_dict_search import run_venetian_dict_search
+    run_venetian_dict_search()
+
+def cmd_context_disamb():
+    from voynich.phases.context_disambiguation import run_context_disambiguation
+    run_context_disambiguation()
+
+def cmd_full_lex():
+    from voynich.phases.complete_lexicon import run_complete_lexicon
+    run_complete_lexicon()
+
+# Track C
+def cmd_formula_seg():
+    from voynich.phases.formula_segmentation import run_formula_segmentation
+    run_formula_segmentation()
+
+def cmd_inter_formula():
+    from voynich.phases.inter_formula_tokens import run_inter_formula_tokens
+    run_inter_formula_tokens()
+
+def cmd_ingred_search():
+    from voynich.phases.ingredient_search import run_ingredient_search
+    run_ingredient_search()
+
+def cmd_f57v_complete():
+    from voynich.phases.f57v_complete_reading import run_f57v_complete_reading
+    run_f57v_complete_reading()
+
+# Track D
+def cmd_bot_fix():
+    from voynich.phases.botanical_data_fix import run_botanical_data_fix
+    run_botanical_data_fix()
+
+def cmd_drosera_prop():
+    from voynich.phases.drosera_propagation import run_drosera_propagation
+    run_drosera_propagation()
+
+def cmd_bot_pred_v2():
+    from voynich.phases.botanical_predictions_v2 import run_botanical_predictions_v2
+    run_botanical_predictions_v2()
+
+# Integration
+def cmd_phase41_integrate():
+    from voynich.phases.phase41_integrate import run_phase41_integrate
+    run_phase41_integrate()
+
+def cmd_phase41():
+    """Run full Phase 41 pipeline: Venetian Validation, Lexicon, f57v, Botanical."""
+    print("=" * 70)
+    print("PHASE 41: Venetian Validation, Lexicon Completion, and Inter-Formula Content Recovery")
+    print("=" * 70)
+    # Track A: Venetian Null Validation
+    print("\n" + "=" * 70)
+    print("TRACK A: Venetian Null Validation")
+    print("=" * 70)
+    cmd_null_ven()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ven_valid()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ven_sig()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ven_confirm()
+    # Track B: Lexicon Completion
+    print("\n" + "=" * 70)
+    print("TRACK B: Lexicon Completion")
+    print("=" * 70)
+    cmd_ungloss_analyze()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ven_dict()
+    print("\n" + "=" * 70 + "\n")
+    cmd_context_disamb()
+    print("\n" + "=" * 70 + "\n")
+    cmd_full_lex()
+    # Track C: f57v Inter-Formula Content
+    print("\n" + "=" * 70)
+    print("TRACK C: f57v Inter-Formula Content Recovery")
+    print("=" * 70)
+    cmd_formula_seg()
+    print("\n" + "=" * 70 + "\n")
+    cmd_inter_formula()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ingred_search()
+    print("\n" + "=" * 70 + "\n")
+    cmd_f57v_complete()
+    # Track D: Botanical Pipeline Fix
+    print("\n" + "=" * 70)
+    print("TRACK D: Botanical Pipeline Fix")
+    print("=" * 70)
+    cmd_bot_fix()
+    print("\n" + "=" * 70 + "\n")
+    cmd_drosera_prop()
+    print("\n" + "=" * 70 + "\n")
+    cmd_bot_pred_v2()
+    # Integration
+    print("\n" + "=" * 70)
+    print("INTEGRATION")
+    print("=" * 70)
+    cmd_phase41_integrate()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -4356,6 +4483,29 @@ def main():
         # Integration
         'phase40-integrate': cmd_phase40_integrate,
         'phase40': cmd_phase40,
+        # Phase 41: Venetian Validation, Lexicon Completion, f57v Reading, Botanical Fix
+        # Track A
+        'null-ven': cmd_null_ven,
+        'ven-valid': cmd_ven_valid,
+        'ven-sig': cmd_ven_sig,
+        'ven-confirm': cmd_ven_confirm,
+        # Track B
+        'ungloss-analyze': cmd_ungloss_analyze,
+        'ven-dict': cmd_ven_dict,
+        'context-disamb': cmd_context_disamb,
+        'full-lex': cmd_full_lex,
+        # Track C
+        'formula-seg': cmd_formula_seg,
+        'inter-formula': cmd_inter_formula,
+        'ingred-search': cmd_ingred_search,
+        'f57v-complete': cmd_f57v_complete,
+        # Track D
+        'bot-fix': cmd_bot_fix,
+        'drosera-prop': cmd_drosera_prop,
+        'bot-pred-v2': cmd_bot_pred_v2,
+        # Integration
+        'phase41-integrate': cmd_phase41_integrate,
+        'phase41': cmd_phase41,
     }
 
     if len(sys.argv) < 2:
