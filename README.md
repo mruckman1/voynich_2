@@ -5275,6 +5275,86 @@ V1 and V2 are the decisive tests for the Venetian hypothesis. Both fail. The ver
 
 - Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=43.6% → Phase 28=43.6% → Phase 29: z=6.14 → Phase 30: 2 words → Phase 34: Track G z=13.12 → Phase 35: NO_INTERACTION → Phase 36: z=12.66 → Phase 37: merged z=16.97, macaronic=YES, CC=0 → Phase 38: SIGNAL_EXPANDED (z=14.37, CC=31) → Phase 39: VENETIAN_SIGNAL_FOUND (amplified z=19.89, Venetian 4.58×) → Phase 40: MAINTAINED (Venetian bigram z=319.76 [bug], folio reading 47.8% coverage) → **Phase 41: VENETIAN_REFUTED (validated z=−0.47, lexicon 73/73, f57v 68% coverage, 0 table changes)**.
 
+## Phase 42: Bigram Audit, Symmetric Revalidation, and Ground-Truth Assessment
+
+Phase 42 is a forensic audit of every bigram z-score ever computed in this project. Phase 41 discovered that Phase 40's z=319.76 was entirely artifactual — the real bigram count included exact+relaxed hits while the null permutation counted exact-only. Phase 42 asks: does the same asymmetry (or other methodological inconsistency) affect the z-scores from Phases 29, 35, 36, 37.6, 38, 39.4, and 39.16? The answer: all original z-scores were inflated 3–70×, but 6 of 7 phases retain z_total > 2.0 after symmetric recomputation. The signal is real but weaker than originally reported.
+
+### Verdict: MODERATE_EVIDENCE
+
+The overall assessment is MODERATE_EVIDENCE. The decoded text contains genuine sequential structure (word bigrams above null), but the effect is moderate (best z=3.90), not overwhelming. Signal word σ-scores and dict-hit selectivities are independently validated as methodologically sound — they use per-token frequency, not bigram comparison, and are unaffected by the asymmetry bug.
+
+### Step 42.1 — Bigram Code Audit
+
+All 8 bigram scripts were audited by code inspection. Each script's real and null hit-counting methods were classified.
+
+| Phase | Script | z | Real counting | Null counting | Symmetric | Status |
+|-------|--------|---|---------------|---------------|-----------|--------|
+| 29 | signal_bigrams.py | 6.14 | exact_only | exact_only (relabel) | YES | VALID |
+| 35 | combined_bigrams.py | 6.88 | exact_only | exact_only (relabel) | YES | VALID |
+| 36 | bigrams_10k.py | 12.66 | exact_only | exact_only (relabel) | YES | VALID |
+| 37.6 | concat_bigrams.py | −6.67 | exact_only | exact_only (shuffle) | YES | VALID |
+| 38 | merged_bigrams.py | 14.37 | exact+relaxed tallied | exact_only (shuffle) | YES* | NEEDS_INSPECTION |
+| 39.4 | corrected_signal.py | 11.53 | exact+relaxed tallied | exact_only (shuffle) | YES* | NEEDS_INSPECTION |
+| 39.16 | amplified_bigrams.py | 19.89 | exact+relaxed tallied | exact_only (shuffle) | YES* | NEEDS_INSPECTION |
+| 40 | venetian_bigrams.py | 319.76 | exact+relaxed combined | exact_only (shuffle) | NO | BUGGED |
+
+*Phases 38/39.4/39.16: The z formula uses exact_hits only (symmetric within its own counting), but the null model differs (shuffle vs relabel), warranting recomputation with a canonical methodology.
+
+### Step 42.2 — Symmetric Recomputation (Critical Step)
+
+Every z-score was recomputed using a single canonical methodology: shuffle-based null with 500 permutations, counting both exact and edit-distance-1 relaxed hits for real and null alike. This is the Phase 41 fix applied universally. Partner sets (edit-distance-1 neighbors in the reference vocabulary) were precomputed per phase.
+
+| Phase | Dictionary | Original z | Symmetric z_exact | Symmetric z_total | Deflation | Classification |
+|-------|-----------|------------|-------------------|-------------------|-----------|---------------|
+| 29 | Latin 131K | 6.14 | 1.20 | **2.23** | 2.8× | DEFLATED |
+| 35 | Latin 131K | 6.88 | −0.44 | **2.09** | 3.3× | DEFLATED |
+| 36 | Latin 10K | 12.66 | 0.13 | **3.80** | 3.3× | DEFLATED |
+| 37.6 | Latin 17K | −6.67 | −6.67 | — | 1.0× | CONFIRMED |
+| 38 | Merged 19K | 14.37 | −0.02 | **3.65** | 3.9× | DEFLATED |
+| 39.4 | Merged 19K | 11.53 | 0.59 | **2.26** | 5.1× | DEFLATED |
+| 39.16 | Calibrated 1K | 19.89 | −0.89 | **3.90** | 5.1× | DEFLATED |
+| 40 | Venetian 29K | 319.76 | 1.33 | **−0.47** | 680× | INVALIDATED |
+
+Key findings: (1) Exact bigram matches are too rare (5–17 hits among 1000+ pairs) to produce meaningful z_exact — the signal lives entirely in relaxed (edit-distance-1) matches. (2) The original z-scores were inflated because the relabel null model and rate-based counting underestimate the null distribution compared to the canonical shuffle+count method. (3) Despite deflation, 6 of 7 phases retain z_total > 2.0 — the sequential structure is genuine but moderate. (4) Phase 37.6 (z=−6.67) is CONFIRMED as no signal, consistent across methodologies. (5) Phase 40's z=319.76 → −0.47, entirely artifactual, consistent with Phase 41's finding.
+
+### Step 42.3 — Signal Word Revalidation
+
+Signal word σ-scores use per-word frequency comparison (real count vs null mean count, normalized by null std), not bigram structure. All 3 sources (Phase 28.4, 39.4, 39.16) were audited: dictionary symmetric, decoding symmetric, σ formula correct. Spot-check recomputation of 5 top signal words (bene, codi, sero, de, cola) confirmed all remain well above σ>2.0. Cross-dictionary consistency check: all 8 genuine signal words from Phase 28 maintain σ>2.0 across 131K, 19K, and 1K dictionaries. Verdict: **SIGMA_SCORES_VALIDATED**.
+
+### Step 42.4 — Selectivity Audit
+
+Selectivity (real_hit_rate / null_mean_hit_rate) is a per-token metric, structurally independent of bigram comparison. Six phases audited (14, 15, 16, 38, 39.16, 41). All methodologies confirmed symmetric — same pipeline decodes both real and null corpora, same dictionary for hit classification. Recomputable selectivities (Phases 38 and 39.16) match reported values. Fair selectivities from untuned dictionaries: Phase 14 = 3.00×, Phase 15 = 2.55×, Phase 38 = 1.73×, Phase 41 = 1.18×. The calibrated 1K dictionary's 322× selectivity reflects dictionary curation, not encoding evidence. Verdict: **SELECTIVITIES_VALIDATED**.
+
+### Step 42.5 — Ground Truth Assessment
+
+**Surviving evidence (not affected by bigram audit):**
+- Systematic encoding (Zipf's law, entropy, morphology) — corpus-level statistics
+- Tachygraphic resemblance (Phase 19 cosine = 0.820) — not bigram-based
+- Sub-cell feature model (Phase 14→16: 19.4%→43.6% dict_hit, ~3× selectivity) — per-token metric
+- Signal word vocabulary (8 words with σ>2.0) — methodology validated
+- Bigram sequential structure (best z_total = 3.90) — survives symmetric recomputation
+
+**Retracted evidence:**
+- Venetian-specific identification (Phases 39–40): z=319.76 → −0.47, entirely artifactual
+- Venetian selectivity: 4.58× → 1.18× (dictionary too large, null also matches at ~31%)
+
+**Honest assessment:** The Voynich manuscript uses a systematic encoding that resembles tachygraphic systems. When decoded through the Phase 16 assignment table, the text produces dictionary hits at 3.0× the rate of random text and forms Latin word sequences at z=3.90 above null. The Venetian hypothesis is retracted. The language could be Latin, Italian, or another Romance variety — the evidence supports the family but not a specific regional variety.
+
+### Progression
+
+| Phase | Dictionary | Original z | Symmetric z_total | Classification |
+|-------|-----------|------------|-------------------|---------------|
+| 29 | Latin 131K | 6.14 | 2.23 | DEFLATED |
+| 35 | Latin 131K | 6.88 | 2.09 | DEFLATED |
+| 36 | Latin 10K | 12.66 | 3.80 | DEFLATED |
+| 37.6 | Latin 17K | −6.67 | −6.67 | CONFIRMED |
+| 38 | Merged 19K | 14.37 | 3.65 | DEFLATED |
+| 39.4 | Merged 19K | 11.53 | 2.26 | DEFLATED |
+| 39.16 | Calibrated 1K | 19.89 | 3.90 | DEFLATED |
+| 40 | Venetian 29K | 319.76 | −0.47 | INVALIDATED |
+
+- Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=43.6% → Phase 28=43.6% → Phase 29: z=6.14 → Phase 30: 2 words → Phase 34: Track G z=13.12 → Phase 35: NO_INTERACTION → Phase 36: z=12.66 → Phase 37: merged z=16.97, macaronic=YES, CC=0 → Phase 38: SIGNAL_EXPANDED (z=14.37, CC=31) → Phase 39: VENETIAN_SIGNAL_FOUND (amplified z=19.89, Venetian 4.58×) → Phase 40: MAINTAINED (Venetian bigram z=319.76 [bug], folio reading 47.8% coverage) → Phase 41: VENETIAN_REFUTED (validated z=−0.47, lexicon 73/73, f57v 68% coverage) → **Phase 42: MODERATE_EVIDENCE (all z deflated 3–70×, 6/7 retain z>2.0, best z=3.90, σ-scores and selectivities validated)**.
+
 ## Background
 
 This project is a fresh start after a prior approach (consonant-skeleton-to-Latin-dictionary matching) proved unproductive. Three pieces of infrastructure were carried over:

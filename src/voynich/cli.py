@@ -4008,6 +4008,44 @@ def cmd_phase41():
     cmd_phase41_integrate()
 
 
+# ── Phase 42: Bigram Audit, Symmetric Revalidation, Ground-Truth ──
+
+def cmd_bigram_audit():
+    from voynich.phases.bigram_code_audit import run_bigram_code_audit
+    run_bigram_code_audit()
+
+def cmd_sym_recompute():
+    from voynich.phases.symmetric_recompute import run_symmetric_recompute
+    run_symmetric_recompute()
+
+def cmd_sig_reval():
+    from voynich.phases.signal_word_revalidate import run_signal_word_revalidate
+    run_signal_word_revalidate()
+
+def cmd_sel_audit():
+    from voynich.phases.selectivity_audit import run_selectivity_audit
+    run_selectivity_audit()
+
+def cmd_ground_truth():
+    from voynich.phases.ground_truth import run_ground_truth
+    run_ground_truth()
+
+def cmd_phase42():
+    """Run full Phase 42 pipeline: Bigram Audit and Ground Truth."""
+    print("=" * 70)
+    print("PHASE 42: Bigram Audit, Symmetric Revalidation, Ground-Truth")
+    print("=" * 70)
+    cmd_bigram_audit()
+    print("\n" + "=" * 70 + "\n")
+    cmd_sym_recompute()
+    print("\n" + "=" * 70 + "\n")
+    cmd_sig_reval()
+    print("\n" + "=" * 70 + "\n")
+    cmd_sel_audit()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ground_truth()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -4506,6 +4544,13 @@ def main():
         # Integration
         'phase41-integrate': cmd_phase41_integrate,
         'phase41': cmd_phase41,
+        # Phase 42: Bigram Audit, Symmetric Revalidation, Ground-Truth
+        'bigram-audit': cmd_bigram_audit,
+        'sym-recompute': cmd_sym_recompute,
+        'sig-reval': cmd_sig_reval,
+        'sel-audit': cmd_sel_audit,
+        'ground-truth': cmd_ground_truth,
+        'phase42': cmd_phase42,
     }
 
     if len(sys.argv) < 2:
