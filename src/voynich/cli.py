@@ -3690,6 +3690,197 @@ def cmd_phase39():
     cmd_phase39_integrate()
 
 
+# ---------------------------------------------------------------------------
+# Phase 40: Venetian Reading, CVC Expansion, Folio Decipherment
+# ---------------------------------------------------------------------------
+
+# Track A
+def cmd_ven_forms():
+    """Run Step 40.1: Venetian Phonological Form Inventory."""
+    from voynich.phases.venetian_forms import run_venetian_forms
+    t0 = time.time()
+    run_venetian_forms()
+    print(f"\nStep 40.1 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ven_match():
+    """Run Step 40.2: Venetian Form Matching."""
+    from voynich.phases.venetian_match import run_venetian_match
+    t0 = time.time()
+    run_venetian_match()
+    print(f"\nStep 40.2 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_ven_bigram():
+    """Run Step 40.3: Venetian Reference Bigrams."""
+    from voynich.phases.venetian_bigrams import run_venetian_bigrams
+    t0 = time.time()
+    run_venetian_bigrams()
+    print(f"\nStep 40.3 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_cc_reclass():
+    """Run Step 40.4: CC Bigram Reclassification."""
+    from voynich.phases.cc_reclassify import run_cc_reclassify
+    t0 = time.time()
+    run_cc_reclassify()
+    print(f"\nStep 40.4 completed in {time.time() - t0:.1f}s")
+
+
+# Track B
+def cmd_cvc_inv():
+    """Run Step 40.5: CVC/CCV Syllable Inventory."""
+    from voynich.phases.cvc_inventory import run_cvc_inventory
+    t0 = time.time()
+    run_cvc_inventory()
+    print(f"\nStep 40.5 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_cvc_csp():
+    """Run Step 40.6: CVC-Expanded CSP."""
+    from voynich.phases.cvc_csp import run_cvc_csp
+    t0 = time.time()
+    run_cvc_csp()
+    print(f"\nStep 40.6 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_cvc_signal():
+    """Run Step 40.7: CVC Signal Isolation."""
+    from voynich.phases.cvc_signal import run_cvc_signal
+    t0 = time.time()
+    run_cvc_signal()
+    print(f"\nStep 40.7 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_cvc_bigram():
+    """Run Step 40.8: CVC Bigram Test."""
+    from voynich.phases.cvc_bigrams import run_cvc_bigrams
+    t0 = time.time()
+    run_cvc_bigrams()
+    print(f"\nStep 40.8 completed in {time.time() - t0:.1f}s")
+
+
+# Track C
+def cmd_syl_lex():
+    """Run Step 40.9: Signal Word Syllable Lexicon."""
+    from voynich.phases.syllable_lexicon import run_syllable_lexicon
+    t0 = time.time()
+    run_syllable_lexicon()
+    print(f"\nStep 40.9 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_folio_recon():
+    """Run Step 40.10: Folio Text Reconstruction."""
+    from voynich.phases.folio_reconstruction import run_folio_reconstruction
+    t0 = time.time()
+    run_folio_reconstruction()
+    print(f"\nStep 40.10 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_f57v_read():
+    """Run Step 40.11: f57v Dedicated Venetian Reading."""
+    from voynich.phases.f57v_reading import run_f57v_reading
+    t0 = time.time()
+    run_f57v_reading()
+    print(f"\nStep 40.11 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_best_read():
+    """Run Step 40.12: Best Non-f57v Folio Reading."""
+    from voynich.phases.best_folio_reading import run_best_folio_reading
+    t0 = time.time()
+    run_best_folio_reading()
+    print(f"\nStep 40.12 completed in {time.time() - t0:.1f}s")
+
+
+# Track D
+def cmd_drosera_con():
+    """Run Step 40.13: Drosera Constraint Extraction."""
+    from voynich.phases.drosera_constraints import run_drosera_constraints
+    t0 = time.time()
+    run_drosera_constraints()
+    print(f"\nStep 40.13 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_bot_pred():
+    """Run Step 40.14: Predicted Form Generation."""
+    from voynich.phases.botanical_predictions import run_botanical_predictions
+    t0 = time.time()
+    run_botanical_predictions()
+    print(f"\nStep 40.14 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_bot_search():
+    """Run Step 40.15: Predicted Form Search."""
+    from voynich.phases.botanical_search import run_botanical_search
+    t0 = time.time()
+    run_botanical_search()
+    print(f"\nStep 40.15 completed in {time.time() - t0:.1f}s")
+
+
+# Integration
+def cmd_phase40_integrate():
+    """Run Step 40.16: Phase 40 Integration."""
+    from voynich.phases.phase40_integrate import run_phase40_integrate
+    t0 = time.time()
+    run_phase40_integrate()
+    print(f"\nStep 40.16 completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase40():
+    """Run full Phase 40 pipeline: Venetian Reading, CVC Expansion, Folio Decipherment."""
+    print("=" * 70)
+    print("PHASE 40: Venetian Reading, CVC Expansion, and Folio-Level Decipherment")
+    print("=" * 70)
+    # Track A: Venetian Correctness
+    print("\n" + "=" * 70)
+    print("TRACK A: Venetian Correctness Hypothesis")
+    print("=" * 70)
+    cmd_ven_forms()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ven_match()
+    print("\n" + "=" * 70 + "\n")
+    cmd_ven_bigram()
+    print("\n" + "=" * 70 + "\n")
+    cmd_cc_reclass()
+    # Track B: CVC Expansion
+    print("\n" + "=" * 70)
+    print("TRACK B: CVC/CCV Syllable Expansion")
+    print("=" * 70)
+    cmd_cvc_inv()
+    print("\n" + "=" * 70 + "\n")
+    cmd_cvc_csp()
+    print("\n" + "=" * 70 + "\n")
+    cmd_cvc_signal()
+    print("\n" + "=" * 70 + "\n")
+    cmd_cvc_bigram()
+    # Track C: Folio Reading
+    print("\n" + "=" * 70)
+    print("TRACK C: Folio-Level Venetian Reading")
+    print("=" * 70)
+    cmd_syl_lex()
+    print("\n" + "=" * 70 + "\n")
+    cmd_folio_recon()
+    print("\n" + "=" * 70 + "\n")
+    cmd_f57v_read()
+    print("\n" + "=" * 70 + "\n")
+    cmd_best_read()
+    # Track D: Botanical Prediction
+    print("\n" + "=" * 70)
+    print("TRACK D: Botanical Prediction from Drosera")
+    print("=" * 70)
+    cmd_drosera_con()
+    print("\n" + "=" * 70 + "\n")
+    cmd_bot_pred()
+    print("\n" + "=" * 70 + "\n")
+    cmd_bot_search()
+    # Integration
+    print("\n" + "=" * 70)
+    print("INTEGRATION")
+    print("=" * 70)
+    cmd_phase40_integrate()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -4142,6 +4333,29 @@ def main():
         # Integration
         'phase39-integrate': cmd_phase39_integrate,
         'phase39': cmd_phase39,
+        # Phase 40: Venetian Reading, CVC Expansion, Folio Decipherment
+        # Track A
+        'ven-forms': cmd_ven_forms,
+        'ven-match': cmd_ven_match,
+        'ven-bigram': cmd_ven_bigram,
+        'cc-reclass': cmd_cc_reclass,
+        # Track B
+        'cvc-inv': cmd_cvc_inv,
+        'cvc-csp': cmd_cvc_csp,
+        'cvc-signal': cmd_cvc_signal,
+        'cvc-bigram': cmd_cvc_bigram,
+        # Track C
+        'syl-lex': cmd_syl_lex,
+        'folio-recon': cmd_folio_recon,
+        'f57v-read': cmd_f57v_read,
+        'best-read': cmd_best_read,
+        # Track D
+        'drosera-con': cmd_drosera_con,
+        'bot-pred': cmd_bot_pred,
+        'bot-search': cmd_bot_search,
+        # Integration
+        'phase40-integrate': cmd_phase40_integrate,
+        'phase40': cmd_phase40,
     }
 
     if len(sys.argv) < 2:

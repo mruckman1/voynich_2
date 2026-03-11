@@ -1628,6 +1628,49 @@ ROMANCE_PHONOLOGICAL_PROCESSES: Dict[str, Dict[str, Dict]] = {
                 'naturality': 'high', 'description': '/v/→/b/ merger (Latin betacism, Occitan/Spanish)'}},
 }
 
+
+# ---------------------------------------------------------------------------
+# Venetian Sound Changes  (Phase 40)
+# ---------------------------------------------------------------------------
+# Attested sound changes from Latin/standard Italian to 15th-century Venetian.
+# Each rule: (regex_pattern, replacement, rule_name).
+# Applied independently (single-rule) to avoid combinatorial explosion.
+
+VENETIAN_SOUND_CHANGES: List[Tuple[str, str, str]] = [
+    (r'(.)\1', r'\1', 'degemination'),                       # ll→l, ss→s, tt→t
+    (r'(?<=[aeiou])ct', 't', 'ct_simplification'),           # nocte→note
+    (r'x', 's', 'x_simplification'),                         # radix→radise
+    (r'(?<=[aeiou])ti(?=[aeou])', 'ci', 'ti_affrication'),   # ratio→racion
+    (r'm$', '', 'final_m_loss'),                              # aquam→aqua
+    (r't$', '', 'final_t_loss'),                              # facit→faci
+    (r's$', '', 'final_s_loss'),                              # minus→minu
+    (r'(?<=[aeiou])d(?=[aeiou])', '', 'intervocalic_d_loss'), # crudo→cruo
+    (r'^cl', 'chi', 'cl_palatalization'),                     # claretto→chiareto
+    (r'^pl', 'pi', 'pl_palatalization'),                      # platea→piaza
+    (r'uo', 'o', 'uo_monophthongization'),                    # cuore→cora
+    (r'ie', 'e', 'ie_monophthongization'),                    # fiere→fere
+]
+
+
+def apply_venetian_sound_changes(word: str) -> Dict[str, List[str]]:
+    """Apply Venetian sound changes to a word.
+
+    Returns dict mapping variant_form -> [rule_names_applied].
+    Only single-rule applications to avoid combinatorial explosion,
+    following the same pattern as generate_medieval_variants().
+    """
+    variants: Dict[str, List[str]] = {}
+
+    for pattern, replacement, rule_name in VENETIAN_SOUND_CHANGES:
+        result = re.sub(pattern, replacement, word, count=1)
+        if result != word and len(result) >= 2:
+            if result not in variants:
+                variants[result] = []
+            variants[result].append(rule_name)
+
+    return variants
+
+
 # Medieval Latin spelling variants for dictionary expansion (Step 13.6)
 MEDIEVAL_LATIN_VARIANTS: Dict[str, str] = {
     'ae': 'e',    # Classical ae → medieval e
