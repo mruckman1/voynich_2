@@ -5353,7 +5353,74 @@ Selectivity (real_hit_rate / null_mean_hit_rate) is a per-token metric, structur
 | 39.16 | Calibrated 1K | 19.89 | 3.90 | DEFLATED |
 | 40 | Venetian 29K | 319.76 | −0.47 | INVALIDATED |
 
-- Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=43.6% → Phase 28=43.6% → Phase 29: z=6.14 → Phase 30: 2 words → Phase 34: Track G z=13.12 → Phase 35: NO_INTERACTION → Phase 36: z=12.66 → Phase 37: merged z=16.97, macaronic=YES, CC=0 → Phase 38: SIGNAL_EXPANDED (z=14.37, CC=31) → Phase 39: VENETIAN_SIGNAL_FOUND (amplified z=19.89, Venetian 4.58×) → Phase 40: MAINTAINED (Venetian bigram z=319.76 [bug], folio reading 47.8% coverage) → Phase 41: VENETIAN_REFUTED (validated z=−0.47, lexicon 73/73, f57v 68% coverage) → **Phase 42: MODERATE_EVIDENCE (all z deflated 3–70×, 6/7 retain z>2.0, best z=3.90, σ-scores and selectivities validated)**.
+- Progression: Phase 11=11.1% → Phase 14=19.4% → Phase 15=35.4% → Phase 16=43.6% → Phase 28=43.6% → Phase 29: z=6.14 → Phase 30: 2 words → Phase 34: Track G z=13.12 → Phase 35: NO_INTERACTION → Phase 36: z=12.66 → Phase 37: merged z=16.97, macaronic=YES, CC=0 → Phase 38: SIGNAL_EXPANDED (z=14.37, CC=31) → Phase 39: VENETIAN_SIGNAL_FOUND (amplified z=19.89, Venetian 4.58×) → Phase 40: MAINTAINED (Venetian bigram z=319.76 [bug], folio reading 47.8% coverage) → Phase 41: VENETIAN_REFUTED (validated z=−0.47, lexicon 73/73, f57v 68% coverage) → Phase 42: MODERATE_EVIDENCE (all z deflated 3–70×, 6/7 retain z>2.0, best z=3.90, σ-scores and selectivities validated) → **Phase 43: LATERAL (structural probing positive, inversion and HMM regressed, Phase 16 table confirmed as local optimum)**.
+
+## Phase 43: Re-Encoding Inversion, Structural Probing, and Conditional Decoding
+
+Phase 43 attacks the decoding problem from three orthogonal directions: (1) invert the encoding by searching for tables whose encoded plaintext matches the Voynich fingerprint, (2) use confirmed signal words as structural probes to map manuscript content, (3) train a context-dependent HMM with signal word anchoring. Two approaches regressed; one produced novel structural insight. The Phase 16 table (43.6% dict-hit) is confirmed as a robust local optimum.
+
+### Verdict: LATERAL
+
+Concordance: 1/3 approaches positive (MINORITY_POSITIVE). Structural probing reveals genuine manuscript organization but neither re-encoding inversion nor HMM decoding improves upon the Phase 16 baseline.
+
+### Approach 1: Re-Encoding Inversion (Steps 43.1–43.5) — REGRESSION
+
+**Step 43.1 — Voynich Fingerprint**: Built a 212-dimensional statistical fingerprint of the EVA transcription (44 unique chars, 125,929 total chars, 36,238 tokens). Key statistics: H0=4.64, H1=3.86, H2=2.36; Zipf alpha=0.833 (r²=0.894); mean token length=3.48; type-token ratio=0.256; hapax rate=72.5%. Cross-section char-freq correlation: mean 0.86 (range 0.69–0.94). Reduced to 16 key dimensions for the encoding search.
+
+**Step 43.2 — Tachygraphic Encoder**: Constructed a parameterized encoder from the Phase 15 assignment (21 syllable→triple mappings across 25 triples, 15 modifier chars). Encoded Latin (H1=4.17, mean_len=4.44) and Italian (H1=4.30, mean_len=3.78). Round-trip recovery: 0% — the encoding is many-to-one (multiple syllables map to the same triple), making perfect inversion impossible. Voynich H1=3.82 is lower than both encoded languages.
+
+**Step 43.3 — Encoding Search** (4,325s): Simulated annealing (100K iterations × 5 restarts per language). Italian won (cost=6.87) over Latin (cost=7.08). Selectivity sigma=10.24 vs 20 random tables — the search finds real structure. However, only 4/16 dimensions well-matched (all character frequencies); H1, H2, token length, TTR all poorly matched. **GATE: PASS** on selectivity but poor dimensional matching.
+
+**Step 43.4 — Inversion Decode**: Inverted the Italian encoding table (400 syllable→triple mappings). 24/25 triples had collision (multiple syllables mapping to same triple). Frequency-based resolution: 0/25 triples agree with Phase 15 (1 consonant-only match). Dict-hit: 20.6% with 1.18× selectivity (null mean=17.5%). **GATE: FAIL** (below 1.5× threshold).
+
+**Step 43.5 — Inversion Validation**: Symmetric null testing confirmed failure. Real dict-hit=18.8% vs Phase 15=39.1% (Δ=−20.2%). Null corpora all at 18.8% — zero selectivity. Bigram z=−0.07. 0/8 bedrock words preserved. 1/5 validations passed. **Verdict: REGRESSION.**
+
+### Approach 4: Signal Word Structural Probing (Steps 43.6–43.9) — STRUCTURAL_SIGNAL
+
+**Step 43.6 — Signal Word Positions**: Mapped 1,320 occurrences of 6 active bedrock words across 211 folios (sero and raro had 0 occurrences in the current pipeline). `codi` dominates (521 across 185 folios); `cola` is rarest (75 across 50 folios). Mean inter-signal distance: 21.7 tokens. All 6 active words are non-uniformly distributed (chi² p < 0.005). Herbal_a contains 44.7% of all signal word occurrences despite having 26% of tokens.
+
+| Word | Occurrences | Folios | Mean position | Section concentration |
+|------|-------------|--------|---------------|----------------------|
+| codi | 521 | 185 | 0.494 | herbal_a 2.1× |
+| sene | 258 | 129 | 0.488 | herbal_a 1.8× |
+| de | 169 | 83 | 0.560 | pharmaceutical 1.6× |
+| bene | 156 | 83 | 0.490 | herbal_b 1.8× |
+| dine | 141 | 81 | 0.523 | herbal_b 1.6× |
+| cola | 75 | 50 | 0.514 | herbal_a 2.4× |
+
+**Step 43.7 — Positional Profiles**: Classified signal words by structural role using 6 features (uniformity CV, line-initial rate, section entropy, inter-occurrence regularity, position bias, frequency rank). Result: 2 function words (codi=CONNECTIVE, de=CONNECTIVE) and 6 content words (bene/sene/dine/cola=QUALITY, sero/raro=INGREDIENT). Agreement with expected classifications: 2/8 (25%) — the classifier lacks discrimination, particularly for `cola` (expected PREPARATION_VERB but classified QUALITY due to sparsity).
+
+**Step 43.8 — Co-occurrence Structure**: 8×8 co-occurrence matrix (window=5, 509 total pairs). Strongest PMI associations: codi–cola (4.59, 45% adjacent), de–cola (3.88, 69% adjacent), bene–de (3.88, 59% adjacent), sero–de (3.71, 78% adjacent). Folio clustering (k=4, silhouette=0.29): Cluster 0 = de-dominant/descriptive (50 folios), Cluster 1 = codi-dominant/formulaic (30 folios, entirely herbal_a), Cluster 2 = low-signal bulk (138 folios), Cluster 3 = sero outlier (1 folio). 42 recurring signal bigram patterns; top: de→codi (75 folios), codi→de (74), codi→codi (68). Section profiles: `cola` elevated 2.4× in herbal_a, depressed in biological (0.2×); `raro` elevated in zodiac (3.9×) and unknown (3.5×).
+
+**Step 43.9 — Structural Reading**: Classified 226 folios by type: DESCRIPTION (64), UNKNOWN (100), RECIPE_COLLECTION (14), FORMULAIC (12), SPARSE (36). Estimated 34 recipes across 14 folios (mean 2.43 per recipe-folio). Organization hypothesis testing:
+
+| Hypothesis | Spearman rho | p-value | Significant |
+|------------|-------------|---------|-------------|
+| Seasonal/section-boundary | −0.679 | 0.039 | Yes |
+| Body-part (strongest: raro) | +0.521 | <0.001 | Yes |
+| Alphabetical | +0.155 | 0.021 | No |
+
+Signal density declines systematically: herbal_a (7.6%) → pharmaceutical (5.0%) → biological (4.3%) → stars (2.9%). `codi` concentrates early (rho=−0.50), `raro` increases later (rho=+0.52). Structural coherence: 0.6504 (typed_fraction=0.40, pattern_regularity=0.99, organization_signal=0.68, type_concentration=0.17). Best folio for close reading: f11r (17.0% signal rate). **Verdict: STRUCTURAL_SIGNAL.**
+
+### Approach 5: Context-Dependent HMM Decoding (Steps 43.10–43.14) — REGRESSION
+
+**Step 43.10 — HMM Architecture**: K=100 hidden states (21 confirmed + 75 CV + 4 CVC), V=44 EVA chars. 14,500 parameters, data-to-parameter ratio=8.68. A initialized from Latin syllable bigrams, B from Phase 15 (0.7 for assigned, 0.3 spread within family), pi from reference initial frequencies (top: et=7.3%, in=5.5%, e=4.9%).
+
+**Step 43.11 — Anchor Initialization**: Hard-clamped 2,471 character positions (2.0% of corpus) from 1,320 signal word tokens. 7 anchored states (be, co, de, di, la, ne, se). 100% consistency — no EVA character maps to conflicting states.
+
+**Step 43.12 — Baum-Welch Training** (453s): 3 restarts × 50 iterations. Best LL=−281,208 (from −471,212 initial, 40% improvement). Learned emissions are highly specialized: co→ch (74.3%), de→k (99.8%), di→y (65.7%)/d (34.3%). B sparsity=0.91, A sparsity=0.87.
+
+**Step 43.13 — Viterbi Decode**: Dict-hit: 11.2% (4,047/36,238) vs Phase 15's 39.1%. Agreement with Phase 15: 0%. HMM found 1,456 new hits but lost 11,570 Phase 15 hits. Best folio: f57v (64.6%).
+
+**Step 43.14 — HMM Signal Isolation**: Critical failure: all 5 null corpora produce identical 11.2% dict-hit (null generated by token shuffling, but HMM decodes each token independently via character-level Viterbi, so word order is irrelevant). Bigram z=0.00. 0/8 bedrock words preserved. Overlap with Phase 36 signal: 21.2%. 2/5 validations passed. **Verdict: REGRESSION.**
+
+### Key Findings
+
+1. **Phase 16 table confirmed as local optimum**: Two independent attempts to find better decodings (inversion search, HMM) both regressed substantially. The table is not an artifact.
+2. **Encoding is many-to-one**: Multiple syllables map to the same EVA triple, making clean inversion fundamentally underdetermined. Any future decoding approach must handle this ambiguity.
+3. **Manuscript has genuine structural organization**: Signal words are non-uniformly distributed (seasonal rho=−0.68, p=0.039). `codi` dominates early folios, `cola` clusters in herbal_a recipe folios. 14 folios contain recipe-like structure with ~34 estimated recipes.
+4. **Character-level HMM is insufficient**: Context-dependence at the character level within tokens doesn't capture word-level structure. The HMM collapsed to degenerate near-deterministic emissions (de→k at 99.8%).
+5. **Italian slightly outperformed Latin** in encoding search (cost 6.87 vs 7.08), but both failed to produce usable inverted tables.
 
 ## Background
 

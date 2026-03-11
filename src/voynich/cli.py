@@ -4046,6 +4046,117 @@ def cmd_phase42():
     cmd_ground_truth()
 
 
+# Phase 43: Re-Encoding Inversion, Structural Probing, Conditional Decoding
+
+def cmd_vm_finger():
+    from voynich.phases.voynich_fingerprint import run_voynich_fingerprint
+    run_voynich_fingerprint()
+
+def cmd_tachy_enc():
+    from voynich.phases.tachygraphic_encoder import run_tachygraphic_encoder
+    run_tachygraphic_encoder()
+
+def cmd_enc_search():
+    from voynich.phases.encoding_search import run_encoding_search
+    run_encoding_search()
+
+def cmd_inv_decode():
+    from voynich.phases.inversion_decode import run_inversion_decode
+    run_inversion_decode()
+
+def cmd_inv_validate():
+    from voynich.phases.inversion_validate import run_inversion_validate
+    run_inversion_validate()
+
+def cmd_sig_pos():
+    from voynich.phases.signal_positions import run_signal_positions
+    run_signal_positions()
+
+def cmd_pos_profiles():
+    from voynich.phases.positional_profiles import run_positional_profiles
+    run_positional_profiles()
+
+def cmd_cooccur():
+    from voynich.phases.cooccurrence_structure import run_cooccurrence_structure
+    run_cooccurrence_structure()
+
+def cmd_struct_read():
+    from voynich.phases.structural_reading import run_structural_reading
+    run_structural_reading()
+
+def cmd_hmm_arch():
+    from voynich.phases.hmm_architecture import run_hmm_architecture
+    run_hmm_architecture()
+
+def cmd_anchor_init():
+    from voynich.phases.anchor_initialization import run_anchor_initialization
+    run_anchor_initialization()
+
+def cmd_bw_train():
+    from voynich.phases.baum_welch_training import run_baum_welch_training
+    run_baum_welch_training()
+
+def cmd_hmm_decode():
+    from voynich.phases.viterbi_decode import run_viterbi_decode
+    run_viterbi_decode()
+
+def cmd_hmm_signal():
+    from voynich.phases.hmm_signal import run_hmm_signal
+    run_hmm_signal()
+
+def cmd_phase43_integrate():
+    from voynich.phases.phase43_integrate import run_phase43_integrate
+    run_phase43_integrate()
+
+def cmd_phase43():
+    """Run full Phase 43 pipeline."""
+    print("=" * 70)
+    print("PHASE 43: Re-Encoding Inversion, Structural Probing, Conditional Decoding")
+    print("=" * 70)
+    # Approach 1: Re-Encoding Inversion
+    print("\n" + "=" * 70)
+    print("APPROACH 1: Re-Encoding Inversion")
+    print("=" * 70)
+    cmd_vm_finger()
+    print("\n" + "=" * 70 + "\n")
+    cmd_tachy_enc()
+    print("\n" + "=" * 70 + "\n")
+    cmd_enc_search()
+    print("\n" + "=" * 70 + "\n")
+    cmd_inv_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_inv_validate()
+    # Approach 4: Signal Word Structural Probing
+    print("\n" + "=" * 70)
+    print("APPROACH 4: Signal Word Structural Probing")
+    print("=" * 70)
+    cmd_sig_pos()
+    print("\n" + "=" * 70 + "\n")
+    cmd_pos_profiles()
+    print("\n" + "=" * 70 + "\n")
+    cmd_cooccur()
+    print("\n" + "=" * 70 + "\n")
+    cmd_struct_read()
+    # Approach 5: Context-Dependent HMM Decoding
+    print("\n" + "=" * 70)
+    print("APPROACH 5: Context-Dependent HMM Decoding")
+    print("=" * 70)
+    cmd_hmm_arch()
+    print("\n" + "=" * 70 + "\n")
+    cmd_anchor_init()
+    print("\n" + "=" * 70 + "\n")
+    cmd_bw_train()
+    print("\n" + "=" * 70 + "\n")
+    cmd_hmm_decode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_hmm_signal()
+    # Integration
+    print("\n" + "=" * 70)
+    print("INTEGRATION")
+    print("=" * 70)
+    cmd_phase43_integrate()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -4551,6 +4662,27 @@ def main():
         'sel-audit': cmd_sel_audit,
         'ground-truth': cmd_ground_truth,
         'phase42': cmd_phase42,
+        # Phase 43: Re-Encoding Inversion, Structural Probing, Conditional Decoding
+        # Approach 1
+        'vm-finger': cmd_vm_finger,
+        'tachy-enc': cmd_tachy_enc,
+        'enc-search': cmd_enc_search,
+        'inv-decode': cmd_inv_decode,
+        'inv-validate': cmd_inv_validate,
+        # Approach 4
+        'sig-pos': cmd_sig_pos,
+        'pos-profiles': cmd_pos_profiles,
+        'cooccur': cmd_cooccur,
+        'struct-read': cmd_struct_read,
+        # Approach 5
+        'hmm-arch': cmd_hmm_arch,
+        'anchor-init': cmd_anchor_init,
+        'bw-train': cmd_bw_train,
+        'hmm-decode': cmd_hmm_decode,
+        'hmm-signal': cmd_hmm_signal,
+        # Integration
+        'phase43-integrate': cmd_phase43_integrate,
+        'phase43': cmd_phase43,
     }
 
     if len(sys.argv) < 2:
