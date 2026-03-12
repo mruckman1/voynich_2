@@ -5497,6 +5497,132 @@ Validations: 6/8 passed. Gate: **PASS**.
 4. **The bottleneck is the scoring function, not the search**: CSA at 56K eval/s with 200K iterations thoroughly samples the landscape. MaxSAT formally enumerates all near-optimal solutions. Both confirm the same conclusion — many assignments score similarly. A stronger language model (beyond unigram dict-hit + bigram reference) would be needed to discriminate the correct assignment.
 5. **Energy and dict-hit are anti-correlated at convergence**: CSA drives energy from 0.41 to −84.13 while dict-hit stays flat at ~49–54% (subsample). The bigram and signal components dominate the energy at low temperature, pulling assignments away from dict-hit-optimal configurations.
 
+## Phase 45: SBM Community Forensics and Distributional Re-encoding
+
+Phase 44 discovered 6 SBM communities from EVA character co-occurrence (split-half ARI=0.83, highly stable) that are completely orthogonal to stroke-feature triples (ARI=0.002). Phase 45 investigates what those communities represent (Track A), whether they improve decoding (Track B), and consolidates the triple assignment table into confidence tiers (Track C).
+
+### Verdict: FREQUENCY_ARTIFACT
+
+The 6 SBM communities are **frequency tiers** — epiphenomenal groupings of characters by usage frequency. Community 0 contains 28/44 EVA characters covering 98.5% of corpus tokens. Spearman correlation between character frequency rank and community assignment is 0.82. Community structure adds zero phonological signal beyond what stroke-feature triples already capture. Hybrid decode improvement: +0.03% (negligible). Validations: 4/8 PASS. Gate: **FAIL**.
+
+### Track A: SBM Community Forensics (Steps 45A.1–45A.7)
+
+**Step 45A.1 — Distributional Profiles** (0.6s): Profiled all 6 communities. Community 0 dominates with 28 members, 124,080 occurrences, 98.5% corpus coverage, Gini=0.415. Communities 1, 3, 5 are pairs of rare characters (b/j, iiin/x, u/z) with near-zero coverage (0.02%, 0.07%, 0.01%). Community 2 has 7 moderate-frequency characters (c, f, g, h, etc., 1.1% coverage). Community 4 has 3 characters (cph, q, v, 0.3% coverage). Frequency-rank vs community Spearman=0.8219. Community 0 dominance ratio: 8.75× (its membership is 8.75× the next largest community).
+
+**Step 45A.2 — Positional Analysis** (0.3s): Chi²=636.5, p=6.15×10⁻¹²⁶. Statistically significant but misleading — driven by Community 0 appearing in every position. Community 4 is the most specialized: 70.6% initial, 0% final (contains q-initial compound characters cph, q, v). Community 1 (b, j): 62.1% final. Communities 3, 5: majority final (55.2%, 55.6%).
+
+**Step 45A.3 — Morphological Roles** (0.0s): Gallows (k, t, p, f) → communities 0 and 2. All prefix chars (d, o, s, y, qo, qok, qot) → community 0. All suffix chars (or, dy, ar, ey, aiin, ol, al, y) → community 0. Chi²=14.35, p=0.50 — **no significant morphological concentration**. Communities do not separate morphological roles.
+
+**Step 45A.4 — Modifier Alignment** (0.0s): Of 15 Phase 16 modifier characters, 10 are in Community 0 (proportional to its 28/44 membership share). Chi²=9.53, p=0.48. Gate passed (modifiers not concentrated in ≤2 communities), but this is trivially true since Community 0 absorbs everything.
+
+**Step 45A.5 — Transition Matrix** (0.3s): Within-token bigram transitions are 97.2% Community 0→0 (self-transition). Chi²=115.5, p=1.36×10⁻¹³. The non-trivial transitions: Community 2→2 (3.5× expected), Community 4→2 (3.1× expected), Community 4→4 (8.6× expected). These reflect real co-occurrence patterns among rare characters but involve so few tokens as to be practically negligible.
+
+**Step 45A.6 — Factorization Hypothesis** (0.2s): Tested 5 labeling hypotheses via Adjusted Rand Index:
+
+| Labeling | ARI |
+|----------|-----|
+| frequency_tier | 0.2484 |
+| modifier_class | 0.0622 |
+| vowel | 0.0443 |
+| onset_consonant | 0.0343 |
+| positional | 0.0249 |
+
+Frequency tier wins decisively (4–10× above all others) but falls below the 0.3 gate. Best C×V bipartition consistency: 0.4773 (near chance). **No consonant/vowel split**.
+
+**Step 45A.7 — Signal Word Decomposition** (0.6s): 7/8 signal words (bene, sero, sene, de, raro, dine, cola) decompose entirely into Community 0 characters — trivially homogeneous. Only "codi" involves Community 4 (via 'q'/'cph'). Gate passed (≥6/8 consistent) but uninformative.
+
+### Track B: SBM-Based Re-encoding and Decoding (Steps 45B.1–45B.5)
+
+**Step 45B.1 — Community Encoding Table** (0.1s): Mapped each community to a syllable domain seeded from confirmed triples. Community 0: 28 chars, 12 confirmed triples, domain size 71. Community 1: 2 chars, 0 confirmed, domain 80. Community 2: 7 chars, 3 confirmed, domain 41. Mean domain size: 55.
+
+**Step 45B.2 — Community CSP** (103.6s): Greedy + random sampling (1,000 trials) + coordinate descent over 6 community variables (one syllable per community, all tokens in that community decode to it). Best dict-hit: **27.72%** (selectivity 2.09×, null=13.2%). Far below stroke-triple model's 43.6%. Coarsening 25 triples into 6 communities loses too much discriminative power — Community 0 maps one syllable to 98.5% of tokens.
+
+**Step 45B.3 — Signal Isolation on Community Decode** (0.9s): Community-based decode: 27.72% dict-hit, selectivity 1.44×. Per-community signal rates: Community 0 = 27.6%, Communities 2–4 = 98–100% (rare chars decode to short strings that trivially match dictionary). Lower selectivity than stroke-triple signal (2.55×).
+
+**Step 45B.4 — Hybrid Stroke+Community Decode** (5.3s): Tested whether community-based soft constraints on the 13 free stroke-triples improve decoding:
+
+| Variant | Dict-Hit | Triples Changed | Description |
+|---------|----------|-----------------|-------------|
+| HYBRID_NONE (baseline) | 43.63% | 0 | Phase 15 table unchanged |
+| HYBRID_C (same-onset) | 43.66% | 2 | vertical,ascender,minim: do→co; open_curve,open_curve,bench: ha→ca |
+| HYBRID_V (same-vowel) | 43.63% | 1 | open_curve,open_curve,bench: ha→ho |
+
+HYBRID_C improves by +0.03% — **negligible**. Community membership provides no additional phonological constraint beyond stroke features.
+
+**Step 45B.5 — Exhaustive Community Landscape** (11.7s): Enumerated all 262,144 possible community assignments (top 8 candidates × 6 communities). Optimized by grouping 36,238 tokens into 176 unique community-ID sequences (204× speedup).
+
+| Metric | Community Landscape | Stroke-Triple Landscape (Phase 44) |
+|--------|--------------------|------------------------------------|
+| Total combos | 262,144 | 500+ (capped) |
+| Best dict-hit | 27.72% | 41.76% |
+| Near-optimal (≥99%) | 12,424 (4.7%) | 100+ |
+| Shape | **FLAT** | **FLAT** |
+
+Both landscapes are equally flat. Community granularity does not improve constraint discrimination.
+
+### Track C: Triple Confidence Consolidation (Steps 45C.1–45C.4)
+
+**Step 45C.1 — Three-Tier Confidence Partition** (0.1s): Classified all 25 stroke-feature triples into confidence tiers using convergent evidence from Phase 28 crib extraction, Phase 30 bootstrap, Phase 44 MaxSAT landscape, CSA search, and SBM predictions:
+
+| Tier | Count | Criteria |
+|------|-------|----------|
+| CONFIRMED | 12 | Cross-source validated (crib + bootstrap + CSA agree) |
+| LANDSCAPE_CONFIRMED | 10 | MaxSAT consensus ≥60% across 100 random solutions |
+| GENUINELY_AMBIGUOUS | 3 | No clear consensus (<60% top candidate) |
+
+The 12 CONFIRMED triples: di, ne, co, di, be, se, ni, ra, se, mi, ro, de. The 10 LANDSCAPE_CONFIRMED include 8 with 100% MaxSAT consensus (ne, gu, da, ga, be, mo, a, fa) and 2 with 61–67% consensus (la, vo). The 3 GENUINELY_AMBIGUOUS: open_curve,hook,rare (top="hi" at 24%), open_curve,open_curve,bench ("he" 53% vs "ha" 47%), sigmoid,hook,rare ("sa" 50%).
+
+**Step 45C.2 — Ambiguous Triple Dossiers** (1.5s): For each of the 3 genuinely ambiguous triples, compiled MaxSAT/CSA/SBM candidates and measured dict-hit deltas by swapping. **All deltas <0.05%** — these triples cover only 164 tokens (0.45% of corpus). No signal words use any ambiguous triple.
+
+| Triple | Tokens | Current | Best Alt | Dict-Hit Δ |
+|--------|--------|---------|----------|-----------|
+| open_curve,hook,rare | 15 | hi | si | +0.006% |
+| open_curve,open_curve,bench | 140 | ha | he | +0.017% |
+| sigmoid,hook,rare | 9 | fe | i | +0.003% |
+
+**Step 45C.3 — Canonical Table Assembly** (0.9s): Assembled definitive 25-triple table. Locked Tier 1 at crib-validated values, Tier 2 at MaxSAT consensus values, Tier 3 retained Phase 15 defaults. This produced 6 changes from Phase 15:
+
+| Triple | Phase 15 | Canonical | MaxSAT Consensus |
+|--------|----------|-----------|------------------|
+| ascender,loop,compound | to | gu | 100% |
+| ascender,crossbar,gallows | te | da | 100% |
+| vertical,descender,suffix | du | mo | 100% |
+| loop,tail,bench | la | a | 100% |
+| vertical,ascender,minim | do | la | 61% |
+| connector,connector,bench | ba | vo | 67% |
+
+Canonical dict-hit: **41.76%** vs Phase 15 baseline 43.63% (Δ=−1.87%). The MaxSAT-optimal assignments improve constraint-space consistency but slightly hurt dictionary matching — the expanded dictionary has local optima misaligned with the global constraint landscape. Phase 15/16 beam-search-optimized table remains the best-performing assignment.
+
+**Step 45C.4 — Impact Analysis: Ambiguity Budget** (1.3s): Swapped all 3 ambiguous triples between their best and worst candidates. Total dict-hit range: **0.04%** (41.72%–41.77%). Gate: **LOW_LEVERAGE**. Token coverage of ambiguous triples: 0.13%. Signal word vulnerability: 0. The 3 ambiguous triples are effectively inert — resolving them cannot meaningfully change decoding performance.
+
+### Cross-Track Integration
+
+**Verdict decision**: best labeling is `frequency_tier`, hybrid decode does not improve → **FREQUENCY_ARTIFACT**.
+
+**Validation Battery**:
+
+| Validation | Result |
+|------------|--------|
+| V1 All 6 communities profiled | PASS |
+| V2 Positional chi² p < 0.01 (6.15×10⁻¹²⁶) | PASS |
+| V3 Best labeling ARI > 0.3 (0.2484) | FAIL |
+| V4 ≥6/8 signal words consistent pattern | FAIL |
+| V5 Hybrid selectivity > 1.5× (1.05×) | FAIL |
+| V6 Community landscape differs from stroke (both FLAT) | FAIL |
+| V7 Canonical table assembled (25 triples) | PASS |
+| V8 Ambiguity budget computed (0.04%) | PASS |
+
+Validations: 4/8 passed. Gate: **FAIL**.
+
+### Key Findings
+
+1. **Communities are frequency bands, not phonological categories**: Spearman(freq_rank, community)=0.82. Community 0 absorbs 28/44 characters covering 98.5% of tokens. The SBM clustered high-frequency characters together because they co-occur more by sheer count, not shared linguistic properties. ARI with frequency tiers (0.2484) is 4–10× above all other hypotheses (positional: 0.025, onset_consonant: 0.034, vowel: 0.044).
+2. **Community-based decoding is strictly inferior**: 27.7% dict-hit vs 43.6% for stroke-triples. Coarsening 25 variables into 6 community variables loses discriminative power. The community landscape is FLAT with 12,424 near-optimal solutions — no constraint gain.
+3. **Hybrid constraints add nothing**: HYBRID_C changes 2 of 13 free triples for +0.03% dict-hit (within noise). HYBRID_V changes 1 triple for +0.00%. Community membership carries no phonological information that stroke features miss.
+4. **The assignment table is highly stable**: 22/25 triples are locked (12 CONFIRMED + 10 LANDSCAPE_CONFIRMED). The 3 genuinely ambiguous triples cover 0.45% of tokens with a total ambiguity budget of 0.04% — they are inert.
+5. **MaxSAT-consensus and beam-search disagree on 6 triples**: The canonical table (MaxSAT consensus) has 6 different assignments from Phase 15 (beam search) but performs 1.87% worse on dict-hit. This confirms the Phase 44 finding: the scoring function landscape is flat, and different optimization methods find different near-equivalent solutions.
+6. **The SBM distributional structure (Phase 44, ARI=0.83) is real but trivial**: Characters cluster by frequency, not by encoding function. The orthogonality to stroke features (ARI=0.002) simply reflects that visual form and usage frequency are independent properties of EVA characters.
+
 ## Background
 
 This project is a fresh start after a prior approach (consonant-skeleton-to-Latin-dictionary matching) proved unproductive. Three pieces of infrastructure were carried over:

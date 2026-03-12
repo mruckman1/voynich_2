@@ -151,6 +151,29 @@ Usage:
     voynich comb-read         # Step 35.8: combined readability battery
     voynich phase35-verdict   # Step 35.9: Phase 35 verdict
     voynich phase35           # Run full Phase 35 pipeline
+
+    # Phase 45: SBM Community Forensics + Distributional Re-encoding
+    voynich sbm-profile       # Step 45A.1: per-community distributional profiles
+    voynich sbm-position      # Step 45A.2: positional analysis
+    voynich sbm-morpheme      # Step 45A.3: morphological role analysis
+    voynich sbm-modifier      # Step 45A.4: modifier vs syllabic alignment
+    voynich sbm-combinat      # Step 45A.5: community bigram transition matrix
+    voynich sbm-factor        # Step 45A.6: C×V factorization hypothesis test
+    voynich sbm-signal        # Step 45A.7: signal word decomposition by community
+    voynich track-a-45        # Run all Track A steps
+    voynich sbm-encode        # Step 45B.1: community-based encoding table
+    voynich sbm-csp           # Step 45B.2: CSP decode with community variables
+    voynich comm-signal       # Step 45B.3: signal isolation on community decode
+    voynich sbm-hybrid        # Step 45B.4: hybrid stroke+community decode
+    voynich sbm-landscape     # Step 45B.5: MaxSAT landscape at community granularity
+    voynich track-b-45        # Run all Track B steps
+    voynich triple-tiers      # Step 45C.1: three-tier confidence partition
+    voynich triple-ambig      # Step 45C.2: ambiguous triple characterization
+    voynich triple-lock       # Step 45C.3: canonical table assembly
+    voynich triple-impact     # Step 45C.4: impact analysis
+    voynich track-c-45        # Run all Track C steps
+    voynich phase45-integrate # Phase 45 integration verdict
+    voynich phase45           # Run full Phase 45 pipeline
 """
 import sys
 import time
@@ -4313,6 +4336,159 @@ def cmd_phase44():
     cmd_phase44_integrate()
 
 
+# Phase 45: SBM Community Forensics + Distributional Re-encoding
+
+# Track A: SBM Forensics
+def cmd_sbm_profile():
+    from voynich.phases.sbm_forensics import run_sbm_profile
+    t0 = time.time()
+    run_sbm_profile()
+    print(f"\nStep 45A.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_position():
+    from voynich.phases.sbm_forensics import run_sbm_position
+    t0 = time.time()
+    run_sbm_position()
+    print(f"\nStep 45A.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_morpheme():
+    from voynich.phases.sbm_forensics import run_sbm_morpheme
+    t0 = time.time()
+    run_sbm_morpheme()
+    print(f"\nStep 45A.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_modifier_45():
+    from voynich.phases.sbm_forensics import run_sbm_modifier
+    t0 = time.time()
+    run_sbm_modifier()
+    print(f"\nStep 45A.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_combinat():
+    from voynich.phases.sbm_forensics import run_sbm_combinat
+    t0 = time.time()
+    run_sbm_combinat()
+    print(f"\nStep 45A.5 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_factor():
+    from voynich.phases.sbm_forensics import run_sbm_factor
+    t0 = time.time()
+    run_sbm_factor()
+    print(f"\nStep 45A.6 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_signal_45():
+    from voynich.phases.sbm_forensics import run_sbm_signal
+    t0 = time.time()
+    run_sbm_signal()
+    print(f"\nStep 45A.7 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_a_45():
+    from voynich.phases.sbm_forensics import run_track_a_45
+    t0 = time.time()
+    run_track_a_45()
+    print(f"\nTrack A (Phase 45) completed in {time.time() - t0:.1f}s")
+
+# Track B: SBM Decode
+def cmd_sbm_encode():
+    from voynich.phases.sbm_decode import run_sbm_encode
+    t0 = time.time()
+    run_sbm_encode()
+    print(f"\nStep 45B.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_csp():
+    from voynich.phases.sbm_decode import run_sbm_csp
+    t0 = time.time()
+    run_sbm_csp()
+    print(f"\nStep 45B.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_comm_signal():
+    from voynich.phases.sbm_decode import run_comm_signal
+    t0 = time.time()
+    run_comm_signal()
+    print(f"\nStep 45B.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_hybrid():
+    from voynich.phases.sbm_decode import run_sbm_hybrid
+    t0 = time.time()
+    run_sbm_hybrid()
+    print(f"\nStep 45B.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_landscape():
+    from voynich.phases.sbm_decode import run_sbm_landscape
+    t0 = time.time()
+    run_sbm_landscape()
+    print(f"\nStep 45B.5 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_b_45():
+    from voynich.phases.sbm_decode import run_track_b_45
+    t0 = time.time()
+    run_track_b_45()
+    print(f"\nTrack B (Phase 45) completed in {time.time() - t0:.1f}s")
+
+# Track C: Triple Consolidation
+def cmd_triple_tiers():
+    from voynich.phases.triple_consolidation import run_triple_tiers
+    t0 = time.time()
+    run_triple_tiers()
+    print(f"\nStep 45C.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_triple_ambig():
+    from voynich.phases.triple_consolidation import run_triple_ambig
+    t0 = time.time()
+    run_triple_ambig()
+    print(f"\nStep 45C.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_triple_lock():
+    from voynich.phases.triple_consolidation import run_triple_lock
+    t0 = time.time()
+    run_triple_lock()
+    print(f"\nStep 45C.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_triple_impact():
+    from voynich.phases.triple_consolidation import run_triple_impact
+    t0 = time.time()
+    run_triple_impact()
+    print(f"\nStep 45C.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_c_45():
+    from voynich.phases.triple_consolidation import run_track_c_45
+    t0 = time.time()
+    run_track_c_45()
+    print(f"\nTrack C (Phase 45) completed in {time.time() - t0:.1f}s")
+
+# Phase 45 Integration
+def cmd_phase45_integrate():
+    from voynich.phases.phase45_integrate import run_phase45_integrate
+    t0 = time.time()
+    run_phase45_integrate()
+    print(f"\nPhase 45 integration completed in {time.time() - t0:.1f}s")
+
+def cmd_phase45():
+    """Run full Phase 45 pipeline: SBM Forensics, SBM Decode, Triple Consolidation."""
+    print("=" * 70)
+    print("PHASE 45: SBM Community Forensics and Distributional Re-encoding")
+    print("=" * 70)
+    # Track A: SBM Forensics
+    print("\n" + "=" * 70)
+    print("TRACK A: SBM Community Forensics")
+    print("=" * 70)
+    cmd_track_a_45()
+    # Track B: SBM Decode
+    print("\n" + "=" * 70)
+    print("TRACK B: SBM-Based Re-encoding and Decoding")
+    print("=" * 70)
+    cmd_track_b_45()
+    # Track C: Triple Consolidation
+    print("\n" + "=" * 70)
+    print("TRACK C: Triple Confidence Consolidation")
+    print("=" * 70)
+    cmd_track_c_45()
+    # Integration
+    print("\n" + "=" * 70)
+    print("INTEGRATION")
+    print("=" * 70)
+    cmd_phase45_integrate()
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -4862,6 +5038,28 @@ def main():
         # Phase 44 Integration
         'phase44-integrate': cmd_phase44_integrate,
         'phase44': cmd_phase44,
+        # Phase 45: SBM Community Forensics
+        'sbm-profile': cmd_sbm_profile,
+        'sbm-position': cmd_sbm_position,
+        'sbm-morpheme': cmd_sbm_morpheme,
+        'sbm-modifier': cmd_sbm_modifier_45,
+        'sbm-combinat': cmd_sbm_combinat,
+        'sbm-factor': cmd_sbm_factor,
+        'sbm-signal': cmd_sbm_signal_45,
+        'track-a-45': cmd_track_a_45,
+        'sbm-encode': cmd_sbm_encode,
+        'sbm-csp': cmd_sbm_csp,
+        'comm-signal': cmd_comm_signal,
+        'sbm-hybrid': cmd_sbm_hybrid,
+        'sbm-landscape': cmd_sbm_landscape,
+        'track-b-45': cmd_track_b_45,
+        'triple-tiers': cmd_triple_tiers,
+        'triple-ambig': cmd_triple_ambig,
+        'triple-lock': cmd_triple_lock,
+        'triple-impact': cmd_triple_impact,
+        'track-c-45': cmd_track_c_45,
+        'phase45-integrate': cmd_phase45_integrate,
+        'phase45': cmd_phase45,
     }
 
     if len(sys.argv) < 2:
