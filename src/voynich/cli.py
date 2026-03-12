@@ -4489,6 +4489,114 @@ def cmd_phase45():
     cmd_phase45_integrate()
 
 
+# Phase 46: Final Internal Consolidation
+# Track A: Triple Arbitration
+def cmd_arb_tables():
+    from voynich.phases.triple_arbitration import run_arb_tables
+    t0 = time.time()
+    run_arb_tables()
+    print(f"\nTable assembly completed in {time.time() - t0:.1f}s")
+
+def cmd_arb_bigram():
+    from voynich.phases.triple_arbitration import run_arb_bigram
+    t0 = time.time()
+    run_arb_bigram()
+    print(f"\nBigram z computation completed in {time.time() - t0:.1f}s")
+
+def cmd_arb_signal():
+    from voynich.phases.triple_arbitration import run_arb_signal
+    t0 = time.time()
+    run_arb_signal()
+    print(f"\nSignal word survival completed in {time.time() - t0:.1f}s")
+
+def cmd_arb_10k():
+    from voynich.phases.triple_arbitration import run_arb_10k
+    t0 = time.time()
+    run_arb_10k()
+    print(f"\nDict-hit 10K completed in {time.time() - t0:.1f}s")
+
+def cmd_arb_select():
+    from voynich.phases.triple_arbitration import run_arb_select
+    t0 = time.time()
+    run_arb_select()
+    print(f"\nTable selection completed in {time.time() - t0:.1f}s")
+
+def cmd_track_a_46():
+    from voynich.phases.triple_arbitration import run_track_a_46
+    t0 = time.time()
+    run_track_a_46()
+    print(f"\nTrack A (Phase 46) completed in {time.time() - t0:.1f}s")
+
+# Track B: Frequency Structure Diagnostic
+def cmd_freq_reference():
+    from voynich.phases.frequency_diagnostic import run_freq_reference
+    t0 = time.time()
+    run_freq_reference()
+    print(f"\nFrequency reference SBM completed in {time.time() - t0:.1f}s")
+
+def cmd_freq_cipher():
+    from voynich.phases.frequency_diagnostic import run_freq_cipher
+    t0 = time.time()
+    run_freq_cipher()
+    print(f"\nFrequency cipher SBM completed in {time.time() - t0:.1f}s")
+
+def cmd_freq_compare():
+    from voynich.phases.frequency_diagnostic import run_freq_compare
+    t0 = time.time()
+    run_freq_compare()
+    print(f"\nFrequency comparison completed in {time.time() - t0:.1f}s")
+
+def cmd_track_b_46():
+    from voynich.phases.frequency_diagnostic import run_track_b_46
+    t0 = time.time()
+    run_track_b_46()
+    print(f"\nTrack B (Phase 46) completed in {time.time() - t0:.1f}s")
+
+# Track C: Definitive Corpus Decode and Gap Map
+def cmd_final_decode():
+    from voynich.phases.final_decode import run_final_decode
+    t0 = time.time()
+    run_final_decode()
+    print(f"\nFinal decode completed in {time.time() - t0:.1f}s")
+
+def cmd_final_annotate():
+    from voynich.phases.final_decode import run_final_annotate
+    t0 = time.time()
+    run_final_annotate()
+    print(f"\nFinal annotation completed in {time.time() - t0:.1f}s")
+
+def cmd_final_map():
+    from voynich.phases.final_decode import run_final_map
+    t0 = time.time()
+    run_final_map()
+    print(f"\nGap map completed in {time.time() - t0:.1f}s")
+
+def cmd_final_summary():
+    from voynich.phases.final_decode import run_final_summary
+    t0 = time.time()
+    run_final_summary()
+    print(f"\nProject summary completed in {time.time() - t0:.1f}s")
+
+def cmd_track_c_46():
+    from voynich.phases.final_decode import run_track_c_46
+    t0 = time.time()
+    run_track_c_46()
+    print(f"\nTrack C (Phase 46) completed in {time.time() - t0:.1f}s")
+
+# Phase 46 Integration
+def cmd_phase46_integrate():
+    from voynich.phases.phase46_integrate import run_phase46_integrate
+    t0 = time.time()
+    run_phase46_integrate()
+    print(f"\nPhase 46 integration completed in {time.time() - t0:.1f}s")
+
+def cmd_phase46():
+    from voynich.phases.phase46_integrate import run_phase46
+    t0 = time.time()
+    run_phase46()
+    print(f"\nPhase 46 completed in {time.time() - t0:.1f}s")
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -5060,6 +5168,28 @@ def main():
         'track-c-45': cmd_track_c_45,
         'phase45-integrate': cmd_phase45_integrate,
         'phase45': cmd_phase45,
+        # Phase 46: Final Internal Consolidation
+        # Track A: Triple Arbitration
+        'arb-tables': cmd_arb_tables,
+        'arb-bigram': cmd_arb_bigram,
+        'arb-signal': cmd_arb_signal,
+        'arb-10k': cmd_arb_10k,
+        'arb-select': cmd_arb_select,
+        'track-a-46': cmd_track_a_46,
+        # Track B: Frequency Structure Diagnostic
+        'freq-reference': cmd_freq_reference,
+        'freq-cipher': cmd_freq_cipher,
+        'freq-compare': cmd_freq_compare,
+        'track-b-46': cmd_track_b_46,
+        # Track C: Definitive Corpus Decode and Gap Map
+        'final-decode': cmd_final_decode,
+        'final-annotate': cmd_final_annotate,
+        'final-map': cmd_final_map,
+        'final-summary': cmd_final_summary,
+        'track-c-46': cmd_track_c_46,
+        # Phase 46 Integration
+        'phase46-integrate': cmd_phase46_integrate,
+        'phase46': cmd_phase46,
     }
 
     if len(sys.argv) < 2:

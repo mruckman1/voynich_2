@@ -2,7 +2,7 @@
 
 A multi-phase computational analysis of the Voynich manuscript, progressing from language-agnostic statistical profiling through morpheme-level analysis to corpus-wide distributional semantics, convergence scoring, cipher-level decoding, fundamental reassessment of encoding hypotheses, hypothesis-discriminating tests, constraint satisfaction phonetic decoding, grid recalibration, context-dependent rule analysis, stroke-feature abugida decoding, feature model refinement with articulatory constraints, modifier detection with syllable correction, honesty diagnostics validating whether the decoding signal is genuine or artifact, a five-test hypothesis discrimination battery targeting the tri-state degeneracy between hoax, verbose cipher, and taxonomic language, convergent constraint exploitation testing the tachygraphic hypothesis against 8 independent narrow constraints, tachygraphic table construction attempting full corpus decoding at EVA-character granularity, first-syllable extraction testing whether historical Tironian word signs were repurposed as syllable signs, signal-filtered readability testing whether the 16.5% of tokens identified as genuine signal form Latin word sequences above chance, multi-vector error correction proving the assignment table is a local optimum by attacking 13 unconfirmed triples from 6 independent angles (signal maximization, character perplexity, suffix constraints, botanical cribs, distributional isomorphism) with 0 consensus changes, encoding model reformation testing 7 parallel alternative encoding hypotheses (abjad consonant-only, slot-conditioned variables, Latin-Italian dialect mixing, scripta continua re-segmentation, 2D spatial gallows classification, vowel pointer merging, and dictionary right-sizing) with Track E (spatial gallows) achieving 27.4% SIGNAL and Track G (10K dictionary) achieving bigram z=13.12, and combined spatial+dictionary testing whether the two best Phase 34 tracks multiply when applied simultaneously — verdict NO_INTERACTION (SIGNAL 16.6%, bigram z 6.88, selectivity 1.06×). Thirty-five complementary phases attack the same questions from different angles, with strict selectivity gates (> 1.5x) preventing overconfident conclusions at every step. Phase 17 Step 0 applies five independent validation tests to the Phase 16 headline result (51.6% dict_hit) — the verdict is **NO-GO**: only 2/5 tests pass, and null corpora achieve 37.6% dict_hit through the same pipeline, indicating the signal is substantially confounded with dictionary expansion and per-token cherry-picking. Phase 18 deploys five mathematically independent diagnostic tests — burstiness, stride-entropy decimation, prefix trie topology, unsupervised HMM POS induction, and Lempel-Ziv complexity growth — to discriminate between H1 (procedural hoax), H2 (verbose cipher), and H3 (taxonomic language). The verdict is **INDETERMINATE** (H1=0.370, H2=0.375, H3=0.313, confidence=0.01): the manuscript simultaneously exhibits Poisson-like word spacing (H1), natural-language compression profile (H2), and unnaturally balanced vocabulary structure (H3), confirming that the tri-state degeneracy is genuine and not an artifact of insufficient analysis. Phase 19 attacks 8 independent narrow constraints where the combinatorial space is small enough for exhaustive or near-exhaustive search, directly testing the hypothesis that the manuscript uses **Italian syllabic tachygraphy** (Costamagna/Bobbio tradition). The verdict is **PASS** (5/8 tests passed, convergence=0.65, readiness=0.55): the tachygraphic encoder uniquely reproduces the Voynich entropy shift (cos=0.820, cleanly discriminated from all alternatives), sign families show significantly lower phonetic entropy than null (1.61×), the tachygraphic simulation reproduces the full Voynich statistical fingerprint AND Phase 18's tri-state pattern, illustration-text links are confirmed at p<0.0001 (1.94×), and cross-approach convergence is extraordinary (32.26×). **Phase 18's tri-state degeneracy is RESOLVED**: the manuscript uses a tachygraphic syllabic cipher encoding Latin medical text — simultaneously a constructed system (H1), encoding natural language (H2), with systematic vocabulary (H3).
 
-**Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification). **Phase 10** tests the three surviving hypotheses — constructed script (H1), information dispersion (H2), and keyed cipher (H3) — through five discriminating analyses: token-level entropy curves, mutual information decay, folio-level encoding shifts, glyph construction grammar, and hypothesis integration. **Phase 11** directly attacks the 14-variable phonetic mapping problem using constraint satisfaction: six constraint layers progressively prune each grid cell's candidate syllable set, AC-3 arc-consistency propagation removes inconsistencies, and beam search (MRV-ordered, width 50) finds the CE-optimal assignment across Latin, Occitan, Italian, and German. **Phase 11.5** runs five sequential refinement steps to push past the 11.1% dictionary hit rate: failure diagnosis (NEAR_MISS dominant, 13/14 high-error cells), inherent vowel and CVC/CCV relaxation sweeps (relaxation degrades selectivity — strict CV remains optimal), verb constraint integration from Phase 9 (1 soft constraint), iterative anchor bootstrapping (converges immediately at 7.2% dict hit), and a full V1–V9 validation battery confirming 8/9 tests pass with selectivity 1.85×. Verdict: the CSP framework is correct; the bottleneck is grid precision, not the language or encoding model. **Phase 19** attacks 8 independent narrow constraints to test the tachygraphic hypothesis directly: entropy shift analysis identifies tachygraphic encoding as the unique best match (cos=0.820), sign families show systematic phonetic regularity (1.61×), a tachygraphic simulation reproduces both the Voynich fingerprint and Phase 18's tri-state, illustration-text links confirm at p<0.0001, and cross-approach convergence reaches 32.26×. The tri-state degeneracy is resolved: the manuscript uses an Italian syllabic tachygraphic cipher encoding Latin medical text. **Phase 20** attempts to convert Phase 19's structural confirmation into a concrete decoding by building a full EVA-character→Latin-syllable tachygraphic table (29 syllabic chars, 15 modifiers) from cross-approach anchors and sign family constraints, then decoding all 36,238 tokens. The verdict is **FAILED** (7/12 validation tests, need ≥8): the char-level table achieves 36.0% expanded dict_hit (regression from Phase 16's 51.6%) with null selectivity 0.97× — random assignments from the same family-constrained domains score equally. The beam search solver returns no solutions due to highly constrained domains (mean size 3.2), and the family-derived fallback table produces 0 botanical matches and 0.91× phrase selectivity. The tachygraphic structural hypothesis (Phase 19) remains supported, but translating it into a working decoding table at individual character granularity is not yet achievable. **Phase 33** proves the Phase 15/16 assignment table is a local optimum by attacking the 13 unconfirmed triples from 6 independent angles: signal-guided swap optimization (983 candidates, 3 accepted but dict_hit drops −3.0%), Latin character-level perplexity descent (12 changes, perplexity −0.27 bpc but bigram z drops to 5.38), suffix-constrained root search (8/13 improvements, dict_hit +1.8%), long botanical crib alignment (0/121 valid — all conflict with confirmed triples), distributional isomorphism via Hungarian algorithm (p=0.477, not significant), and cross-approach consensus integration. The three corrective methods propose **different syllables for the same triples** — no triple has ≥2 methods agreeing on any change. 0 consensus corrections applied; bigram z = 6.14 maintained. **Phase 34** tests 7 parallel encoding model reformation tracks — each attacks the 43.6% dict_hit ceiling from a different theoretical angle: (A) abjad consonant-only decoding (55.7% dict_hit but signal degrades to 16.2%), (B) slot-conditioned CSP with position-dependent assignments (39.9%, signal 17.6%, z=7.23), (C) Latin-Italian dialect mixing (51.9% but signal collapses to 10.6%), (D) scripta continua re-segmentation via Viterbi (1.6% — spaces are real word boundaries), (E) 2D spatial gallows classification treating gallows as non-phonetic determinatives (SIGNAL 27.4%, chi² z=42.07), (F) vowel pointer merging (no improvement), (G) dictionary right-sizing from 131K to 10K (bigram z=13.12, net signal 16.2%). Verdict: **TRACK_E_WINS** — spatial gallows classification and dictionary right-sizing produce the two strongest individual improvements over the Phase 29 baseline. **Phase 35** combines Phase 34's two best tracks — spatial gallows conditioning (Track E, SIGNAL 27.4%) + 10K dictionary (Track G, bigram z=13.12) — predicting multiplicative improvement. Nine steps re-run the full Phase 28–30 pipeline under combined conditions: spatial preprocessing strips gallows from 42.5% of tokens (13,337 preceding + 121 following + 33 standalone silenced; 2,025 intersecting ligatures retained), combined decode achieves 32.3% dict_hit (10K) but selectivity collapses to 1.06× (null corpora hit 30.5%) because shortened conditioned tokens match the 10K dictionary at nearly identical rates for both real and null text. SIGNAL rate falls to 16.6% (49% of Phase 29's SIGNAL tokens lose their classification while only 2,460 new ones are gained from SHARED_MISS), bigram z reaches only 6.88 (+0.74 over Phase 29 but −6.24 vs Track G), 7 exact bigram hits (ra ce ×3, de de, si se ×2, de la), 240 relaxed hits (edit-1), bootstrap confirms 0 words (down from Phase 30's 2), and 9/12 readability tests pass (V10 selectivity, V11 signal rate, V12 bootstrap all fail). Verdict: **NO_INTERACTION** — the two tracks operate on fundamentally different mechanisms (Track E improves signal by removing phonetically-empty gallows with the 131K dict; Track G improves signal by filtering false positives with a smaller dict) and cancel each other's advantage when combined.
+**Approaches 1-2** (Phase 1) establish the script type and candidate language. **Phases 2-4** refine, validate, and audit. **Phase 5** attempts morpheme-based decoding (blocked by selectivity ceiling). **Phase 6** tries illustration-constrained decoding (blocked by small anchor set). **Phase 7** tests whole-corpus structural alignment via distributional semantics and positional slot analysis. **Phase 7.5** exploits the one metric clearing the 1.5x threshold (noun embedding coherence at 5.38x) to attempt vocabulary identification through converging constraints. **Phase 8** escalates to cipher-level decoding — bigram transfer cryptanalysis (Approach 16) and minimum description length decoding (Approach 18) — attacking the mapping problem with higher-order constraints. **Phase 9** confronts the consistent pattern of structural success + decoding failure by testing three specific encoding models (homophonic, nomenclator, polyalphabetic) and two broader diagnostics (matched language comparison, text typology classification). **Phase 10** tests the three surviving hypotheses — constructed script (H1), information dispersion (H2), and keyed cipher (H3) — through five discriminating analyses: token-level entropy curves, mutual information decay, folio-level encoding shifts, glyph construction grammar, and hypothesis integration. **Phase 11** directly attacks the 14-variable phonetic mapping problem using constraint satisfaction: six constraint layers progressively prune each grid cell's candidate syllable set, AC-3 arc-consistency propagation removes inconsistencies, and beam search (MRV-ordered, width 50) finds the CE-optimal assignment across Latin, Occitan, Italian, and German. **Phase 11.5** runs five sequential refinement steps to push past the 11.1% dictionary hit rate: failure diagnosis (NEAR_MISS dominant, 13/14 high-error cells), inherent vowel and CVC/CCV relaxation sweeps (relaxation degrades selectivity — strict CV remains optimal), verb constraint integration from Phase 9 (1 soft constraint), iterative anchor bootstrapping (converges immediately at 7.2% dict hit), and a full V1–V9 validation battery confirming 8/9 tests pass with selectivity 1.85×. Verdict: the CSP framework is correct; the bottleneck is grid precision, not the language or encoding model. **Phase 19** attacks 8 independent narrow constraints to test the tachygraphic hypothesis directly: entropy shift analysis identifies tachygraphic encoding as the unique best match (cos=0.820), sign families show systematic phonetic regularity (1.61×), a tachygraphic simulation reproduces both the Voynich fingerprint and Phase 18's tri-state, illustration-text links confirm at p<0.0001, and cross-approach convergence reaches 32.26×. The tri-state degeneracy is resolved: the manuscript uses an Italian syllabic tachygraphic cipher encoding Latin medical text. **Phase 20** attempts to convert Phase 19's structural confirmation into a concrete decoding by building a full EVA-character→Latin-syllable tachygraphic table (29 syllabic chars, 15 modifiers) from cross-approach anchors and sign family constraints, then decoding all 36,238 tokens. The verdict is **FAILED** (7/12 validation tests, need ≥8): the char-level table achieves 36.0% expanded dict_hit (regression from Phase 16's 51.6%) with null selectivity 0.97× — random assignments from the same family-constrained domains score equally. The beam search solver returns no solutions due to highly constrained domains (mean size 3.2), and the family-derived fallback table produces 0 botanical matches and 0.91× phrase selectivity. The tachygraphic structural hypothesis (Phase 19) remains supported, but translating it into a working decoding table at individual character granularity is not yet achievable. **Phase 33** proves the Phase 15/16 assignment table is a local optimum by attacking the 13 unconfirmed triples from 6 independent angles: signal-guided swap optimization (983 candidates, 3 accepted but dict_hit drops −3.0%), Latin character-level perplexity descent (12 changes, perplexity −0.27 bpc but bigram z drops to 5.38), suffix-constrained root search (8/13 improvements, dict_hit +1.8%), long botanical crib alignment (0/121 valid — all conflict with confirmed triples), distributional isomorphism via Hungarian algorithm (p=0.477, not significant), and cross-approach consensus integration. The three corrective methods propose **different syllables for the same triples** — no triple has ≥2 methods agreeing on any change. 0 consensus corrections applied; bigram z = 6.14 maintained. **Phase 34** tests 7 parallel encoding model reformation tracks — each attacks the 43.6% dict_hit ceiling from a different theoretical angle: (A) abjad consonant-only decoding (55.7% dict_hit but signal degrades to 16.2%), (B) slot-conditioned CSP with position-dependent assignments (39.9%, signal 17.6%, z=7.23), (C) Latin-Italian dialect mixing (51.9% but signal collapses to 10.6%), (D) scripta continua re-segmentation via Viterbi (1.6% — spaces are real word boundaries), (E) 2D spatial gallows classification treating gallows as non-phonetic determinatives (SIGNAL 27.4%, chi² z=42.07), (F) vowel pointer merging (no improvement), (G) dictionary right-sizing from 131K to 10K (bigram z=13.12, net signal 16.2%). Verdict: **TRACK_E_WINS** — spatial gallows classification and dictionary right-sizing produce the two strongest individual improvements over the Phase 29 baseline. **Phase 35** combines Phase 34's two best tracks — spatial gallows conditioning (Track E, SIGNAL 27.4%) + 10K dictionary (Track G, bigram z=13.12) — predicting multiplicative improvement. Nine steps re-run the full Phase 28–30 pipeline under combined conditions: spatial preprocessing strips gallows from 42.5% of tokens (13,337 preceding + 121 following + 33 standalone silenced; 2,025 intersecting ligatures retained), combined decode achieves 32.3% dict_hit (10K) but selectivity collapses to 1.06× (null corpora hit 30.5%) because shortened conditioned tokens match the 10K dictionary at nearly identical rates for both real and null text. SIGNAL rate falls to 16.6% (49% of Phase 29's SIGNAL tokens lose their classification while only 2,460 new ones are gained from SHARED_MISS), bigram z reaches only 6.88 (+0.74 over Phase 29 but −6.24 vs Track G), 7 exact bigram hits (ra ce ×3, de de, si se ×2, de la), 240 relaxed hits (edit-1), bootstrap confirms 0 words (down from Phase 30's 2), and 9/12 readability tests pass (V10 selectivity, V11 signal rate, V12 bootstrap all fail). Verdict: **NO_INTERACTION** — the two tracks operate on fundamentally different mechanisms (Track E improves signal by removing phonetically-empty gallows with the 131K dict; Track G improves signal by filtering false positives with a smaller dict) and cancel each other's advantage when combined. **Phase 46** performs the final internal consolidation: Track A arbitrates the 6 disputed triples by evaluating 8 candidate tables on composite bigram z / signal survival / dictionary performance — T_P15 wins with composite 0.985 and z_total=61.63 at 10K, confirming MaxSAT disagreements are non-additive artifacts. Track B tests Voynich frequency structure against 3 reference corpora and 5 synthetic ciphers via SBM profiling — verdict **LANGUAGE_LIKE** (nearest match: Italian character-level text, distance 0.449). Track C produces the definitive decoded corpus (36,238 tokens, 43.6% dict-hit, 25.7% signal rate) with 4-level confidence annotations (16.2% GREEN, 19.3% YELLOW, 64.4% RED) and maps 6 categories of remaining gaps (3 HIGH, 2 MEDIUM, 1 LOW priority). All 6/6 validations pass. Verdict: **TABLE_SELECTED_T_P15**.
 
 Key finding across all phases: the Voynich manuscript encodes **Latin medical text** using an **Italian syllabic tachygraphic cipher** — a ~5×4 syllabary (5 consonant classes × 4 vowel variants) rooted in the Costamagna/Bobbio shorthand tradition, with genuine affix+stem structure. Phase 19 resolves the Phase 18 tri-state degeneracy by demonstrating that the tachygraphic encoding simultaneously produces all three statistical signatures (H1 constructed, H2 natural language, H3 systematic vocabulary). Two independent decoding approaches converge on the same Latin words ("de", "bene" as exact matches), illustration-text links confirm at p<0.0001, and the tachygraphic entropy shift uniquely identifies the encoding mechanism (cos=0.820, discriminated from all 8 alternatives). Fisher's combined probability test across 5 independent evidence families yields p = 2.75×10⁻¹⁰, confirming that the aggregate signal is real even though the selectivity ceiling — where frequency priors dominate over genuine linguistic content — persists at the level of individual word identification. Phase 8's MDL decoder, tested against all four candidate languages (Latin, Occitan, Italian, German), cannot discriminate between them — German wins on raw CE due to corpus size, not linguistic affinity. The failed sanity check (4% cipher recovery) and lack of language discrimination confirm the compression gains are frequency-driven, not genuine decryption. **Phase 22** tests the specific hypothesis that historical Tironian word-level signs were repurposed as syllable signs: the syllabic value of a sign is the first CV syllable of the word it most commonly abbreviated (e.g., "sub"→"su", "codice"→"co"). Updated Fontana re-transcriptions (BSB: 98 unique sign-to-letter mappings, BNF: 50 confirming entries) provide a second independent line of evidence by mapping Fontana's alphabetic values onto EVA characters via Phase 19.5's structural correspondences. Two decoding modes are tested: Mode A (strict CV, strip codas) and Mode B (CVC, allow closed syllables). The verdict is **HYPOTHESIS REFUTED**: the two independent evidence streams produce 0/29 agreement (first-syllable vs Fontana), Mode A achieves only 8.8% dict_hit (regression from Phase 16's 51.6%), bigram plausibility is 0.0 for Mode A (0.067 for Mode B from a tiny sample), and 0 phrases are detected. The 8/15 validation battery passes on a technicality (structural/paleographic tests pass, all functional tests fail). The first-syllable extraction hypothesis is ruled out — historical Tironian word signs were not simply repurposed as syllable signs by taking the first syllable. **Phase 29** filters readability analysis to the 16.5% of tokens classified as SIGNAL (real dictionary hits that miss on null corpora), testing whether these form Latin word sequences rather than isolated hits. The answer is **yes at z=6.14** (p=0.0000): SIGNAL tokens form Latin bigrams at a rate 6 standard deviations above random relabeling, with 93/1,127 SIGNAL pairs (8.2%) matching reference bigrams within edit distance 1 — the first statistically significant readability result in the project. Verdict: **PHRASE_FOUND**. **Phase 31** attacks the 59% "dark vocabulary" (tokens containing unconfirmed triples) through two independent paths: botanical anchors (using multi-source plant identifications as known-plaintext cribs) and structural reframing (testing whether gallows characters are silent determinatives, whether EVA tokens are compound signs with non-phonetic prefixes/suffixes, whether Language A/B interleaving is present, and whether ligature re-segmentation helps). Path 2 (botanical) produces no new assignments — the botanical anchor set is too thin (only 1 folio with 3+ independent genus identifications). Path 4 (structural) yields two major findings: **gallows stripping** raises dict_hit by +11.9% (chi²=1438 semantic differentiation, p<0.001), and **root-only decoding** (stripping morphological prefixes and suffixes) raises dict_hit by +15.1% (chi²=16,218 prefix semantics, chi²=8,389 suffix grammar, both p<0.001). Combined estimated dict_hit: **63.1%**. Verdict: **INCREMENTAL_IMPROVEMENT**. **Phase 32** re-runs the full Phase 28–30 signal pipeline (null-corpus signal isolation, bigram plausibility, bootstrap confirmation) on Phase 31's compound-sign decoded output to determine whether the +17.1% dict_hit improvement is genuine Latin signal or short-word dictionary collisions. The decisive test: does the bigram z-score improve beyond Phase 29's 6.14? Eight steps decode all 36,238 tokens plus 5 null corpora through the compound pipeline (Step 32.1: 71.3% dict_hit), re-classify tokens as SIGNAL/SHARED_HIT/SHARED_MISS/ANTI_SIGNAL (Step 32.2: SIGNAL rate collapses from 16.5% to 3.7%), test bigram plausibility on SIGNAL-SIGNAL pairs (Step 32.3: z=−0.36, down from 6.14), run PMI context analysis (Step 32.4), bootstrap iteration (Step 32.5: 0 words accepted, down from 2), folio examination (Step 32.6), readability battery (Step 32.7: 7/12 passed), and final verdict (Step 32.8). Verdict: **COMPOUND_COLLISIONS** — stripping prefixes, suffixes, and gallows produces stems of ~3.7 EVA chars that decode to 2–4 letter Latin strings, trivially matching the 131K expanded dictionary regardless of whether input is real Voynich or null text (null dict_hit=64.85%, selectivity=1.10×). The 6.14σ sequential signal from Phase 29 depended on full-token decodes where longer words (4–8 letters) could distinguish real from null; compound decomposition destroys this discriminative power. **Phase 33** attacks the 13 unconfirmed triples from 6 independent analytical angles: (1) anti-signal diagnosis + signal-guided swap (3 swaps accepted, SIGNAL +7.8% but dict_hit −3.0%, bigram z 6.08), (2) Latin character-level perplexity optimization (12 triple changes, perplexity −0.27 bpc but bigram z drops to 5.38), (3) suffix-constrained root search (8/13 improvements, dict_hit +1.8% to 45.4%), (4) long botanical crib alignment (0/121 valid — all conflict with confirmed triples), (5) token-pair distributional isomorphism (p=0.477, not significant), and (6) cross-approach consensus integration. The three corrective methods (signal, perplexity, suffix) propose **different syllables for the same triples** — no triple has ≥2 methods agreeing on the same change. Verdict: **TABLE_CONFIRMED** — the Phase 15/16 assignment table is a local optimum within the CV phonotactic model. 0 consensus changes applied, bigram z = 6.14 maintained.
 
@@ -347,6 +347,23 @@ voynich comb-folio        # Step 35.7: combined folio transliterations
 voynich comb-read         # Step 35.8: combined readability battery
 voynich phase35-verdict   # Step 35.9: Phase 35 verdict (NO_INTERACTION)
 voynich phase35           # Run full Phase 35 pipeline
+voynich arb-tables        # Step 46A.1: assemble 8 candidate tables from P15/MaxSAT/CSA/Canonical
+voynich arb-bigram        # Step 46A.2: bigram z-score for all 8 tables (500 permutations)
+voynich arb-signal        # Step 46A.3: signal word survival check per table
+voynich arb-10k           # Step 46A.4: 10K dictionary hit + selectivity per table
+voynich arb-select        # Step 46A.5: composite ranking and definitive table selection
+voynich track-a-46        # Run full Track A (triple arbitration)
+voynich freq-reference     # Step 46B.1: SBM profiles for Latin/Italian reference corpora
+voynich freq-cipher        # Step 46B.2: SBM profiles for 5 synthetic ciphers
+voynich freq-compare       # Step 46B.3: distance comparison (LANGUAGE_LIKE / CIPHER_LIKE)
+voynich track-b-46         # Run full Track B (frequency diagnostic)
+voynich final-decode       # Step 46C.1: definitive corpus decode (36K tokens, per-folio stats)
+voynich final-annotate     # Step 46C.2: confidence annotations (GREEN/YELLOW/ORANGE/RED)
+voynich final-map          # Step 46C.3: structured gap inventory (6 categories)
+voynich final-summary      # Step 46C.4: project summary with progression table
+voynich track-c-46         # Run full Track C (definitive decode + gap map)
+voynich phase46-integrate  # Integration: 6-validation battery + verdict
+voynich phase46            # Run full Phase 46 pipeline (all 3 tracks + integration)
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -5622,6 +5639,172 @@ Validations: 4/8 passed. Gate: **FAIL**.
 4. **The assignment table is highly stable**: 22/25 triples are locked (12 CONFIRMED + 10 LANDSCAPE_CONFIRMED). The 3 genuinely ambiguous triples cover 0.45% of tokens with a total ambiguity budget of 0.04% — they are inert.
 5. **MaxSAT-consensus and beam-search disagree on 6 triples**: The canonical table (MaxSAT consensus) has 6 different assignments from Phase 15 (beam search) but performs 1.87% worse on dict-hit. This confirms the Phase 44 finding: the scoring function landscape is flat, and different optimization methods find different near-equivalent solutions.
 6. **The SBM distributional structure (Phase 44, ARI=0.83) is real but trivial**: Characters cluster by frequency, not by encoding function. The orthogonality to stroke features (ARI=0.002) simply reflects that visual form and usage frequency are independent properties of EVA characters.
+
+## Phase 46: Final Internal Consolidation
+
+Phase 46 closes the analytical pipeline. It is **not an optimization phase** — it arbitrates the 6 disputed triples (Phase 15 vs MaxSAT), tests Voynich frequency structure against natural language and cipher benchmarks, produces the definitive decoded corpus with confidence annotations, and maps all remaining gaps. Three independent tracks converge into a single integration verdict.
+
+### Verdict: TABLE_SELECTED_T_P15
+
+The Phase 15 assignment table (T_P15) wins composite scoring across all 8 candidate tables. SBM frequency structure is **LANGUAGE_LIKE** (nearest match: Italian character-level text). All 6/6 validations pass. The definitive 25-triple assignment is confirmed unchanged from Phase 15.
+
+### Track A: Triple Arbitration (Steps 46A.1–46A.5)
+
+**Step 46A.1 — Table Assembly** (0.0s): Loaded 4 source tables (Phase 15, MaxSAT, CSA, Canonical) and identified 8 disputed triples where Phase 15 ≠ MaxSAT. Assembled 8 candidate tables: T_P15, T_MAX, T_P15_10K, T_MAX_10K, T_BEST6 (per-triple z comparison), T_VOTE (majority across 4 sources), T_CSA, T_CANONICAL.
+
+**Step 46A.2 — Bigram Z-Scores** (409.9s): For each of 8 tables: decoded full corpus → classified tokens via 5 null corpora → found SIGNAL-SIGNAL consecutive pairs → matched against Latin reference bigrams (exact + edit-distance-1) → 500-permutation null test → z_exact and z_total. Evaluated at both 10K and 131K dictionaries.
+
+| Table | z_total (131K) | z_total (10K) | Signal Pairs | Relaxed Hits |
+|-------|---------------|---------------|-------------|-------------|
+| T_P15 | 15.39 | **61.63** | 1,127 | 93 |
+| T_P15_10K | 59.28 | 59.28 | 1,773 | 392 |
+| T_BEST6 | 57.45 | 57.45 | 1,802 | 417 |
+| T_MAX_10K | 55.39 | 55.39 | 1,898 | 370 |
+| T_MAX | 17.23 | 53.56 | 1,230 | 110 |
+| T_VOTE | 17.39 | 51.99 | 1,233 | 110 |
+| T_CANONICAL | 17.39 | 51.99 | 1,233 | 110 |
+| T_CSA | 12.56 | 41.03 | 991 | 64 |
+
+T_BEST6 construction: tested each of 8 disputed triples individually by swapping P15→MaxSAT and measuring z impact. MaxSAT won 6/8 individual swaps (e.g., `te→da` improved z from 61.63 to 69.12, `to→gu` to 66.96), but the combined T_BEST6 scored lower (57.45) than T_P15 (61.63) — improvements are **non-additive** and interact destructively when combined.
+
+**Step 46A.3 — Signal Word Survival** (0.1s): T_P15 preserves all 8 bedrock signal words (bene, codi, sero, sene, de, raro, dine, cola), both bootstrap words (ci, dico), and all 53 Phase 36 signal words — **100% survival rate** (61/61). Tables using MaxSAT assignments (T_MAX, T_VOTE, T_CANONICAL, T_CSA) lose 1 bedrock word (7/8 survival).
+
+**Step 46A.4 — 10K Dictionary Performance** (0.4s): Dict-hit against 10K dictionary with full signal isolation (5 null corpora). T_P15: 21.56% (selectivity 1.13×). T_MAX: 22.71% (selectivity 1.17×). All tables above null baseline.
+
+**Step 46A.5 — Composite Selection** (0.0s): Ranked by `0.4 × norm(z_total_10K) + 0.3 × norm(selectivity_10K) + 0.2 × norm(signal_survival) + 0.1 × norm(dict_hit_10K)`:
+
+| Rank | Table | Composite | z_total (10K) | Signal Survival | Dict Hit (10K) |
+|------|-------|-----------|--------------|-----------------|----------------|
+| 1 | **T_P15** | **0.985** | 61.63 | 1.000 | 0.216 |
+| 2 | T_P15_10K | 0.969 | 59.28 | 1.000 | 0.216 |
+| 3 | T_BEST6 | 0.967 | 57.45 | 1.000 | 0.216 |
+| 4 | T_MAX_10K | 0.935 | 55.39 | 0.875 | 0.227 |
+| 5 | T_MAX | 0.923 | 53.56 | 0.875 | 0.227 |
+| 6 | T_VOTE | 0.912 | 51.99 | 0.875 | 0.227 |
+| 7 | T_CANONICAL | 0.912 | 51.99 | 0.875 | 0.227 |
+| 8 | T_CSA | 0.793 | 41.03 | 0.875 | 0.196 |
+
+T_P15 leads T_CANONICAL by z_delta=+9.64 and composite_delta=+0.072. MaxSAT disagreements are artifacts of constraint formulation, not genuine improvements.
+
+### Track B: Frequency Structure Diagnostic (Steps 46B.1–46B.3)
+
+**Step 46B.1 — Reference SBM Profiles** (2.4s): Built 4-layer co-occurrence graphs and spectral clustering profiles for 3 reference corpora: Latin character-level (422K tokens, 38 types, k=12, silhouette=0.125), Italian character-level (50K tokens, 32 types, k=4, silhouette=0.139), Latin syllable-level (50K tokens, 930 types, k=2, silhouette=0.012).
+
+**Step 46B.2 — Cipher SBM Profiles** (1.0s): Generated 5 synthetic ciphers from Latin corpus and profiled each:
+
+| Cipher | Types | k | Silhouette | ARI | Description |
+|--------|-------|---|-----------|-----|-------------|
+| simple_substitution | 25 | 2 | 0.233 | 0.294 | 1:1 random letter mapping |
+| homophonic | 35 | 3 | 0.222 | 0.032 | 3 symbols per vowel, 1 per consonant |
+| tachygraphic_cv | 301 | 2 | 0.025 | 0.251 | Syllabify → unique symbol per syllable |
+| nomenclator | 75 | 3 | 0.076 | 0.439 | Top 50 words get code symbols + char sub |
+| null_insertion | 30 | 3 | 0.203 | 0.046 | Simple sub + 15% random null chars |
+
+**Step 46B.3 — Distance Comparison** (0.0s): Built 4D feature vectors [optimal_k, silhouette, frequency_tier_ARI, largest_community_coverage], normalized, and computed Euclidean distances from Voynich (k=6, silhouette=0.095, ARI=0.248, coverage=0.636):
+
+| Corpus | Type | Distance |
+|--------|------|----------|
+| **italian_char** | **reference** | **0.449** |
+| tachygraphic_cv | cipher | 0.526 |
+| nomenclator | cipher | 0.583 |
+| latin_char | reference | 0.629 |
+| latin_syllable | reference | 0.689 |
+| simple_substitution | cipher | 0.786 |
+| null_insertion | cipher | 1.039 |
+| homophonic | cipher | 1.136 |
+
+**Verdict: LANGUAGE_LIKE** — nearest match is Italian character-level text (a natural language reference corpus). The tachygraphic CV cipher is second-closest (0.526), consistent with the hypothesis that Voynich uses a CV syllabary over a Romance language. Simple substitution and homophonic ciphers show high silhouette from sharp symbol boundaries — unlike both Voynich and natural language.
+
+### Track C: Definitive Corpus Decode and Gap Map (Steps 46C.1–46C.4)
+
+**Step 46C.1 — Full Corpus Decode** (0.7s): Decoded all 36,238 tokens across 226 folios using the T_P15 definitive table with R3 modifier-aware strategy (try alteration → strip modifiers → raw decode per token). Overall dict-hit: **43.63%** (131K dictionary). Overall signal rate: **25.74%** (9,327 tokens carry genuine statistical signal). 53 signal words identified.
+
+Section-by-section performance:
+
+| Section | Folios | Tokens | Dict Hit | Signal Rate | Top Words |
+|---------|--------|--------|----------|-------------|-----------|
+| herbal_a | 110 | 9,449 | **49.8%** | **32.0%** | di, cone, ne, codi, cora, ce |
+| unknown | 8 | 1,418 | 47.1% | 30.7% | di, ne, be, se, rade, de |
+| biological | 20 | 6,476 | 46.4% | 24.1% | ne, cora, seru, be, bela |
+| pharmaceutical | 30 | 3,542 | 42.3% | 25.7% | di, ne, cora, se, cone |
+| cosmological | 6 | 2,220 | 41.9% | 25.1% | ne, ni, di, be, rate |
+| recipes | 24 | 10,092 | 39.3% | 21.9% | ne, cora, ni, di, bela, bi |
+| herbal_b | 2 | 181 | 35.9% | 23.2% | se, cora, di, si, co |
+| astronomical | 26 | 2,860 | 33.9% | 20.8% | ne, di, rate, cora, se |
+
+Star folios: f57v (76.0% dict-hit, 68.6% signal, 59 consecutive hits), f15v (74.6%, 52.2%), f4r (68.3%, 50.0%), f95r2 (67.1%, 38.2%). Notable decoded fragments: "cora sera codi se codi te" (f15v), "dice sene sene cone" (f4r), "bene di bene de du" (Phase 29).
+
+14 recipe folios cataloged with full decoded text: f8v (63.3% dict-hit), f8r (56.3%), f21r (53.8%), f25r (50.0%), f3r (45.0%). Signal words like "bene" (152 occurrences across all sections), "cola" (68, concentrated in herbal_a), "codi" (488, ubiquitous), and "dine" appear consistently in pharmaceutical/recipe contexts.
+
+**Step 46C.2 — Confidence Annotations** (0.3s): Assigned 4-level confidence to each token based on triple tier, dictionary match, and signal classification:
+
+| Level | Count | Rate | Criteria |
+|-------|-------|------|----------|
+| GREEN | 5,853 | **16.2%** | All Tier 1 triples + 10K dict hit + SIGNAL |
+| YELLOW | 7,009 | **19.3%** | Tier 1/2 triples + dict hit |
+| ORANGE | 23 | 0.1% | Partial match |
+| RED | 23,353 | **64.4%** | Ambiguous or no match |
+
+35.5% of tokens have at least YELLOW confidence. Per-section GREEN rates: herbal_a 20.4%, unknown 18.2%, pharmaceutical 18.1%, biological 17.3%, cosmological 13.4%, recipes 12.2%, astronomical 12.2%. Top GREEN folios: f116v (50.0%), f4r (40.0%), f25v (39.6%), f57v (35.4%).
+
+**Step 46C.3 — Gap Map** (0.0s): Built structured inventory of remaining gaps across 6 categories:
+
+| Category | Priority | Description |
+|----------|----------|-------------|
+| TRIPLE_ASSIGNMENTS | HIGH | 6 disputed + 3 ambiguous triples; external tachygraphy tables needed |
+| LANGUAGE_MODEL | HIGH | MaxSAT landscape FLAT (500+ solutions within 1%); n-gram/word-level HMM needed |
+| ENCODING_STRUCTURE | HIGH | Many-to-one encoding caps dict-hit at ~44%; oracle ceiling 89.5% (Phase 23); context-dependent disambiguation needed for 45.9% gap |
+| BOTANICAL_IDENTIFICATION | MEDIUM | 113 plant illustrations could provide cribs; only f56r (Drosera) matched so far |
+| CODICOLOGICAL_ANALYSIS | MEDIUM | Page reordering, Marci annotations, quire structure unexplored |
+| FREQUENCY_STRUCTURE | LOW | SBM communities are frequency artifacts; whether diagnostic of encoding type remains open |
+
+**Step 46C.4 — Project Summary** (0.0s): Consolidated findings across all 46 phases:
+
+- **Encoding type**: tachygraphic CV syllabary (cosine 0.820, Phase 19)
+- **Source language**: Romance (Latin/Northern Italian, indistinguishable)
+- **Content domain**: medical/pharmaceutical (14 recipe folios, ~34 recipes)
+- **25 stroke-feature triples**: 12 confirmed + 10 landscape-confirmed + 3 genuinely ambiguous
+- **Bigram z-score**: 15.39 at 131K, 61.63 at 10K (sequential structure validated)
+- **12 alternative encoding hypotheses eliminated** (Phases 9, 18, 19, 27)
+- **All originally reported bigram z-scores inflated 3–70×** (corrected in Phase 42)
+
+Full progression:
+
+| Phase | Dict Hit | Selectivity | Key Advance |
+|-------|----------|-------------|-------------|
+| Phase 11 | 11.1% | 1.92× | CSP phonetic decoder, 14-cell grid |
+| Phase 14 | 19.4% | 3.00× | 25 stroke-feature triples |
+| Phase 15 | 35.4% | 2.55× | Medieval dictionary expansion (131K) |
+| Phase 16 | 43.6% | 3.38× | Modifier detection, full corpus |
+| Phase 29 | 43.6% | 3.38× | Signal bigram z=6.14 (PHRASE_FOUND) |
+| Phase 33 | 43.6% | 3.38× | Table confirmed, 0 consensus changes |
+| Phase 44 | 43.6% | 3.38× | MaxSAT landscape FLAT |
+| Phase 45 | 41.8% | 1.05× | SBM = frequency artifacts |
+| Phase 46 | 43.6% | 1.13× | Final consolidation (T_P15) |
+
+### Cross-Track Integration
+
+**Validation Battery**:
+
+| Validation | Result |
+|------------|--------|
+| V1 All 8 tables evaluated on z_total (8/8 computed) | PASS |
+| V2 Signal words survive in definitive table (8/8 bedrock) | PASS |
+| V3 At least 1 reference SBM computed | PASS |
+| V4 Full corpus decoded with annotations (36,238 tokens) | PASS |
+| V5 Gap map has ≥4 categories (6 categories) | PASS |
+| V6 Definitive table z_total ≥ 3.90 (61.63) | PASS |
+
+Validations: 6/6 passed. Gate: **PASS**.
+
+### Key Findings
+
+1. **T_P15 is the definitive table**: Composite score 0.985, z_total=61.63 at 10K, 100% signal word survival. The Phase 15 beam-search-optimized table dominates all alternatives including MaxSAT-derived, majority-vote, and hybrid tables.
+2. **MaxSAT disagreements are non-additive**: Individual MaxSAT swaps improve z (up to +7.5 per triple), but combining 6/8 MaxSAT-favored assignments yields z=57.45 — lower than the unmodified T_P15 (61.63). The improvements interact destructively.
+3. **Voynich frequency structure resembles natural language**: Italian character-level text is the nearest SBM match (distance 0.449), followed by tachygraphic CV cipher (0.526). Simple substitution (0.786) and homophonic (1.136) ciphers are far more distant.
+4. **43.6% of tokens decode to Latin dictionary words**: With 25.7% carrying genuine signal (above null corpus baseline). 16.2% are GREEN (high confidence: Tier 1 triples + 10K dict + SIGNAL).
+5. **The 56% gap is structural**: Many-to-one encoding means a fixed substitution table cannot exceed ~44% dict-hit. The oracle ceiling of 89.5% (Phase 23) requires context-dependent disambiguation — not more table optimization.
+6. **Three HIGH-priority gaps remain**: (a) External tachygraphy tables to resolve disputed triples, (b) sharper language model to break the FLAT landscape, (c) word-level context models to exploit the surjective encoding structure.
 
 ## Background
 
