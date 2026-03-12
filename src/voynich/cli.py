@@ -4597,6 +4597,163 @@ def cmd_phase46():
     print(f"\nPhase 46 completed in {time.time() - t0:.1f}s")
 
 
+# Phase 47: Z-Score Audit, Disambiguation, Structural Reading, Sequence
+# Track A: Z-Score Audit
+def cmd_z_reproduce_42():
+    from voynich.phases.zscore_audit import run_z_reproduce_42
+    t0 = time.time()
+    run_z_reproduce_42()
+    print(f"\nStep 47A.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_z_reproduce_46():
+    from voynich.phases.zscore_audit import run_z_reproduce_46
+    t0 = time.time()
+    run_z_reproduce_46()
+    print(f"\nStep 47A.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_z_diff():
+    from voynich.phases.zscore_audit import run_z_diff
+    t0 = time.time()
+    run_z_diff()
+    print(f"\nStep 47A.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_z_canonical():
+    from voynich.phases.zscore_audit import run_z_canonical
+    t0 = time.time()
+    run_z_canonical()
+    print(f"\nStep 47A.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_z_sensitivity():
+    from voynich.phases.zscore_audit import run_z_sensitivity
+    t0 = time.time()
+    run_z_sensitivity()
+    print(f"\nStep 47A.5 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_a_47():
+    from voynich.phases.zscore_audit import run_track_a_47
+    t0 = time.time()
+    run_track_a_47()
+    print(f"\nTrack A (Phase 47) completed in {time.time() - t0:.1f}s")
+
+# Track B: Word-Level Disambiguation
+def cmd_disamb_lattice():
+    from voynich.phases.word_disambiguation import run_disamb_lattice
+    t0 = time.time()
+    run_disamb_lattice()
+    print(f"\nStep 47B.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_disamb_bigram():
+    from voynich.phases.word_disambiguation import run_disamb_bigram
+    t0 = time.time()
+    run_disamb_bigram()
+    print(f"\nStep 47B.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_disamb_viterbi():
+    from voynich.phases.word_disambiguation import run_disamb_viterbi
+    t0 = time.time()
+    run_disamb_viterbi()
+    print(f"\nStep 47B.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_disamb_eval():
+    from voynich.phases.word_disambiguation import run_disamb_eval
+    t0 = time.time()
+    run_disamb_eval()
+    print(f"\nStep 47B.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_disamb_compare():
+    from voynich.phases.word_disambiguation import run_disamb_compare
+    t0 = time.time()
+    run_disamb_compare()
+    print(f"\nStep 47B.5 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_b_47():
+    from voynich.phases.word_disambiguation import run_track_b_47
+    t0 = time.time()
+    run_track_b_47()
+    print(f"\nTrack B (Phase 47) completed in {time.time() - t0:.1f}s")
+
+# Track C: Structural Reading
+def cmd_read_ngrams():
+    from voynich.phases.structural_reading_47 import run_read_ngrams
+    t0 = time.time()
+    run_read_ngrams()
+    print(f"\nStep 47C.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_read_recipes():
+    from voynich.phases.structural_reading_47 import run_read_recipes
+    t0 = time.time()
+    run_read_recipes()
+    print(f"\nStep 47C.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_read_topics():
+    from voynich.phases.structural_reading_47 import run_read_topics
+    t0 = time.time()
+    run_read_topics()
+    print(f"\nStep 47C.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_read_star():
+    from voynich.phases.structural_reading_47 import run_read_star
+    t0 = time.time()
+    run_read_star()
+    print(f"\nStep 47C.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_read_sections():
+    from voynich.phases.structural_reading_47 import run_read_sections
+    t0 = time.time()
+    run_read_sections()
+    print(f"\nStep 47C.5 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_c_47():
+    from voynich.phases.structural_reading_47 import run_track_c_47
+    t0 = time.time()
+    run_track_c_47()
+    print(f"\nTrack C (Phase 47) completed in {time.time() - t0:.1f}s")
+
+# Track D: Sequence Analysis
+def cmd_seq_overlap():
+    from voynich.phases.sequence_analysis import run_seq_overlap
+    t0 = time.time()
+    run_seq_overlap()
+    print(f"\nStep 47D.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_seq_continuity():
+    from voynich.phases.sequence_analysis import run_seq_continuity
+    t0 = time.time()
+    run_seq_continuity()
+    print(f"\nStep 47D.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_seq_boundary():
+    from voynich.phases.sequence_analysis import run_seq_boundary
+    t0 = time.time()
+    run_seq_boundary()
+    print(f"\nStep 47D.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_seq_reorder():
+    from voynich.phases.sequence_analysis import run_seq_reorder
+    t0 = time.time()
+    run_seq_reorder()
+    print(f"\nStep 47D.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_d_47():
+    from voynich.phases.sequence_analysis import run_track_d_47
+    t0 = time.time()
+    run_track_d_47()
+    print(f"\nTrack D (Phase 47) completed in {time.time() - t0:.1f}s")
+
+# Phase 47 Integration
+def cmd_phase47_integrate():
+    from voynich.phases.phase47_integrate import run_phase47_integrate
+    t0 = time.time()
+    run_phase47_integrate()
+    print(f"\nPhase 47 integration completed in {time.time() - t0:.1f}s")
+
+def cmd_phase47():
+    from voynich.phases.phase47_integrate import run_phase47
+    t0 = time.time()
+    run_phase47()
+    print(f"\nPhase 47 completed in {time.time() - t0:.1f}s")
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -5190,6 +5347,37 @@ def main():
         # Phase 46 Integration
         'phase46-integrate': cmd_phase46_integrate,
         'phase46': cmd_phase46,
+        # Phase 47: Z-Score Audit, Disambiguation, Structural Reading, Sequence
+        # Track A: Z-Score Audit
+        'z-reproduce-42': cmd_z_reproduce_42,
+        'z-reproduce-46': cmd_z_reproduce_46,
+        'z-diff': cmd_z_diff,
+        'z-canonical': cmd_z_canonical,
+        'z-sensitivity': cmd_z_sensitivity,
+        'track-a-47': cmd_track_a_47,
+        # Track B: Word-Level Disambiguation
+        'disamb-lattice': cmd_disamb_lattice,
+        'disamb-bigram': cmd_disamb_bigram,
+        'disamb-viterbi': cmd_disamb_viterbi,
+        'disamb-eval': cmd_disamb_eval,
+        'disamb-compare': cmd_disamb_compare,
+        'track-b-47': cmd_track_b_47,
+        # Track C: Structural Reading
+        'read-ngrams': cmd_read_ngrams,
+        'read-recipes': cmd_read_recipes,
+        'read-topics': cmd_read_topics,
+        'read-star': cmd_read_star,
+        'read-sections': cmd_read_sections,
+        'track-c-47': cmd_track_c_47,
+        # Track D: Sequence Analysis
+        'seq-overlap': cmd_seq_overlap,
+        'seq-continuity': cmd_seq_continuity,
+        'seq-boundary': cmd_seq_boundary,
+        'seq-reorder': cmd_seq_reorder,
+        'track-d-47': cmd_track_d_47,
+        # Phase 47 Integration
+        'phase47-integrate': cmd_phase47_integrate,
+        'phase47': cmd_phase47,
     }
 
     if len(sys.argv) < 2:
