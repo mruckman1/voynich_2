@@ -4109,6 +4109,7 @@ def cmd_phase43_integrate():
     run_phase43_integrate()
 
 def cmd_phase43():
+
     """Run full Phase 43 pipeline."""
     print("=" * 70)
     print("PHASE 43: Re-Encoding Inversion, Structural Probing, Conditional Decoding")
@@ -4155,6 +4156,161 @@ def cmd_phase43():
     print("INTEGRATION")
     print("=" * 70)
     cmd_phase43_integrate()
+
+
+# Phase 44: Solution Landscape Enumeration (MaxSAT, SBM, CSA)
+
+# Track A: MaxSAT
+def cmd_maxsat_encode():
+    from voynich.phases.maxsat_landscape import run_maxsat_encode
+    t0 = time.time()
+    run_maxsat_encode()
+    print(f"\nStep 44A.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_maxsat_solve():
+    from voynich.phases.maxsat_landscape import run_maxsat_solve
+    t0 = time.time()
+    run_maxsat_solve()
+    print(f"\nStep 44A.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_maxsat_landscape():
+    from voynich.phases.maxsat_landscape import run_maxsat_landscape
+    t0 = time.time()
+    run_maxsat_landscape()
+    print(f"\nStep 44A.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_maxsat_validate():
+    from voynich.phases.maxsat_landscape import run_maxsat_validate
+    t0 = time.time()
+    run_maxsat_validate()
+    print(f"\nStep 44A.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_a():
+    from voynich.phases.maxsat_landscape import run_track_a
+    t0 = time.time()
+    run_track_a()
+    print(f"\nTrack A completed in {time.time() - t0:.1f}s")
+
+# Track B: SBM
+def cmd_sbm_graph():
+    from voynich.phases.sbm_cooccurrence import run_sbm_graph
+    t0 = time.time()
+    run_sbm_graph()
+    print(f"\nStep 44B.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_fit():
+    from voynich.phases.sbm_cooccurrence import run_sbm_fit
+    t0 = time.time()
+    run_sbm_fit()
+    print(f"\nStep 44B.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_compare():
+    from voynich.phases.sbm_cooccurrence import run_sbm_compare
+    t0 = time.time()
+    run_sbm_compare()
+    print(f"\nStep 44B.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_predict():
+    from voynich.phases.sbm_cooccurrence import run_sbm_predict
+    t0 = time.time()
+    run_sbm_predict()
+    print(f"\nStep 44B.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_sbm_validate():
+    from voynich.phases.sbm_cooccurrence import run_sbm_validate
+    t0 = time.time()
+    run_sbm_validate()
+    print(f"\nStep 44B.5 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_b():
+    from voynich.phases.sbm_cooccurrence import run_track_b
+    t0 = time.time()
+    run_track_b()
+    print(f"\nTrack B completed in {time.time() - t0:.1f}s")
+
+# Track C: k-Permutation CSA
+def cmd_kperm_energy():
+    from voynich.phases.kperm_csa import run_kperm_energy
+    t0 = time.time()
+    run_kperm_energy()
+    print(f"\nStep 44C.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_kperm_search():
+    from voynich.phases.kperm_csa import run_kperm_search
+    t0 = time.time()
+    run_kperm_search()
+    print(f"\nStep 44C.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_kperm_analyze():
+    from voynich.phases.kperm_csa import run_kperm_analyze
+    t0 = time.time()
+    run_kperm_analyze()
+    print(f"\nStep 44C.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_kperm_validate():
+    from voynich.phases.kperm_csa import run_kperm_validate
+    t0 = time.time()
+    run_kperm_validate()
+    print(f"\nStep 44C.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_c():
+    from voynich.phases.kperm_csa import run_track_c
+    t0 = time.time()
+    run_track_c()
+    print(f"\nTrack C completed in {time.time() - t0:.1f}s")
+
+# Phase 44 Integration
+def cmd_phase44_integrate():
+    from voynich.phases.phase44_integrate import run_phase44_integrate
+    t0 = time.time()
+    run_phase44_integrate()
+    print(f"\nPhase 44 integration completed in {time.time() - t0:.1f}s")
+
+def cmd_phase44():
+    """Run full Phase 44 pipeline: MaxSAT, SBM, CSA + integration."""
+    print("=" * 70)
+    print("PHASE 44: Solution Landscape Enumeration")
+    print("=" * 70)
+    # Track A: MaxSAT
+    print("\n" + "=" * 70)
+    print("TRACK A: MaxSAT Landscape Enumeration")
+    print("=" * 70)
+    cmd_maxsat_encode()
+    print("\n" + "=" * 70 + "\n")
+    cmd_maxsat_solve()
+    print("\n" + "=" * 70 + "\n")
+    cmd_maxsat_landscape()
+    print("\n" + "=" * 70 + "\n")
+    cmd_maxsat_validate()
+    # Track B: SBM
+    print("\n" + "=" * 70)
+    print("TRACK B: Stochastic Block Model")
+    print("=" * 70)
+    cmd_sbm_graph()
+    print("\n" + "=" * 70 + "\n")
+    cmd_sbm_fit()
+    print("\n" + "=" * 70 + "\n")
+    cmd_sbm_compare()
+    print("\n" + "=" * 70 + "\n")
+    cmd_sbm_predict()
+    print("\n" + "=" * 70 + "\n")
+    cmd_sbm_validate()
+    # Track C: CSA
+    print("\n" + "=" * 70)
+    print("TRACK C: Coupled Simulated Annealing")
+    print("=" * 70)
+    cmd_kperm_energy()
+    print("\n" + "=" * 70 + "\n")
+    cmd_kperm_search()
+    print("\n" + "=" * 70 + "\n")
+    cmd_kperm_analyze()
+    print("\n" + "=" * 70 + "\n")
+    cmd_kperm_validate()
+    # Integration
+    print("\n" + "=" * 70)
+    print("INTEGRATION")
+    print("=" * 70)
+    cmd_phase44_integrate()
 
 
 def cmd_phase24():
@@ -4683,6 +4839,29 @@ def main():
         # Integration
         'phase43-integrate': cmd_phase43_integrate,
         'phase43': cmd_phase43,
+        # Phase 44: Solution Landscape Enumeration
+        # Track A: MaxSAT
+        'maxsat-encode': cmd_maxsat_encode,
+        'maxsat-solve': cmd_maxsat_solve,
+        'maxsat-landscape': cmd_maxsat_landscape,
+        'maxsat-validate': cmd_maxsat_validate,
+        'track-a': cmd_track_a,
+        # Track B: SBM
+        'sbm-graph': cmd_sbm_graph,
+        'sbm-fit': cmd_sbm_fit,
+        'sbm-compare': cmd_sbm_compare,
+        'sbm-predict': cmd_sbm_predict,
+        'sbm-validate': cmd_sbm_validate,
+        'track-b': cmd_track_b,
+        # Track C: CSA
+        'kperm-energy': cmd_kperm_energy,
+        'kperm-search': cmd_kperm_search,
+        'kperm-analyze': cmd_kperm_analyze,
+        'kperm-validate': cmd_kperm_validate,
+        'track-c': cmd_track_c,
+        # Phase 44 Integration
+        'phase44-integrate': cmd_phase44_integrate,
+        'phase44': cmd_phase44,
     }
 
     if len(sys.argv) < 2:
