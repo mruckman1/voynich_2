@@ -4753,6 +4753,104 @@ def cmd_phase47():
     run_phase47()
     print(f"\nPhase 47 completed in {time.time() - t0:.1f}s")
 
+# Phase 48: Marginal Bilingual Crib Exploitation
+
+def cmd_f116v_transcribe():
+    from voynich.phases.marginal_cribs import run_f116v_transcribe
+    run_f116v_transcribe()
+
+def cmd_f116v_decode():
+    from voynich.phases.marginal_cribs import run_f116v_decode
+    run_f116v_decode()
+
+def cmd_f116v_context():
+    from voynich.phases.marginal_cribs import run_f116v_context
+    run_f116v_context()
+
+def cmd_f116v_match():
+    from voynich.phases.marginal_cribs import run_f116v_match
+    run_f116v_match()
+
+def cmd_f116v_reverse():
+    from voynich.phases.marginal_cribs import run_f116v_reverse
+    run_f116v_reverse()
+
+def cmd_track_a_48():
+    from voynich.phases.marginal_cribs import run_track_a_48
+    run_track_a_48()
+
+def cmd_f17r_extract():
+    from voynich.phases.marginal_secondary import run_f17r_extract
+    run_f17r_extract()
+
+def cmd_f66r_extract():
+    from voynich.phases.marginal_secondary import run_f66r_extract
+    run_f66r_extract()
+
+def cmd_margin_decode():
+    from voynich.phases.marginal_secondary import run_margin_decode
+    run_margin_decode()
+
+def cmd_margin_hand():
+    from voynich.phases.marginal_secondary import run_margin_hand
+    run_margin_hand()
+
+def cmd_track_b_48():
+    from voynich.phases.marginal_secondary import run_track_b_48
+    run_track_b_48()
+
+def cmd_marci_source():
+    from voynich.phases.marci_annotations import run_marci_source
+    run_marci_source()
+
+def cmd_marci_extract():
+    from voynich.phases.marci_annotations import run_marci_extract
+    run_marci_extract()
+
+def cmd_marci_compare():
+    from voynich.phases.marci_annotations import run_marci_compare
+    run_marci_compare()
+
+def cmd_marci_test():
+    from voynich.phases.marci_annotations import run_marci_test
+    run_marci_test()
+
+def cmd_track_c_48():
+    from voynich.phases.marci_annotations import run_track_c_48
+    run_track_c_48()
+
+def cmd_crib_collect():
+    from voynich.phases.bilingual_propagation import run_crib_collect
+    run_crib_collect()
+
+def cmd_crib_consistent_48():
+    from voynich.phases.bilingual_propagation import run_crib_consistent
+    run_crib_consistent()
+
+def cmd_crib_propagate():
+    from voynich.phases.bilingual_propagation import run_crib_propagate
+    run_crib_propagate()
+
+def cmd_crib_decode_48():
+    from voynich.phases.bilingual_propagation import run_crib_decode
+    run_crib_decode()
+
+def cmd_crib_validate():
+    from voynich.phases.bilingual_propagation import run_crib_validate
+    run_crib_validate()
+
+def cmd_track_d_48():
+    from voynich.phases.bilingual_propagation import run_track_d_48
+    run_track_d_48()
+
+def cmd_phase48_integrate():
+    from voynich.phases.phase48_integrate import run_phase48_integrate
+    run_phase48_integrate()
+
+def cmd_phase48():
+    from voynich.phases.phase48_integrate import run_phase48
+    run_phase48()
+
 
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
@@ -5378,6 +5476,36 @@ def main():
         # Phase 47 Integration
         'phase47-integrate': cmd_phase47_integrate,
         'phase47': cmd_phase47,
+        # Phase 48: Marginal Bilingual Crib Exploitation
+        # Track A: f116v decode
+        'f116v-transcribe': cmd_f116v_transcribe,
+        'f116v-decode': cmd_f116v_decode,
+        'f116v-context': cmd_f116v_context,
+        'f116v-match': cmd_f116v_match,
+        'f116v-reverse': cmd_f116v_reverse,
+        'track-a-48': cmd_track_a_48,
+        # Track B: f17r/f66r marginal
+        'f17r-extract': cmd_f17r_extract,
+        'f66r-extract': cmd_f66r_extract,
+        'margin-decode': cmd_margin_decode,
+        'margin-hand': cmd_margin_hand,
+        'track-b-48': cmd_track_b_48,
+        # Track C: Marci annotations
+        'marci-source': cmd_marci_source,
+        'marci-extract': cmd_marci_extract,
+        'marci-compare': cmd_marci_compare,
+        'marci-test': cmd_marci_test,
+        'track-c-48': cmd_track_c_48,
+        # Track D: Crib propagation
+        'crib-collect': cmd_crib_collect,
+        'crib-consistent': cmd_crib_consistent_48,
+        'crib-propagate': cmd_crib_propagate,
+        'crib-decode': cmd_crib_decode_48,
+        'crib-validate': cmd_crib_validate,
+        'track-d-48': cmd_track_d_48,
+        # Phase 48 Integration
+        'phase48-integrate': cmd_phase48_integrate,
+        'phase48': cmd_phase48,
     }
 
     if len(sys.argv) < 2:
