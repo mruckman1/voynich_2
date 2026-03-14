@@ -1946,3 +1946,284 @@ def overlap_rate_with_null(
         'selectivity': selectivity,
         'p_value': p_value,
     }
+
+
+# ---------------------------------------------------------------------------
+# Word-Level N-Gram Language Model (Phase 49)
+# ---------------------------------------------------------------------------
+
+def build_word_ngram_lm(
+    word_sequences: List[List[str]],
+    order: int = 3,
+    smoothing: float = 1.0,
+) -> Dict:
+    """
+    Build a word-level n-gram language model with add-k smoothing.
+
+    Args:
+        word_sequences: list of word sequences (each is a list of word strings)
+        order: n-gram order (e.g. 3 for trigram)
+        smoothing: add-k smoothing constant
+
+    Returns dict with:
+        'order': int,
+        'vocab': sorted list of words (including <BOS>, <EOS>),
+        'vocab_size': int,
+        'counts': dict mapping context_tuple_key -> {next_word: count},
+        'smoothing': float,
+    """
+    BOS = '<BOS>'
+    EOS = '<EOS>'
+    ctx_len = order - 1
+
+    vocab_set: set = {BOS, EOS}
+    counts: Dict[str, Dict[str, int]] = {}
+
+    for seq in word_sequences:
+        padded = [BOS] * ctx_len + list(seq) + [EOS]
+        vocab_set.update(seq)
+        for i in range(ctx_len, len(padded)):
+            context_key = '|'.join(padded[i - ctx_len:i])
+            word = padded[i]
+            if context_key not in counts:
+                counts[context_key] = {}
+            counts[context_key][word] = counts[context_key].get(word, 0) + 1
+
+    vocab = sorted(vocab_set)
+    return {
+        'order': order,
+        'vocab': vocab,
+        'vocab_size': len(vocab),
+        'counts': counts,
+        'smoothing': smoothing,
+    }
+
+
+def cross_entropy_word_lm(
+    word_sequence: List[str],
+    lm: Dict,
+    per_word: bool = True,
+) -> float:
+    """
+    Compute cross-entropy of a word sequence under a word-level n-gram LM.
+
+    Args:
+        word_sequence: list of words to score
+        lm: language model dict from build_word_ngram_lm()
+        per_word: if True return bits/word, else total bits
+
+    Returns cross-entropy in bits.
+    """
+    order = lm['order']
+    counts = lm['counts']
+    k = lm['smoothing']
+    V = lm['vocab_size']
+    ctx_len = order - 1
+
+    BOS = '<BOS>'
+    EOS = '<EOS>'
+    padded = [BOS] * ctx_len + list(word_sequence) + [EOS]
+
+    total_log_prob = 0.0
+    n_words = 0
+
+    for i in range(ctx_len, len(padded)):
+        word = padded[i]
+
+        # Try full context, then back off
+        prob = None
+        for backoff in range(ctx_len + 1):
+            ctx_key = '|'.join(padded[i - ctx_len + backoff:i])
+            if ctx_key in counts:
+                ctx_counts = counts[ctx_key]
+                total_count = sum(ctx_counts.values())
+                word_count = ctx_counts.get(word, 0)
+                prob = (word_count + k) / (total_count + k * V)
+                break
+
+        if prob is None or prob <= 0:
+            prob = 1.0 / V
+
+        total_log_prob += math.log2(prob)
+        n_words += 1
+
+    ce = -total_log_prob / n_words if n_words > 0 and per_word else -total_log_prob
+    return ce
+
+
+# ---------------------------------------------------------------------------
+# Sinkhorn Optimal Transport (Phase 49)
+# ---------------------------------------------------------------------------
+
+def sinkhorn_ot(
+    cost_matrix: np.ndarray,
+    a: np.ndarray,
+    b: np.ndarray,
+    reg: float = 0.1,
+    max_iter: int = 100,
+    tol: float = 1e-9,
+) -> Tuple[np.ndarray, float]:
+    """
+    Compute entropic optimal transport plan via log-domain Sinkhorn.
+
+    Args:
+        cost_matrix: (n, m) cost matrix C
+        a: (n,) source marginal (must sum to 1)
+        b: (m,) target marginal (must sum to 1)
+        reg: entropic regularization strength epsilon
+        max_iter: maximum Sinkhorn iterations
+        tol: convergence tolerance on marginal error
+
+    Returns:
+        (transport_plan, wasserstein_distance)
+        transport_plan: (n, m) coupling matrix gamma
+        wasserstein_distance: <C, gamma> = sum(C * gamma)
+    """
+    n, m = cost_matrix.shape
+    log_a = np.log(a + 1e-300)
+    log_b = np.log(b + 1e-300)
+
+    # Log-domain kernel: log K = -C / reg
+    log_K = -cost_matrix / reg
+
+    # Initialize dual variables
+    log_u = np.zeros(n)
+    log_v = np.zeros(m)
+
+    for _it in range(max_iter):
+        # Update u: log_u = log_a - logsumexp(log_K + log_v[None, :], axis=1)
+        log_Kv = log_K + log_v[None, :]
+        log_u_new = log_a - _logsumexp_rows(log_Kv)
+
+        # Update v: log_v = log_b - logsumexp(log_K.T + log_u[None, :], axis=1)
+        log_Ku = log_K.T + log_u_new[None, :]
+        log_v_new = log_b - _logsumexp_rows(log_Ku)
+
+        # Check convergence
+        if np.max(np.abs(log_u_new - log_u)) < tol and np.max(np.abs(log_v_new - log_v)) < tol:
+            log_u, log_v = log_u_new, log_v_new
+            break
+        log_u, log_v = log_u_new, log_v_new
+
+    # Recover transport plan: gamma = diag(u) K diag(v)
+    log_gamma = log_u[:, None] + log_K + log_v[None, :]
+    gamma = np.exp(log_gamma)
+
+    # Wasserstein distance
+    w_dist = float(np.sum(gamma * cost_matrix))
+    return gamma, w_dist
+
+
+def _logsumexp_rows(log_matrix: np.ndarray) -> np.ndarray:
+    """Numerically stable logsumexp along axis=1."""
+    row_max = np.max(log_matrix, axis=1, keepdims=True)
+    return (row_max.squeeze(1) +
+            np.log(np.sum(np.exp(log_matrix - row_max), axis=1)))
+
+
+# ---------------------------------------------------------------------------
+# Gromov-Wasserstein Distance (Phase 49)
+# ---------------------------------------------------------------------------
+
+def gromov_wasserstein(
+    D1: np.ndarray,
+    D2: np.ndarray,
+    p: np.ndarray,
+    q: np.ndarray,
+    reg: float = 0.1,
+    max_iter: int = 50,
+    tol: float = 1e-7,
+) -> Tuple[np.ndarray, float]:
+    """
+    Compute entropic Gromov-Wasserstein distance between two metric spaces.
+
+    Finds coupling gamma minimizing:
+        sum_{i,j,k,l} |D1(i,k) - D2(j,l)|^2 * gamma(i,j) * gamma(k,l)
+    with entropic regularization.
+
+    Args:
+        D1: (n, n) intra-distance matrix for source space
+        D2: (m, m) intra-distance matrix for target space
+        p: (n,) source marginal
+        q: (m,) target marginal
+        reg: entropic regularization
+        max_iter: maximum outer iterations
+        tol: convergence tolerance
+
+    Returns:
+        (coupling, gw_distance)
+    """
+    n = len(p)
+    m = len(q)
+
+    # Initialize coupling as outer product of marginals
+    gamma = np.outer(p, q)
+
+    # Precompute D1^2 and D2^2 row/column sums for efficient cost computation
+    D1_sq = D1 ** 2
+    D2_sq = D2 ** 2
+
+    prev_gw = float('inf')
+
+    for _it in range(max_iter):
+        # Compute linearized cost matrix:
+        # L(i,j) = sum_k D1(i,k)^2 * p(k) + sum_l D2(j,l)^2 * q(l) - 2 * D1 @ gamma @ D2.T
+        term1 = (D1_sq @ p)[:, None]           # (n, 1)
+        term2 = (D2_sq @ q)[None, :]           # (1, m)
+        term3 = 2.0 * D1 @ gamma @ D2.T        # (n, m)
+        cost = term1 + term2 - term3
+
+        # Solve entropic OT with this linearized cost
+        gamma_new, _ = sinkhorn_ot(cost, p, q, reg=reg, max_iter=100)
+
+        # Compute GW objective
+        gw_val = float(np.sum(cost * gamma_new))
+
+        if abs(prev_gw - gw_val) < tol:
+            gamma = gamma_new
+            break
+        gamma = gamma_new
+        prev_gw = gw_val
+
+    # Final GW distance
+    gw_distance = float(np.sum(cost * gamma))
+    return gamma, gw_distance
+
+
+# ---------------------------------------------------------------------------
+# NetLSD Spectral Signature (Phase 49)
+# ---------------------------------------------------------------------------
+
+def netlsd_signature(
+    eigenvalues: np.ndarray,
+    timescales: Optional[np.ndarray] = None,
+) -> np.ndarray:
+    """
+    Compute NetLSD heat kernel trace signature from graph Laplacian eigenvalues.
+
+    h(t) = (1/n) * sum_i exp(-t * lambda_i)
+
+    Args:
+        eigenvalues: sorted eigenvalues of the normalized Laplacian
+        timescales: array of time values t; defaults to logspace(-2, 2, 50)
+
+    Returns:
+        signature array of shape (len(timescales),)
+    """
+    if timescales is None:
+        timescales = np.logspace(-2, 2, 50)
+
+    eigs = np.asarray(eigenvalues, dtype=np.float64)
+    n = len(eigs)
+    if n == 0:
+        return np.zeros(len(timescales))
+
+    # h(t) = (1/n) sum_i exp(-t * lambda_i)
+    # Shape: (T, n) -> sum over n -> (T,)
+    sig = np.sum(np.exp(-timescales[:, None] * eigs[None, :]), axis=1) / n
+    return sig
+
+
+def spectral_distance(sig1: np.ndarray, sig2: np.ndarray) -> float:
+    """L2 distance between two spectral signatures (e.g. from netlsd_signature)."""
+    return float(np.sqrt(np.sum((sig1 - sig2) ** 2)))

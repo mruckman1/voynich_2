@@ -4851,6 +4851,162 @@ def cmd_phase48():
     from voynich.phases.phase48_integrate import run_phase48
     run_phase48()
 
+# Phase 49: Novel Computational Approaches
+# Track A: External LM Lattice Decode
+def cmd_lm_build():
+    from voynich.phases.lm_lattice_decode import run_lm_build
+    t0 = time.time()
+    run_lm_build()
+    print(f"\nStep 49A.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_lm_lattice():
+    from voynich.phases.lm_lattice_decode import run_lm_lattice
+    t0 = time.time()
+    run_lm_lattice()
+    print(f"\nStep 49A.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_lm_viterbi():
+    from voynich.phases.lm_lattice_decode import run_lm_viterbi
+    t0 = time.time()
+    run_lm_viterbi()
+    print(f"\nStep 49A.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_lm_calibrate():
+    from voynich.phases.lm_lattice_decode import run_lm_calibrate
+    t0 = time.time()
+    run_lm_calibrate()
+    print(f"\nStep 49A.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_lm_decode():
+    from voynich.phases.lm_lattice_decode import run_lm_decode
+    t0 = time.time()
+    run_lm_decode()
+    print(f"\nStep 49A.5 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_a_49():
+    from voynich.phases.lm_lattice_decode import run_track_a_49
+    t0 = time.time()
+    run_track_a_49()
+    print(f"\nTrack A completed in {time.time() - t0:.1f}s")
+
+# Track B: Spectral Periodicity
+def cmd_spectral_signals():
+    from voynich.phases.spectral_periodicity import run_spectral_signals
+    t0 = time.time()
+    run_spectral_signals()
+    print(f"\nStep 49B.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_spectral_fft():
+    from voynich.phases.spectral_periodicity import run_spectral_fft
+    t0 = time.time()
+    run_spectral_fft()
+    print(f"\nStep 49B.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_spectral_stft():
+    from voynich.phases.spectral_periodicity import run_spectral_stft
+    t0 = time.time()
+    run_spectral_stft()
+    print(f"\nStep 49B.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_spectral_xfolio():
+    from voynich.phases.spectral_periodicity import run_spectral_crossfolio
+    t0 = time.time()
+    run_spectral_crossfolio()
+    print(f"\nStep 49B.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_b_49():
+    from voynich.phases.spectral_periodicity import run_track_b_49
+    t0 = time.time()
+    run_track_b_49()
+    print(f"\nTrack B completed in {time.time() - t0:.1f}s")
+
+# Track C: Optimal Transport
+def cmd_ot_embed():
+    from voynich.phases.optimal_transport import run_ot_embeddings
+    t0 = time.time()
+    run_ot_embeddings()
+    print(f"\nStep 49C.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_ot_sinkhorn():
+    from voynich.phases.optimal_transport import run_ot_sinkhorn
+    t0 = time.time()
+    run_ot_sinkhorn()
+    print(f"\nStep 49C.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_ot_gromov():
+    from voynich.phases.optimal_transport import run_ot_gromov
+    t0 = time.time()
+    run_ot_gromov()
+    print(f"\nStep 49C.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_ot_langid():
+    from voynich.phases.optimal_transport import run_ot_langid
+    t0 = time.time()
+    run_ot_langid()
+    print(f"\nStep 49C.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_c_49():
+    from voynich.phases.optimal_transport import run_track_c_49
+    t0 = time.time()
+    run_track_c_49()
+    print(f"\nTrack C completed in {time.time() - t0:.1f}s")
+
+# Track D: Spectral Graph Matching
+def cmd_graph_build():
+    from voynich.phases.spectral_graph_match import run_graph_build
+    t0 = time.time()
+    run_graph_build()
+    print(f"\nStep 49D.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_graph_laplacian():
+    from voynich.phases.spectral_graph_match import run_graph_laplacian
+    t0 = time.time()
+    run_graph_laplacian()
+    print(f"\nStep 49D.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_graph_netlsd():
+    from voynich.phases.spectral_graph_match import run_graph_netlsd
+    t0 = time.time()
+    run_graph_netlsd()
+    print(f"\nStep 49D.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_graph_verdict():
+    from voynich.phases.spectral_graph_match import run_graph_verdict
+    t0 = time.time()
+    run_graph_verdict()
+    print(f"\nStep 49D.4 completed in {time.time() - t0:.1f}s")
+
+def cmd_track_d_49():
+    from voynich.phases.spectral_graph_match import run_track_d_49
+    t0 = time.time()
+    run_track_d_49()
+    print(f"\nTrack D completed in {time.time() - t0:.1f}s")
+
+# Track E: Integration
+def cmd_phase49_combine():
+    from voynich.phases.phase49_integrate import run_phase49_combine
+    t0 = time.time()
+    run_phase49_combine()
+    print(f"\nStep 49E.1 completed in {time.time() - t0:.1f}s")
+
+def cmd_rl_assess():
+    from voynich.phases.phase49_integrate import run_rl_assess
+    t0 = time.time()
+    run_rl_assess()
+    print(f"\nStep 49E.2 completed in {time.time() - t0:.1f}s")
+
+def cmd_phase49_validate():
+    from voynich.phases.phase49_integrate import run_phase49_validate
+    t0 = time.time()
+    run_phase49_validate()
+    print(f"\nStep 49E.3 completed in {time.time() - t0:.1f}s")
+
+def cmd_phase49():
+    from voynich.phases.phase49_integrate import run_phase49
+    t0 = time.time()
+    run_phase49()
+    print(f"\nPhase 49 completed in {time.time() - t0:.1f}s")
+
 
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
@@ -5506,6 +5662,37 @@ def main():
         # Phase 48 Integration
         'phase48-integrate': cmd_phase48_integrate,
         'phase48': cmd_phase48,
+        # Phase 49: Novel Computational Approaches
+        # Track A: External LM Lattice Decode
+        'lm-build': cmd_lm_build,
+        'lm-lattice': cmd_lm_lattice,
+        'lm-viterbi': cmd_lm_viterbi,
+        'lm-calibrate': cmd_lm_calibrate,
+        'lm-decode': cmd_lm_decode,
+        'track-a-49': cmd_track_a_49,
+        # Track B: Spectral Periodicity
+        'spectral-signals': cmd_spectral_signals,
+        'spectral-fft': cmd_spectral_fft,
+        'spectral-stft': cmd_spectral_stft,
+        'spectral-xfolio': cmd_spectral_xfolio,
+        'track-b-49': cmd_track_b_49,
+        # Track C: Optimal Transport
+        'ot-embed': cmd_ot_embed,
+        'ot-sinkhorn': cmd_ot_sinkhorn,
+        'ot-gromov': cmd_ot_gromov,
+        'ot-langid': cmd_ot_langid,
+        'track-c-49': cmd_track_c_49,
+        # Track D: Spectral Graph Matching
+        'graph-build': cmd_graph_build,
+        'graph-laplacian': cmd_graph_laplacian,
+        'graph-netlsd': cmd_graph_netlsd,
+        'graph-verdict': cmd_graph_verdict,
+        'track-d-49': cmd_track_d_49,
+        # Phase 49 Integration
+        'phase49-combine': cmd_phase49_combine,
+        'rl-assess': cmd_rl_assess,
+        'phase49-validate': cmd_phase49_validate,
+        'phase49': cmd_phase49,
     }
 
     if len(sys.argv) < 2:
