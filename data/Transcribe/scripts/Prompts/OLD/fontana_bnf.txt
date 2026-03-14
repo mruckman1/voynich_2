@@ -1,0 +1,131 @@
+You are analyzing pages from the Secretum de Thesauro
+Experimentorum Ymaginationis Hominis by Giovanni Fontana
+(Paris, BNF NAL 635), a manuscript from the 1430s,
+northern Italy (Padua/Venice region).
+
+This is the second of Fontana's two known cipher manuscripts.
+It focuses on mnemonic devices and memory techniques. Like the
+Bellicorum Instrumentorum Liber (BSB Cod. icon. 242), it uses
+a geometric substitution cipher. The two manuscripts appear to
+share the same or closely related cipher systems — tracking
+whether the signs match, differ, or represent a variant of
+the BSB cipher is the primary comparative purpose of
+processing this manuscript.
+
+Use the SAME sign_id numbering series as the Fontana BSB
+manuscript. If a sign from this manuscript matches a BSB
+sign exactly, reuse the BSB sign_id (e.g. "F03"). If a sign
+is new (not seen in BSB), assign a new identifier starting
+from where the BSB series left off.
+
+─────────────────────────────────────────────────────────────
+WHAT TO SKIP — output nothing for any of the following:
+─────────────────────────────────────────────────────────────
+- Illustrations — one-sentence visual description only in
+  page_illustration_description
+- Latin/Italian prose sections not containing cipher text
+  or a cipher key
+- Blank or decorative pages
+- Library stamps, later ownership notes, non-Fontana hands
+- Pages where the content is identical to BSB (note in
+  bsb_parallel field instead of re-extracting)
+
+─────────────────────────────────────────────────────────────
+OUTPUT FORMAT — same schema as fontana_bsb.txt with additions:
+─────────────────────────────────────────────────────────────
+
+For each page:
+
+1. folio
+   Folio number as written on the page. Null if not visible.
+
+2. page_type
+   "cipher_text" / "plain_text" / "cipher_key" /
+   "illustration" / "mixed"
+
+3. bsb_parallel
+   If this page appears to contain content also found in
+   BSB Cod. icon. 242, note it here: "similar to BSB f.Xr"
+   or "identical cipher key to BSB f.Yr". Null if no
+   apparent parallel.
+
+4. page_illustration_description
+   One sentence if illustration present. Null if none.
+
+5. plain_text_transcription
+   Exact transcription of plain Latin/Italian text on this
+   page. Null if none.
+
+6. cipher_signs
+   Array of sign objects. Use the same sign_id as BSB for
+   matching signs. For new signs, continue the F-series.
+   Each object:
+
+   a. sign_id          — reused BSB id or new id
+   b. matches_bsb_sign — the BSB sign_id this matches,
+                         or null if new to this manuscript
+   c. base_form        — same vocabulary as BSB prompt:
+      "circle", "oval", "vertical_stroke",
+      "horizontal_stroke", "diagonal_left", "diagonal_right",
+      "open_curve_left", "open_curve_right", "closed_loop",
+      "hook", "angle"
+   d. added_feature    — same vocabulary as BSB prompt:
+      "tick_up", "tick_down", "tick_left", "tick_right",
+      "tick_northeast", "tick_northwest", "tick_southeast",
+      "tick_southwest", "tick_internal", "tick_external",
+      "crossbar", "dot_inside", "dot_outside", "loop_added",
+      "stroke_through", "mirrored", "rotated_90", "no_addition"
+   e. sign_difference_from_bsb
+      If this sign matches a BSB sign but differs slightly,
+      describe the difference. Null if identical or new.
+   f. letter_value     — if Fontana provides it on this page
+   g. family_relationship — list of related sign_ids
+   h. confidence
+
+7. cipher_key_entries
+   If this page shows a cipher key table:
+   [{symbol_description, letter_value, bsb_key_match, confidence}]
+   where bsb_key_match is the BSB sign_id for the same entry
+   if it appears in the BSB key, or null.
+
+─────────────────────────────────────────────────────────────
+RULES:
+─────────────────────────────────────────────────────────────
+- The cross-manuscript comparison is the primary value of
+  this source. Note every agreement and every discrepancy
+  with the BSB cipher carefully
+- Do not decode cipher text — describe signs visually
+- If this manuscript has cipher key pages that the BSB
+  does not (or vice versa), this is a significant finding —
+  flag it clearly in cipher_key_entries
+
+Output ONLY a JSON array (one object per page). No explanation,
+no preamble, no markdown fences, no trailing commentary.
+
+[{
+  "folio": <string or null>,
+  "page_type": <string>,
+  "bsb_parallel": <string or null>,
+  "page_illustration_description": <string or null>,
+  "plain_text_transcription": <string or null>,
+  "cipher_signs": [
+    {
+      "sign_id": <string>,
+      "matches_bsb_sign": <string or null>,
+      "base_form": <string>,
+      "added_feature": <string>,
+      "sign_difference_from_bsb": <string or null>,
+      "letter_value": <string or null>,
+      "family_relationship": [<string>],
+      "confidence": <"high" or "medium" or "low">
+    }
+  ],
+  "cipher_key_entries": [
+    {
+      "symbol_description": <string>,
+      "letter_value": <string or null>,
+      "bsb_key_match": <string or null>,
+      "confidence": <"high" or "medium" or "low">
+    }
+  ]
+}]

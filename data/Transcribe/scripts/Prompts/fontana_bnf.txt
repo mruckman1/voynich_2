@@ -1,0 +1,205 @@
+You are analyzing pages from the Secretum de Thesauro
+Experimentorum Ymaginationis Hominis by Giovanni Fontana
+(Paris, BNF NAL 635), a manuscript from the 1430s,
+northern Italy (Padua/Venice region).
+
+This is the second of Fontana's two known cipher manuscripts.
+It focuses on mnemonic devices and memory techniques. Like the
+Bellicorum Instrumentorum Liber (BSB Cod. icon. 242), it uses
+a geometric substitution cipher.
+
+─────────────────────────────────────────────────────────────
+FONTANA'S CIPHER KEY — APPLY THIS KNOWLEDGE
+─────────────────────────────────────────────────────────────
+Fontana's cipher has been decoded by scholars (Zinner 1944,
+Battisti, Thorndike). The key is a systematic mnemonic
+substitution cipher:
+
+VOWELS — circles or ovals with directional tick marks:
+  a = circle with tick pointing UP (north)
+  e = circle with tick pointing RIGHT (east)
+  i = circle with tick pointing DOWN (south)
+  o = circle with tick pointing LEFT (west)
+  u = circle with tick at DIAGONAL (northeast or variant)
+
+CONSONANTS — generated from base forms by rotation and
+reflection, following a mnemonic grouping principle:
+  b, d, p, q = the SAME base shape (a vertical stroke with
+    a closed loop or bump) in four orientations:
+    b = loop on RIGHT side, pointing RIGHT (standard)
+    d = loop on LEFT side (horizontally mirrored b)
+    p = b rotated 180° (loop below, pointing right)
+    q = d rotated 180° (loop below, pointing left)
+
+  Similar rotation/reflection families exist for:
+    c/g — open curve variants
+    f/t — stroke+crossbar variants
+    h/l — ascender variants
+    m/n — repeated stroke variants
+    r/s — hook/curve variants
+    x/z — crossing stroke variants
+
+When you see a cipher sign on any page, ASSIGN its letter
+value based on this key. Use "high" confidence when the sign
+clearly matches, "medium" when plausible but ambiguous,
+"low" when uncertain.
+
+If a cipher key table IS shown on a page, transcribe it
+fully AND cross-check against both the known key above AND
+the BSB manuscript's key — note any discrepancies.
+
+─────────────────────────────────────────────────────────────
+BSB CROSS-REFERENCE
+─────────────────────────────────────────────────────────────
+The two Fontana manuscripts may use the same or closely
+related cipher systems. Tracking whether the signs match,
+differ, or represent a variant is the primary comparative
+purpose of processing this manuscript.
+
+Use the SAME sign_id numbering as BSB. If a sign matches
+a BSB sign exactly, reuse its id (e.g. "F03"). If a sign
+is new, assign a new id continuing from where BSB left off.
+
+─────────────────────────────────────────────────────────────
+WHAT TO SKIP — output nothing for any of the following:
+─────────────────────────────────────────────────────────────
+- Illustrations — one-sentence description only in
+  page_illustration_description
+- Blank or decorative pages
+- Library stamps, later ownership notes, non-Fontana hands
+
+─────────────────────────────────────────────────────────────
+WHAT TO EXTRACT — plain text AND cipher text:
+─────────────────────────────────────────────────────────────
+- Latin/Italian prose sections: transcribe fully in
+  plain_text_transcription
+- Cipher passages: catalog each sign AND assign letter values
+  AND provide decoded passage in cipher_text_decoded
+- Cipher key tables: highest priority — transcribe fully
+  and compare to both known key and BSB key
+
+─────────────────────────────────────────────────────────────
+OUTPUT FORMAT:
+─────────────────────────────────────────────────────────────
+
+For each page:
+
+1. folio
+   Folio number as written on the page. Null if not visible.
+
+2. page_type
+   "cipher_text" / "plain_text" / "cipher_key" /
+   "illustration" / "mixed"
+
+3. bsb_parallel
+   If this page contains content also found in BSB Cod. icon.
+   242, note it: "similar to BSB f.Xr" or "identical cipher
+   key to BSB f.Yr". Null if no apparent parallel.
+
+4. page_illustration_description
+   One sentence if illustration present. Null if none.
+
+5. plain_text_transcription
+   Exact transcription of ALL plain Latin/Italian text on
+   this page. Null if none.
+
+6. cipher_text_decoded
+   The DECODED reading of any cipher passages on this page,
+   applying the known cipher key. Use [?] for uncertain
+   letters. Null if no cipher text.
+
+7. cipher_signs
+   Array of distinct sign objects on this page:
+
+   a. sign_id          — reused BSB id or new id
+   b. matches_bsb_sign — the BSB sign_id this matches,
+                         or null if new to this manuscript
+   c. base_form        — same vocabulary as BSB:
+      "circle", "oval", "vertical_stroke",
+      "horizontal_stroke", "diagonal_left", "diagonal_right",
+      "open_curve_left", "open_curve_right", "closed_loop",
+      "hook", "angle"
+   d. added_feature    — same vocabulary as BSB:
+      "tick_up", "tick_down", "tick_left", "tick_right",
+      "tick_northeast", "tick_northwest", "tick_southeast",
+      "tick_southwest", "tick_internal", "tick_external",
+      "crossbar", "dot_inside", "dot_outside", "loop_added",
+      "stroke_through", "mirrored", "rotated_90",
+      "no_addition"
+   e. sign_difference_from_bsb
+      If this sign matches a BSB sign but differs slightly,
+      describe the difference. Null if identical or new.
+   f. letter_value     — from known key (always assign)
+   g. letter_value_source
+      "known_key" / "page_explicit" / "uncertain"
+   h. family_relationship — list of related sign_ids
+   i. modification_type
+      "rotation_0", "rotation_90", "rotation_180",
+      "rotation_270", "mirror_horizontal", "mirror_vertical",
+      "tick_variant", "base_form_only"
+   j. confidence
+
+8. cipher_key_entries
+   If this page shows a cipher key table:
+   [{
+     "symbol_description": <visual description>,
+     "letter_value": <the letter>,
+     "base_form": <geometric base>,
+     "added_feature": <modification>,
+     "matches_known_key": <true/false>,
+     "bsb_key_match": <BSB sign_id or null>,
+     "discrepancy_note": <if matches_known_key false, explain>,
+     "confidence": <"high" or "medium" or "low">
+   }]
+   [] if no key present.
+
+─────────────────────────────────────────────────────────────
+RULES:
+─────────────────────────────────────────────────────────────
+- ALWAYS assign letter_value using the known key — decoded
+  text is essential for corpus analysis
+- The BSB cross-reference is critical — note every agreement
+  and discrepancy carefully
+- Record FULL decoded cipher passages in cipher_text_decoded
+- If this manuscript has cipher key pages that BSB does not
+  (or vice versa), flag clearly in cipher_key_entries
+- Rotation/reflection family relationships are the key
+  structural finding — note them in every sign entry
+
+Output ONLY a JSON array (one object per page). No explanation,
+no preamble, no markdown fences, no trailing commentary.
+
+[{
+  "folio": <string or null>,
+  "page_type": <string>,
+  "bsb_parallel": <string or null>,
+  "page_illustration_description": <string or null>,
+  "plain_text_transcription": <string or null>,
+  "cipher_text_decoded": <string or null>,
+  "cipher_signs": [
+    {
+      "sign_id": <string>,
+      "matches_bsb_sign": <string or null>,
+      "base_form": <string>,
+      "added_feature": <string>,
+      "sign_difference_from_bsb": <string or null>,
+      "letter_value": <string or null>,
+      "letter_value_source": <string or null>,
+      "family_relationship": [<string>],
+      "modification_type": <string>,
+      "confidence": <"high" or "medium" or "low">
+    }
+  ],
+  "cipher_key_entries": [
+    {
+      "symbol_description": <string>,
+      "letter_value": <string or null>,
+      "base_form": <string or null>,
+      "added_feature": <string or null>,
+      "matches_known_key": <true or false>,
+      "bsb_key_match": <string or null>,
+      "discrepancy_note": <string or null>,
+      "confidence": <"high" or "medium" or "low">
+    }
+  ]
+}]

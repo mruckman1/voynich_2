@@ -1,0 +1,122 @@
+You are transcribing the chapter "Dalla tironiana alla tachigrafia
+sillabica" by Giorgio Costamagna, published in the edited volume
+Tironische Noten, ed. Peter Ganz (Wiesbaden: Harrassowitz, 1990).
+
+The chapter is in Italian. The surrounding volume is in German but
+this chapter is entirely Italian — do not translate it.
+
+This chapter documents the historical transition from standard
+Carolingian Tironian notes to the Italian syllabic tachygraphy
+system. It is a scholarly prose argument with sign examples and
+tables embedded in the text. Both the prose and the embedded
+signs are needed.
+
+─────────────────────────────────────────────────────────────
+WHAT TO SKIP — output nothing for any of the following:
+─────────────────────────────────────────────────────────────
+- The volume's German preface, introduction, or other chapters
+  — only Costamagna's Italian chapter is wanted
+- Running page headers and footer page numbers
+- The editor's (Ganz's) apparatus: editorial notes, series
+  information, publisher boilerplate
+- Bibliography entries at the END of the chapter — include
+  footnotes embedded in the text body, skip the final
+  bibliography list
+- Any German-language text that is not part of Costamagna's
+  chapter (table of contents, other authors' chapters)
+
+─────────────────────────────────────────────────────────────
+OUTPUT FORMAT — two parallel arrays:
+─────────────────────────────────────────────────────────────
+This chapter requires two types of extraction. Output both
+in a single JSON object with two keys: "prose" and "signs".
+
+── PART 1: prose ──────────────────────────────────────────
+
+Transcribe the full Italian text of the chapter verbatim.
+Preserve paragraph breaks as "\n\n" in the string.
+Preserve footnote call numbers inline as [N] where N is the
+footnote number. Then include footnote texts in a separate
+"footnotes" array.
+
+Do not translate. Do not summarize. Do not paraphrase.
+If a word is unclear, transcribe your best reading followed
+by [?]. If a word is completely illegible, write [illegible].
+
+── PART 2: signs ──────────────────────────────────────────
+
+Whenever a shorthand sign (a drawn symbol, not typeset text)
+appears in the text or in a table or figure:
+
+1. sign_id
+   Sequential identifier: "S01", "S02", etc. across the
+   whole chapter.
+
+2. page
+   Page number where the sign appears.
+
+3. context_italian
+   The Italian phrase immediately surrounding the sign in
+   the text — enough to understand what value Costamagna
+   assigns to it. Approximately 10–20 words of context.
+
+4. syllable_or_word_value
+   The syllabic or word value Costamagna assigns to this sign
+   in the surrounding text or label. Transcribe exactly.
+   Null if not stated.
+
+5. first_stroke
+   Using ONLY these terms:
+   vertical_stroke, horizontal_stroke, diagonal_left,
+   diagonal_right, open_curve_left, open_curve_right,
+   closed_loop, hook_up, hook_down, ascender, descender,
+   crossbar, sigmoid, connector, unclear
+
+6. middle_strokes [] — same vocabulary
+
+7. final_stroke — same vocabulary
+
+8. modifier_marks
+   dot, tick, thickening, angle_change, serif_added,
+   loop_added, notch, bar_through. [] if none.
+
+9. tironian_origin
+   If Costamagna explicitly links this sign to a standard
+   Tironian note as its origin, transcribe that statement
+   exactly. Null if no origin stated.
+
+10. confidence
+    "high" / "medium" / "low"
+
+─────────────────────────────────────────────────────────────
+OUTPUT SCHEMA:
+─────────────────────────────────────────────────────────────
+
+Output ONLY the JSON object below. No explanation, no preamble,
+no markdown fences, no trailing commentary.
+
+{
+  "chapter_title": "Dalla tironiana alla tachigrafia sillabica",
+  "author": "Giorgio Costamagna",
+  "volume": "Tironische Noten",
+  "prose": {
+    "full_text": <string — complete Italian chapter text>,
+    "footnotes": [
+      {"number": <integer>, "text": <string>}
+    ]
+  },
+  "signs": [
+    {
+      "sign_id": <string>,
+      "page": <integer>,
+      "context_italian": <string>,
+      "syllable_or_word_value": <string or null>,
+      "first_stroke": <string>,
+      "middle_strokes": [<string>],
+      "final_stroke": <string>,
+      "modifier_marks": [<string>],
+      "tironian_origin": <string or null>,
+      "confidence": <"high" or "medium" or "low">
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+You are extracting Tironian sign entries from the plate tables of
+Schmitz's Commentarii Notarum Tironianarum (Leipzig, 1893).
+
+This edition has two parts: a text volume and a separate set of loose
+plate tables. The plates are the target. The text volume contains the
+prolegomena (manuscript catalog), Latin commentary, and an alphabetical
+index — none of that is wanted here.
+
+─────────────────────────────────────────────────────────────
+WHAT TO SKIP — output nothing for any of the following:
+─────────────────────────────────────────────────────────────
+- Any page of prose text (Latin or German) — prolegomena,
+  preface, commentary sections between plates
+- The alphabetical index (Notarum Index Alphabeticus) at the
+  back of the volume — it reverses the lookup direction and
+  will be processed separately if needed
+- Running page headers and footer page numbers (do not report
+  these as entries)
+- Plate title lines (e.g. "TAB. XLVII" or "NOTAE DE DEIS")
+  — record the plate number in the plate field, but do not
+  create an entry for the title itself
+- Footnote numbers and footnote text at the bottom of a plate
+- Editorial correction marks (asterisks, daggers, brackets)
+  that mark disputed readings — include the Latin expansion
+  but note the mark in editorial_note
+
+─────────────────────────────────────────────────────────────
+WHAT TO EXTRACT — one JSON object per sign:
+─────────────────────────────────────────────────────────────
+Each plate is a grid or numbered list of Tironian signs.
+Each sign is a drawn symbol (not typeset) with a Latin word
+or phrase written alongside it in Carolingian minuscule.
+
+For each sign on the plate:
+
+1. plate
+   The plate number as printed in the plate header (Roman
+   or Arabic numeral — transcribe exactly, e.g. "XLVII" or "47").
+
+2. position
+   The sequential number of this sign within the plate,
+   counting left-to-right, top-to-bottom from 1.
+
+3. latin_expansion
+   The Latin text printed alongside the sign. Transcribe
+   exactly as written, including case.
+   If a sign has no accompanying Latin text, write null.
+   If you cannot read it confidently, write null.
+
+4. sign_complexity
+   Count the total number of distinct strokes in the sign:
+   "simple"   — 1 to 3 strokes
+   "compound" — 4 or more strokes
+   (Simple signs are most relevant for comparison with the
+   Voynich script — note this field helps filter later.)
+
+5. first_stroke
+   The first stroke drawn, using ONLY these terms:
+   vertical_stroke, horizontal_stroke, diagonal_left,
+   diagonal_right, open_curve_left, open_curve_right,
+   closed_loop, hook_up, hook_down, ascender, descender,
+   crossbar, sigmoid, connector, unclear
+
+6. middle_strokes
+   List of any strokes between the first and last, in order.
+   Use the same vocabulary. Empty list [] if none.
+
+7. final_stroke
+   The last stroke drawn. Same vocabulary.
+
+8. modifier_marks
+   Small marks added to a base form that do not constitute
+   a full stroke: dot, tick, thickening, angle_change,
+   serif_added, loop_added, notch.
+   Empty list [] if none.
+
+9. editorial_note
+   If Schmitz marks this entry with a correction symbol
+   (asterisk *, dagger †, or square bracket), note it here
+   as a short string. Otherwise null.
+
+10. confidence
+    "high"   — sign clearly visible, expansion clearly readable
+    "medium" — one of the two has minor uncertainty
+    "low"    — significant uncertainty in sign or expansion
+
+─────────────────────────────────────────────────────────────
+RULES:
+─────────────────────────────────────────────────────────────
+- Describe the sign as you see it — do not name it or attempt
+  to identify it as a known Tironian note
+- If a stroke is unclear or damaged, write "unclear" — never
+  substitute a guess
+- For compound signs (4+ strokes), still record what you can
+  observe, marking unclear strokes as "unclear"
+- Do not translate or interpret the Latin expansion
+- If a single sign has two Latin expansions listed (variant
+  readings), create one JSON object per expansion
+
+Output ONLY a JSON array. No explanation, no preamble,
+no markdown fences, no trailing commentary.
+
+[{
+  "plate": <string>,
+  "position": <integer>,
+  "latin_expansion": <string or null>,
+  "sign_complexity": <"simple" or "compound">,
+  "first_stroke": <string>,
+  "middle_strokes": [<string>],
+  "final_stroke": <string>,
+  "modifier_marks": [<string>],
+  "editorial_note": <string or null>,
+  "confidence": <"high" or "medium" or "low">
+}]

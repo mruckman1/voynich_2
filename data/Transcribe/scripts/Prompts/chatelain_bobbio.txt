@@ -1,0 +1,136 @@
+You are extracting Tironian sign entries from pages 115–125 of
+Chatelain's Introduction à la lecture des notes tironiennes
+(Paris: Champion, 1900).
+
+This section of the book documents variant Tironian sign forms
+from the Italian manuscript tradition, with particular focus on
+the Bobbio Abbey scriptorum (northern Italy, 8th–10th century).
+The text of the book is in French; the sign labels and glosses
+are in Latin.
+
+─────────────────────────────────────────────────────────────
+WHAT TO SKIP — output nothing for any of the following:
+─────────────────────────────────────────────────────────────
+- French prose paragraphs discussing the signs — skip the
+  discussion, extract only the signs themselves
+- Running page headers and footer page numbers
+- Chapter titles and section headings (e.g. "§ 42. — Italie")
+- Footnote numbers and footnote text
+- Bibliographic references and citations
+- Plate title lines — record the plate number in the plate
+  field but do not create an entry for the title
+- Cross-references to other plates or sections
+  (e.g. "cf. pl. XXXVII")
+
+─────────────────────────────────────────────────────────────
+WHAT TO EXTRACT — one JSON object per sign:
+─────────────────────────────────────────────────────────────
+Each sign appears as a drawn symbol with a Latin label or
+value written alongside it. Signs are organized into plates
+(numbered with Roman numerals) and positions within plates.
+
+Critical: the Italian tradition uses MINIMAL PAIR signs —
+sign families where a single base form generates multiple
+syllable values by varying one small feature (angle of
+entry, terminal thickness, presence/absence of a serif or
+tick). Capturing variant_of_position and variant_difference
+is the primary analytical purpose of processing this source.
+
+For each sign:
+
+1. page
+   Page number as printed on the page.
+
+2. plate
+   The plate number if the sign appears on a labeled plate
+   (e.g. "XXXVIII"). Null if the sign appears inline in text.
+
+3. position
+   Sequential number of this sign within its plate or page
+   section, counting left-to-right, top-to-bottom from 1.
+
+4. label_text
+   The Latin label or syllabic value written next to the sign.
+   Transcribe exactly — preserve case and any punctuation.
+   If a French gloss accompanies the Latin label, transcribe
+   the French in french_gloss (see below).
+   If no label, write null.
+
+5. french_gloss
+   Any French explanatory phrase directly attached to this
+   sign entry (not general prose). Transcribe exactly.
+   Null if none.
+
+6. geographic_source
+   If Chatelain notes which manuscript or scriptorium this
+   sign comes from (e.g. "Bobbio", "Milan", "Verona"),
+   transcribe that attribution exactly. Null if not given.
+
+7. first_stroke
+   The first stroke of the sign, using ONLY these terms:
+   vertical_stroke, horizontal_stroke, diagonal_left,
+   diagonal_right, open_curve_left, open_curve_right,
+   closed_loop, hook_up, hook_down, ascender, descender,
+   crossbar, sigmoid, connector, unclear
+
+8. middle_strokes
+   List of strokes between first and last. Same vocabulary.
+   Empty list [] if none.
+
+9. final_stroke
+   Last stroke. Same vocabulary.
+
+10. modifier_marks
+    Small marks on the base form: dot, tick, thickening,
+    angle_change, serif_added, loop_added, notch.
+    Empty list [] if none.
+
+11. variant_of_position
+    If this sign is a variant of another sign on the same
+    page or plate, give the position number of the base sign
+    it varies from. Null if this is a base form.
+
+12. variant_difference
+    If variant_of_position is set: describe exactly what one
+    feature differs from the base sign. Use specific terms:
+    "entry_angle_steeper", "entry_angle_shallower",
+    "terminal_thicker", "terminal_thinner", "serif_added",
+    "serif_removed", "tick_added", "loop_added",
+    "mirrored_horizontal", "mirrored_vertical",
+    "rotated_90cw", "rotated_90ccw".
+    Null if this is not a variant.
+
+13. confidence
+    "high"   — sign and label both clearly visible
+    "medium" — one field uncertain
+    "low"    — significant uncertainty
+
+─────────────────────────────────────────────────────────────
+RULES:
+─────────────────────────────────────────────────────────────
+- Describe strokes as you see them — do not try to identify
+  the sign as a known Tironian note or assign a phoneme value
+- If a sign is damaged or unclear, record what is visible and
+  mark confidence "low"
+- Do not translate French glosses to English
+- If you cannot determine whether two signs are variants of
+  each other, leave variant_of_position null
+
+Output ONLY a JSON array. No explanation, no preamble,
+no markdown fences, no trailing commentary.
+
+[{
+  "page": <integer>,
+  "plate": <string or null>,
+  "position": <integer>,
+  "label_text": <string or null>,
+  "french_gloss": <string or null>,
+  "geographic_source": <string or null>,
+  "first_stroke": <string>,
+  "middle_strokes": [<string>],
+  "final_stroke": <string>,
+  "modifier_marks": [<string>],
+  "variant_of_position": <integer or null>,
+  "variant_difference": <string or null>,
+  "confidence": <"high" or "medium" or "low">
+}]

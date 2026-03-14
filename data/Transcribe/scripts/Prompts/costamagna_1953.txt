@@ -1,0 +1,155 @@
+You are extracting sign entries from Costamagna's
+Il sistema tachigrafico sillabico usato dai notai medioevali
+italiani (sec. VIII–XI): regole fondamentali (Genoa, 1953).
+
+This Italian-language monograph documents a syllabic shorthand
+system used by northern Italian notaries. Unlike standard
+Tironian notes (which represent whole words), this system
+assigns each sign a consonant-vowel (CV) syllable value such
+as BA, BE, BI, BO, BU — CA, CE, CI — LA, LE, LI — etc.
+Signs for the same consonant form a FAMILY: same base stroke,
+differentiated by a small modification (angle, terminal weight,
+a tick or serif) for each vowel.
+
+This is the primary phonetic reference for the project. The
+syllable_value and word_position fields are the two most
+important fields in the entire pipeline — capture them with
+maximum care.
+
+─────────────────────────────────────────────────────────────
+WHAT TO SKIP — output nothing for any of the following:
+─────────────────────────────────────────────────────────────
+- Italian prose chapters (introduction, methodology discussion,
+  historical overview) — skip all running prose
+- Table of contents (Indice)
+- Bibliography (Bibliografia)
+- Footnotes that are editorial or bibliographic (not part of
+  a sign entry)
+- Running page headers
+- Chapter titles and section headings
+- Any page that does not contain a sign table
+
+─────────────────────────────────────────────────────────────
+WHAT TO EXTRACT — one JSON object per sign:
+─────────────────────────────────────────────────────────────
+The sign tables are the extraction target. Tables are typically
+organized as a grid (consonant × vowel) or as a list with
+syllable value on the left and sign on the right. Some tables
+group signs by word position (initial, medial, final).
+
+For each sign:
+
+1. table_number
+   Sequential table number as printed (Arabic or Roman).
+   If the table has a heading such as "Segni per BA-BI-BO",
+   record that heading in table_heading.
+
+2. table_heading
+   The printed heading of the table this sign belongs to,
+   transcribed exactly in Italian. Null if no heading.
+
+3. position
+   Sequential position of this sign within the table,
+   counting left-to-right, top-to-bottom from 1.
+
+4. syllable_value
+   *** MOST IMPORTANT FIELD ***
+   The CV syllable this sign represents, as printed in the
+   table — e.g. "BA", "be", "LI", "ma".
+   Transcribe exactly, preserving the printed case.
+   If the table shows a cluster (e.g. "STA", "TRA"),
+   transcribe the full cluster.
+   If you cannot read this confidently, write null — do
+   not guess.
+
+5. word_position
+   *** SECOND MOST IMPORTANT FIELD ***
+   Where in a word this sign may appear, as indicated by
+   Costamagna. Transcribe any printed indicator exactly in
+   the raw_position_note field, then normalize to:
+   "initial"  — appears at the start of a word only
+   "medial"   — appears in the middle of a word only
+   "final"    — appears at the end of a word only
+   "any"      — no positional restriction given
+   If genuinely unclear, write null (not "any").
+
+6. raw_position_note
+   The exact Italian text Costamagna prints to indicate
+   position (e.g. "iniz.", "finale", "med.", "iniziale e
+   finale"). Null if no positional note is given.
+
+7. variant_group
+   If Costamagna groups this sign with others as variants
+   of the same base form (e.g. all signs for the BA family),
+   record the group label he uses. Null if not grouped.
+
+8. first_stroke
+   Using ONLY these terms:
+   vertical_stroke, horizontal_stroke, diagonal_left,
+   diagonal_right, open_curve_left, open_curve_right,
+   closed_loop, hook_up, hook_down, ascender, descender,
+   crossbar, sigmoid, connector, unclear
+
+9. middle_strokes
+   List in order. Same vocabulary. [] if none.
+
+10. final_stroke
+    Same vocabulary.
+
+11. modifier_marks
+    Small differentiating marks added to a base form:
+    dot, tick, thickening, angle_change, serif_added,
+    loop_added, notch, bar_through.
+    [] if none.
+    These are CRITICAL — they are the feature that
+    differentiates one vowel value from another within
+    a consonant family.
+
+12. italian_label
+    Any Italian text label that Costamagna writes directly
+    adjacent to this sign (not general prose, not the
+    syllable value). Transcribe exactly. Null if none.
+
+13. manuscript_source
+    If Costamagna attributes this sign form to a specific
+    manuscript or document, record the attribution exactly.
+    Null if not given.
+
+14. confidence
+    "high"   — syllable value and sign form both clearly visible
+    "medium" — one field has minor uncertainty
+    "low"    — significant uncertainty in syllable_value or
+               stroke description
+
+─────────────────────────────────────────────────────────────
+RULES:
+─────────────────────────────────────────────────────────────
+- syllable_value is null if you cannot read it — never guess
+- Describe strokes as you observe them — do not infer phonetic
+  values from stroke shape
+- If the same syllable has multiple sign variants shown in
+  the same table cell, create one JSON object per variant
+- Do not translate Italian labels to English
+- For the modifier_marks field: a "tick" added to a curve to
+  create a different vowel value is THE key data point — do
+  not omit it or roll it into the stroke description
+
+Output ONLY a JSON array. No explanation, no preamble,
+no markdown fences, no trailing commentary.
+
+[{
+  "table_number": <integer or null>,
+  "table_heading": <string or null>,
+  "position": <integer>,
+  "syllable_value": <string or null>,
+  "word_position": <"initial" or "medial" or "final" or "any" or null>,
+  "raw_position_note": <string or null>,
+  "variant_group": <string or null>,
+  "first_stroke": <string>,
+  "middle_strokes": [<string>],
+  "final_stroke": <string>,
+  "modifier_marks": [<string>],
+  "italian_label": <string or null>,
+  "manuscript_source": <string or null>,
+  "confidence": <"high" or "medium" or "low">
+}]

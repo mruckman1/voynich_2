@@ -1,0 +1,249 @@
+You are extracting individual Tironian shorthand signs from
+facsimile plates of Ambrosianus M.12 sup., a manuscript of
+Hyginus's Astronomica written at Bobbio Abbey (northern Italy,
+7th–8th century). The plates appear on PDF pages 85–99 of
+Chatelain & Legendre, Hygini Astronomica: texte du manuscrit
+tironien de Milan (Paris: Champion, 1909).
+
+The file is: hyginiastronomic00hygi.pdf
+
+─────────────────────────────────────────────────────────────
+HOW THIS MANUSCRIPT WORKS
+─────────────────────────────────────────────────────────────
+This is NOT a sign catalog with neat labels. It is a running
+Latin text where Tironian shorthand signs are INTERSPERSED
+with words written in standard early-medieval minuscule.
+
+The scribe uses standard script for:
+  - Proper nouns (NATURALIS, SIGNIFICATIONES, ZODIACUS, etc.)
+  - Technical terms (sphera, polo, tropicus, etc.)
+  - Section headings and chapter markers
+  - Some common words written in full
+
+The scribe uses Tironian signs for:
+  - Prepositions (in, ad, de, sub, per, cum, etc.)
+  - Conjunctions (et, ac, aut, sed, quod, etc.)
+  - Common verbs and verb endings
+  - Pronouns and grammatical particles
+  - Common nouns when not written out in full
+  - Inflectional suffixes (-bus, -tur, -orum, etc.)
+
+Your job is to identify each DISTINCT Tironian sign form,
+record its visual appearance, and map it to the Latin word
+or syllable it represents by using the surrounding readable
+text and the transcription on PDF pages 33–80.
+
+─────────────────────────────────────────────────────────────
+HOW TO USE THE TRANSCRIPTION
+─────────────────────────────────────────────────────────────
+Chatelain's transcription (pages 33–80) marks manuscript line
+breaks with double vertical bars and superscript line numbers:
+  || 7 qui eodem centro sphère continentur
+
+The plate captions identify which manuscript pages are shown:
+  Plate 1 (p.85): "Baeda et Hyginus. p. 1"
+  Plate 2 (p.87): "Hyginus. p. 2–3"
+  Plate 3 (p.89): "Hyginus. p. 4–5"
+  Plate 4 (p.91): "Hyginus. p. 6–7"
+  Plate 5 (p.93): "Hyginus. p. 8–9"
+  Plate 6 (p.95): "Hyginus. p. 10–11"
+  Plate 7 (p.97): "Hyginus. p. 12–13"
+  Plate 8 (p.99): "Hyginus. p. 14"
+
+Use the transcription to determine what Latin word each
+Tironian sign stands for. The readable words on either side
+of a sign constrain its identity. For example, if you see
+readable "sphera" then a Tironian sign then readable "polo",
+and the transcription reads "sphera in polo", the sign = "in".
+
+─────────────────────────────────────────────────────────────
+WHAT TO SKIP — output nothing for:
+─────────────────────────────────────────────────────────────
+- Words written entirely in standard minuscule or capital
+  script (these are NOT Tironian signs)
+- Plate captions and page numbers
+- Damaged areas where no sign form is recoverable
+- Decorative initials and rubrication
+- Modern annotations or library stamps
+
+─────────────────────────────────────────────────────────────
+WHAT TO EXTRACT — one JSON object per DISTINCT sign form:
+─────────────────────────────────────────────────────────────
+Do NOT create a separate entry for every occurrence. Instead,
+create ONE entry per distinct sign form, with an occurrence
+count and list of locations where it appears.
+
+For each distinct sign:
+
+1. sign_id
+   Sequential integer starting from 1.
+
+2. latin_value
+   The Latin word, syllable, or morpheme this sign represents,
+   as determined from the transcription. Use the dictionary
+   form where identifiable (e.g. "et" not "ET").
+   If the value cannot be determined, write null.
+
+3. value_type
+   Classify the latin_value:
+   "word"       — complete Latin word (et, in, cum, quod...)
+   "syllable"   — sub-word syllable (de-, -bus, -tur, -orum...)
+   "prefix"     — bound prefix (con-, per-, prae-...)
+   "suffix"     — bound suffix (-tur, -bus, -que...)
+   "ambiguous"  — could be word or syllable depending on context
+   Null if latin_value is null.
+
+4. first_stroke
+   The first stroke of the sign, using ONLY these terms:
+   vertical_stroke, horizontal_stroke, diagonal_left,
+   diagonal_right, open_curve_left, open_curve_right,
+   closed_loop, hook_up, hook_down, ascender, descender,
+   crossbar, sigmoid, connector, dot, tick, unclear
+
+5. middle_strokes
+   List of strokes between first and last. Same vocabulary.
+   Empty list [] if the sign is only one or two strokes.
+
+6. final_stroke
+   Last stroke. Same vocabulary. Same as first_stroke if the
+   sign is a single stroke.
+
+7. modifier_marks
+   Small marks on the base form: dot, tick, thickening,
+   angle_change, serif_added, loop_added, notch.
+   Empty list [] if none.
+
+8. height_relative
+   Approximate height of the sign relative to surrounding
+   standard text:
+   "supralinear"  — sits above the text baseline
+   "baseline"     — same height as standard text
+   "descending"   — descends below the baseline
+   "full_height"  — extends both above and below
+
+9. width_relative
+   "narrow"   — narrower than a standard minuscule letter
+   "normal"   — about the same width
+   "wide"     — wider than a standard letter
+
+10. occurrence_count
+    Total number of times this exact sign form appears across
+    all plates examined.
+
+11. first_occurrence
+    Location of the first clear instance:
+    {
+      "pdf_page": <integer>,
+      "manuscript_page": <string>,
+      "line_number": <integer or null>,
+      "preceding_word": <string or null>,
+      "following_word": <string or null>
+    }
+
+12. variant_of_sign_id
+    If this sign is a minimal-pair variant of another sign
+    in this table (same base form, one feature changed),
+    give the sign_id of the base form. Null if this is a
+    base form or no variant relationship is detectable.
+
+13. variant_difference
+    If variant_of_sign_id is set, describe the single feature
+    that differs:
+    "entry_angle_steeper", "entry_angle_shallower",
+    "terminal_thicker", "terminal_thinner",
+    "serif_added", "serif_removed",
+    "tick_added", "tick_removed",
+    "loop_added", "loop_removed",
+    "mirrored_horizontal", "mirrored_vertical",
+    "rotated_90cw", "rotated_90ccw",
+    "stroke_extended", "stroke_shortened",
+    "dot_added", "dot_removed"
+    Null if not a variant.
+
+14. similar_to_eva
+    If this sign's form resembles any EVA (Extended Voynich
+    Alphabet) character, note which one(s). Use standard EVA
+    letter names: o, a, e, y, d, s, r, l, k, t, p, f, c, h,
+    i, n, q, m, g, x, etc. Null if no resemblance.
+    This field is speculative — mark it as such.
+
+15. confidence
+    "high"   — sign form clearly visible AND latin_value
+               confirmed by transcription cross-reference
+    "medium" — one of form or value is uncertain
+    "low"    — significant uncertainty in both
+
+─────────────────────────────────────────────────────────────
+ANALYTICAL PRIORITIES
+─────────────────────────────────────────────────────────────
+The primary analytical purpose of this extraction is to build
+a SIGN-TO-VALUE TABLE for Bobbio tachygraphy as actually used
+in a real manuscript, not as cataloged in Chatelain's later
+systematic works.
+
+Pay special attention to:
+
+A. SIGN FAMILIES — groups of signs sharing a common base form
+   where small modifications (tick, dot, angle change) produce
+   different values. These are evidence of the systematic
+   modification principle central to tachygraphic writing.
+
+B. SYLLABIC VS WORD-LEVEL values — note whether each sign
+   represents a complete word or a sub-word unit. Signs used
+   for syllables or morphemes are more analytically valuable
+   than signs for complete words.
+
+C. FREQUENCY — common signs (et, in, est, -que, -bus, -tur)
+   are the most reliable because they appear often enough to
+   confirm the reading. Prioritize these.
+
+D. CONTEXT WINDOWS — for each sign, the preceding and
+   following readable words are critical data. Always record
+   them in first_occurrence.
+
+─────────────────────────────────────────────────────────────
+RULES
+─────────────────────────────────────────────────────────────
+- Describe strokes as you see them in the facsimile — do not
+  import stroke descriptions from secondary sources
+- A single pen-stroke that curves may still be ONE stroke
+  (e.g. open_curve_left), not multiple strokes
+- If two signs look identical but represent different words
+  in different contexts, record them as ONE sign with a note
+  in latin_value indicating the ambiguity
+- If the same Latin word is written with different sign forms
+  in different places, record them as SEPARATE signs
+- Standard abbreviation marks (macrons, suspension marks) over
+  otherwise standard text are NOT Tironian signs — skip them
+- Ligatures of standard letters are NOT Tironian signs
+- Do not translate Latin values to English
+
+─────────────────────────────────────────────────────────────
+OUTPUT FORMAT
+─────────────────────────────────────────────────────────────
+Output ONLY a JSON array. No explanation, no preamble,
+no markdown fences, no trailing commentary.
+
+[{
+  "sign_id": <integer>,
+  "latin_value": <string or null>,
+  "value_type": <string or null>,
+  "first_stroke": <string>,
+  "middle_strokes": [<string>],
+  "final_stroke": <string>,
+  "modifier_marks": [<string>],
+  "height_relative": <string>,
+  "width_relative": <string>,
+  "occurrence_count": <integer>,
+  "first_occurrence": {
+    "pdf_page": <integer>,
+    "manuscript_page": <string>,
+    "line_number": <integer or null>,
+    "preceding_word": <string or null>,
+    "following_word": <string or null>
+  },
+  "variant_of_sign_id": <integer or null>,
+  "variant_difference": <string or null>,
+  "similar_to_eva": <string or null>,
+  "confidence": <"high" or "medium" or "low">
+}]

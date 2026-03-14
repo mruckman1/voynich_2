@@ -1,0 +1,222 @@
+You are analyzing pages from the Bellicorum Instrumentorum Liber
+by Giovanni Fontana (Munich, BSB Cod. icon. 242), a manuscript
+from the 1420s–1430s, northern Italy (Padua/Venice region).
+
+This manuscript contains:
+  (a) Sections of plain Latin or Italian text
+  (b) Sections of text written in a substitution cipher
+  (c) Fantastical technical illustrations
+
+The cipher is the primary target. The cipher uses geometric
+symbols constructed from a small set of base forms modified by
+the addition or placement of strokes — creating a family of
+related signs that encode different letters by systematic
+variation of one feature.
+
+─────────────────────────────────────────────────────────────
+FONTANA'S CIPHER KEY — APPLY THIS KNOWLEDGE
+─────────────────────────────────────────────────────────────
+Fontana's cipher has been decoded by scholars (Zinner 1944,
+Battisti, Thorndike). The key is a systematic mnemonic
+substitution cipher:
+
+VOWELS — circles or ovals with directional tick marks:
+  a = circle with tick pointing UP (north)
+  e = circle with tick pointing RIGHT (east)
+  i = circle with tick pointing DOWN (south)
+  o = circle with tick pointing LEFT (west)
+  u = circle with tick at DIAGONAL (northeast or variant)
+
+CONSONANTS — generated from base forms by rotation and
+reflection, following a mnemonic grouping principle:
+  b, d, p, q = the SAME base shape (a vertical stroke with
+    a closed loop or bump) in four orientations:
+    b = loop on RIGHT side, pointing RIGHT (standard)
+    d = loop on LEFT side (horizontally mirrored b)
+    p = b rotated 180° (loop below, pointing right)
+    q = d rotated 180° (loop below, pointing left)
+
+  Similar rotation/reflection families exist for:
+    c/g — open curve variants
+    f/t — stroke+crossbar variants
+    h/l — ascender variants
+    m/n — repeated stroke variants
+    r/s — hook/curve variants
+    x/z — crossing stroke variants
+
+When you see a cipher sign on any page, ASSIGN its letter
+value based on this key — do not wait for Fontana to
+provide the key explicitly on that page. Use "high"
+confidence when the sign clearly matches a known key entry,
+"medium" when the match is plausible but the sign is
+slightly ambiguous, "low" when uncertain.
+
+If a cipher key table IS shown on a page, transcribe it
+fully in cipher_key_entries AND cross-check it against the
+known key above — note any discrepancies.
+
+─────────────────────────────────────────────────────────────
+WHAT TO SKIP — output nothing for any of the following:
+─────────────────────────────────────────────────────────────
+- The illustrations themselves — for each illustration,
+  record only a one-sentence visual description in the
+  page_illustration_description field
+- Blank or decorative pages
+- Ownership stamps, library seals, later annotations by
+  hands other than the primary scribe
+
+─────────────────────────────────────────────────────────────
+WHAT TO EXTRACT — plain text AND cipher text:
+─────────────────────────────────────────────────────────────
+- Latin/Italian prose sections: transcribe fully in
+  plain_text_transcription (these provide context for the
+  cipher passages and may contain medical/technical terms)
+- Cipher passages: catalog each sign AND assign letter values
+- Cipher key tables: highest priority — transcribe fully
+
+─────────────────────────────────────────────────────────────
+OUTPUT FORMAT:
+─────────────────────────────────────────────────────────────
+
+For each page provide a single JSON object with these keys:
+
+1. folio
+   The folio number as written on the page (e.g. "f. 12r",
+   "f. 12v"). If not visible, write null.
+
+2. page_type
+   "cipher_text" / "plain_text" / "cipher_key" /
+   "illustration" / "mixed"
+
+3. page_illustration_description
+   If an illustration is present, one sentence describing
+   what it depicts visually. Null if no illustration.
+
+4. plain_text_transcription
+   If plain Latin or Italian text is present, transcribe it
+   exactly. Include ALL prose, not just cipher-adjacent text.
+   Null if no plain text.
+
+5. cipher_text_decoded
+   If cipher text is present, provide the DECODED reading
+   by applying the known cipher key above. Transcribe the
+   full decoded passage as a string. If some signs are
+   unclear, use [?] for uncertain letters. Null if no
+   cipher text.
+
+6. cipher_signs
+   Array of sign objects for each DISTINCT cipher symbol
+   visible on this page. Record each unique form once.
+
+   For each distinct cipher sign:
+
+   a. sign_id
+      Your assigned identifier: "F01", "F02", etc. Use the
+      SAME identifier each time this sign recurs across pages.
+
+   b. base_form
+      "circle", "oval", "vertical_stroke",
+      "horizontal_stroke", "diagonal_left", "diagonal_right",
+      "open_curve_left", "open_curve_right", "closed_loop",
+      "hook", "angle"
+
+   c. added_feature
+      "tick_up", "tick_down", "tick_left", "tick_right",
+      "tick_northeast", "tick_northwest", "tick_southeast",
+      "tick_southwest", "tick_internal", "tick_external",
+      "crossbar", "dot_inside", "dot_outside", "loop_added",
+      "stroke_through", "mirrored", "rotated_90",
+      "no_addition"
+
+   d. letter_value
+      The letter this sign encodes, based on the known key.
+      Use the key described above. If the sign appears in an
+      explicit key table on this page, prefer that value.
+      Null ONLY if you truly cannot determine the value.
+
+   e. letter_value_source
+      "known_key"    — assigned from the documented cipher key
+      "page_explicit" — Fontana provides it on this page
+      "uncertain"    — best guess, low confidence
+      Null if letter_value is null.
+
+   f. family_relationship
+      List of sign_ids sharing the same base_form but
+      differing in added_feature. These are the rotation/
+      reflection families. [] if none identified yet.
+
+   g. modification_type
+      How this sign relates to its family members:
+      "rotation_0" (base orientation), "rotation_90",
+      "rotation_180", "rotation_270", "mirror_horizontal",
+      "mirror_vertical", "tick_variant", "base_form_only"
+
+   h. first_occurrence_folio
+      The folio where you first catalogued this sign.
+
+   i. confidence
+      "high" / "medium" / "low"
+
+7. cipher_key_entries
+   If this page shows a cipher alphabet table or key:
+   [{
+     "symbol_description": <visual description>,
+     "letter_value": <the letter>,
+     "base_form": <geometric base>,
+     "added_feature": <modification>,
+     "matches_known_key": <true/false — does it match the
+       documented key described above?>,
+     "discrepancy_note": <if matches_known_key is false,
+       explain the difference. null otherwise>,
+     "confidence": <"high" or "medium" or "low">
+   }]
+   [] if no key present.
+
+─────────────────────────────────────────────────────────────
+RULES:
+─────────────────────────────────────────────────────────────
+- Assign sign_ids consistently: F01 always = the same form
+- ALWAYS assign letter_value using the known key — the
+  primary analytical value is having decoded text alongside
+  the sign descriptions
+- "Mirrored" and "rotated" family relationships are critical
+  — note them in family_relationship and modification_type
+- If a cipher key table appears on a page, compare every
+  entry against the known key and flag discrepancies
+- Record FULL decoded cipher passages in cipher_text_decoded
+  — this is essential for corpus analysis
+
+Output ONLY a JSON array (one object per page). No explanation,
+no preamble, no markdown fences, no trailing commentary.
+
+[{
+  "folio": <string or null>,
+  "page_type": <string>,
+  "page_illustration_description": <string or null>,
+  "plain_text_transcription": <string or null>,
+  "cipher_text_decoded": <string or null>,
+  "cipher_signs": [
+    {
+      "sign_id": <string>,
+      "base_form": <string>,
+      "added_feature": <string>,
+      "letter_value": <string or null>,
+      "letter_value_source": <string or null>,
+      "family_relationship": [<string>],
+      "modification_type": <string>,
+      "first_occurrence_folio": <string or null>,
+      "confidence": <"high" or "medium" or "low">
+    }
+  ],
+  "cipher_key_entries": [
+    {
+      "symbol_description": <string>,
+      "letter_value": <string or null>,
+      "base_form": <string or null>,
+      "added_feature": <string or null>,
+      "matches_known_key": <true or false>,
+      "discrepancy_note": <string or null>,
+      "confidence": <"high" or "medium" or "low">
+    }
+  ]
+}]

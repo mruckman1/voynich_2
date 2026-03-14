@@ -5007,6 +5007,37 @@ def cmd_phase49():
     run_phase49()
     print(f"\nPhase 49 completed in {time.time() - t0:.1f}s")
 
+# Phase 50: WFST Validation + Word-Level LM
+def cmd_table_null():
+    from voynich.phases.permuted_table_null import run_permuted_table_null
+    t0 = time.time()
+    run_permuted_table_null()
+    print(f"\nTrack A completed in {time.time() - t0:.1f}s")
+
+def cmd_word_lm():
+    from voynich.phases.word_lm_rescore import run_word_lm_rescore
+    t0 = time.time()
+    run_word_lm_rescore()
+    print(f"\nTrack B completed in {time.time() - t0:.1f}s")
+
+def cmd_null_battery_50():
+    from voynich.phases.null_battery_50 import run_null_battery_50
+    t0 = time.time()
+    run_null_battery_50()
+    print(f"\nTrack C completed in {time.time() - t0:.1f}s")
+
+def cmd_lang_id_matched():
+    from voynich.phases.size_matched_langid import run_size_matched_langid
+    t0 = time.time()
+    run_size_matched_langid()
+    print(f"\nTrack D completed in {time.time() - t0:.1f}s")
+
+def cmd_phase50():
+    from voynich.phases.phase50_integrate import run_phase50
+    t0 = time.time()
+    run_phase50()
+    print(f"\nPhase 50 completed in {time.time() - t0:.1f}s")
+
 
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
@@ -5693,6 +5724,12 @@ def main():
         'rl-assess': cmd_rl_assess,
         'phase49-validate': cmd_phase49_validate,
         'phase49': cmd_phase49,
+        # Phase 50: WFST Validation + Word-Level LM
+        'table-null': cmd_table_null,
+        'word-lm': cmd_word_lm,
+        'null-battery-50': cmd_null_battery_50,
+        'lang-id-matched': cmd_lang_id_matched,
+        'phase50': cmd_phase50,
     }
 
     if len(sys.argv) < 2:
