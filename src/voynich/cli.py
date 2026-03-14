@@ -5039,6 +5039,27 @@ def cmd_phase50():
     print(f"\nPhase 50 completed in {time.time() - t0:.1f}s")
 
 
+# Phase 51: Reverse Suffix Calibration + Concatenation Bridge
+
+def cmd_suffix_cal():
+    from voynich.phases.suffix_calibration import run_suffix_calibration
+    t0 = time.time()
+    run_suffix_calibration()
+    print(f"\nTrack A completed in {time.time() - t0:.1f}s")
+
+def cmd_concat_bridge():
+    from voynich.phases.concatenation_bridge import run_concatenation_bridge
+    t0 = time.time()
+    run_concatenation_bridge()
+    print(f"\nTrack B completed in {time.time() - t0:.1f}s")
+
+def cmd_phase51():
+    from voynich.phases.phase51_integrate import run_phase51
+    t0 = time.time()
+    run_phase51()
+    print(f"\nPhase 51 completed in {time.time() - t0:.1f}s")
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -5730,6 +5751,10 @@ def main():
         'null-battery-50': cmd_null_battery_50,
         'lang-id-matched': cmd_lang_id_matched,
         'phase50': cmd_phase50,
+        # Phase 51: Reverse Suffix Calibration + Concatenation Bridge
+        'suffix-cal': cmd_suffix_cal,
+        'concat-bridge': cmd_concat_bridge,
+        'phase51': cmd_phase51,
     }
 
     if len(sys.argv) < 2:
