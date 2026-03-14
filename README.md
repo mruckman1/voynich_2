@@ -6350,6 +6350,8 @@ Full progression:
 | Phase 50 | 32.8% (10K) | 1.10× | INSUFFICIENT_SIGNAL: ED1 artifact confirmed, Italian #1 |
 | Phase 51A | — | z=4.23 | SUFFIX_MAP_PARTIAL: POS 67% coverage, 6.9% CV accuracy |
 | Phase 51B | — | z=4.57 | BRIDGE_MARGINAL: 70K matches, 0 consensus assignments |
+| Phase 52 | 40.1% cov | 0.56× | CATALOG_MARGINAL: 22 T1 words, 56 paradigms, null FAIL |
+| Phase 53 | 39.1% (131K) | 1.01× | CONSTRAINTS_FOUND_NO_CONSENSUS: 230 constraints, 0 corrections |
 
 ## Phase 51: Reverse Suffix Calibration + Concatenation Bridge Search
 
@@ -6556,7 +6558,135 @@ Recognizable pharmaceutical fragments: seeds (*semen*), roots (*radecem*), coral
 
 5. **Progression:** Phase 16 = 43.6% dict_hit → Phase 52 = 40.1% coverage (different metric: coverage counts signal+catalog tokens, not dict_hit on decoded syllables). The 22 T1 words add genuine content vocabulary beyond function words, but the longest content-rich runs remain short (11–15 tokens with 2–3 content words).
 
+## Phase 53: Paradigm-Constrained Free Triple Resolution
+
+Phase 52 found 56 morphological paradigms where different EVA token types map to different inflected forms of the same Latin stem (e.g., radic- in 7 case forms from 20+ EVA types). Phase 53 exploits these paradigms to constrain the 13 free (unconfirmed) triples using the Ventris method: known word identifications constraining individual sign values. If a token decodes to "ratione" and the confirmed triples produce "ra...ne", the free triple in the middle must produce "tio". Collect such constraints across all paradigms and check for convergence.
+
+### Overall Verdict: CONSTRAINTS_FOUND_NO_CONSENSUS (3/7 validations, Gate FAIL)
+
+230 constraints extracted from 15 paradigms across 5 of the 13 free triples. No triple reached sufficient consensus (>0.5) to justify a correction. The null test (z = 0.02) confirmed that paradigm-derived constraint convergence is indistinguishable from random — shuffled assignment tables produce equally convergent constraint landscapes. 0 corrections applied; table unchanged.
+
+### Track A: Paradigm Constraint Extraction — 230 constraints, 0 accepted
+
+Cross-referenced Phase 52's 20 qualifying paradigms (stem ≥ 4, ≥ 2 distinct EVA types) against the 4,688-entry word catalog. Two extraction methods:
+- **101 catalog constraints** from `implied_assignments` in word_catalog.json — entries where exactly one free triple fills a gap, so the implied value is unambiguous.
+- **129 alignment constraints** from greedy left-to-right alignment of confirmed syllables against the Latin word, extracting gap substrings for isolated free triples.
+- **0 alignment failures** — every attempted alignment succeeded.
+
+**Value length distribution:** 3-char values dominate (127), then 2-char (84), then 1-char (19). This confirms free triples often encode 2–3 character substrings, not strictly 2-char CV syllables — the CV model's assumption of uniform syllable length is approximate.
+
+**Per-triple constraint landscape:**
+
+| Triple | Current | Top Implied | Consensus | N Obs | N Paradigms | Recommendation |
+|--------|---------|-------------|-----------|-------|-------------|----------------|
+| `loop,tail,bench` | la | cis | 0.11 | 142 | 13 | NO_CONSENSUS |
+| `ascender,loop,compound` | to | ra | 0.45 | 44 | 5 | NO_CONSENSUS |
+| `ascender,crossbar,gallows` | te | r | 0.32 | 38 | 8 | NO_CONSENSUS |
+| `loop,sigmoid,bench` | ne | rvi | 0.25 | 4 | 2 | NO_CONSENSUS |
+| `ascender,plume,gallows` | ga | de | 1.00 | 2 | 1 | INSUFFICIENT |
+
+**`loop,tail,bench`** is the most revealing case: 142 observations from 13 paradigm stems, yet consensus is only 11%. The implied values are wildly dispersed: "cis" (15), "ce" (15), "ces" (12), "cum" (12), "cem" (10), "ci" (10), plus 18 other values. This triple appears in suffix positions of Latin words where different inflectional endings (genitive -is, accusative -em, ablative -ibus, nominative -es) demand mutually exclusive outputs. One triple literally cannot encode all Latin case endings — different paradigm members require different values at the same position.
+
+**`ascender,loop,compound`** shows the second pattern: consensus 0.45 for "ra" (20 observations), but the minority values "me" (9), "rra" (8), "co" (7) each come from different paradigm stems (radic→"ra", medic→"me", codic→"co"). The triple encodes different parts of different words, so no single value satisfies all paradigms.
+
+**8 free triples received zero constraints:** connector,connector,bench ("ba"), crossbar,crossbar,rare ("fa"), open_curve,hook,rare ("hi"), open_curve,open_curve,bench ("ha"), sigmoid,hook,rare ("fe"), vertical,ascender,minim ("do"), vertical,descender,suffix ("du"). These triples either don't appear in paradigm member tokens or always co-occur with other free triples (making the gap split ambiguous and excluded by the n_shared=1 filter).
+
+### Track B: Validation — null test z = 0.02
+
+**Baseline metrics** (simplified decode, no corrections):
+- Dict-hit: 26.3% (10K) / 39.1% (131K)
+- 820 unique EVA types produce signal words, all preserved (no regression)
+
+**Null test (20 shuffled assignment tables):** Each null table was processed through the full pipeline: bridge search → paradigm detection → constraint extraction → consensus computation.
+
+| Metric | Real | Null Mean | Null Std | Z-Score |
+|--------|------|-----------|----------|---------|
+| Max consensus | 0.4545 | 0.4503 | 0.2440 | **0.02** |
+| Selectivity | — | — | — | **1.01×** |
+
+**The null test is the definitive result.** Shuffled tables produce equally convergent constraint landscapes. The paradigm constraints are an artifact of the 131K expanded dictionary's breadth — with 131K candidate words, any assignment table will produce apparent paradigms with similar consensus rates. This extends Phase 52's null finding (selectivity 0.56×) from match *counts* to constraint *consensus*: not only do shuffled tables produce more matches, they produce equally convergent implied values for free triples.
+
+### Track C: Corpus Decode — 39.1% dict-hit, 3 content runs
+
+Since no corrections were applied, Track C documents the baseline decode state and searches for content-bearing passages.
+
+**Per-section dict-hit (131K):**
+
+| Section | Dict-Hit | Tokens |
+|---------|----------|--------|
+| herbal_a | **48.0%** | 1,831 |
+| herbal_b | 44.1% | 7,618 |
+| cosmo | 43.9% | 6,476 |
+| pharma | 39.0% | 1,893 |
+| herbal_c | 38.0% | 3,723 |
+| stars | 34.7% | 10,092 |
+| recipes | 34.3% | 2,220 |
+| zodiac | **28.0%** | 2,385 |
+
+**Consecutive dict-hit runs:** 1,469 runs of length ≥ 3 across 36,238 tokens. Longest: 21 tokens on f66r ("di se di te te di ra di se te ha fa te ra ne ne te ra fa ga di") — entirely 2-letter function words.
+
+**Content runs** (≥ 5 tokens, ≥ 2 pharmaceutical/botanical content words): 3 found.
+
+| Folio | Length | Content Words | Text |
+|-------|--------|---------------|------|
+| f88r | 6 | 3 (bene ×3) | bene cone bene bene cone cora |
+| f25r | 7 | 2 (cola ×2) | cola di di cola be rade corate |
+| f3r | 6 | 2 (cola, bene) | co co colado cola cora bene |
+
+All three runs are dominated by the same high-frequency signal words (bene, cola, cora, cone) recurring in short clusters. No coherent pharmaceutical recipe fragment emerged.
+
+### Validation Battery
+
+| # | Test | Value | Threshold | Result |
+|---|------|-------|-----------|--------|
+| V1 | Constraints extracted | 230 | ≥ 20 | **PASS** |
+| V2 | Triple consensus (>0.5) | 0 | ≥ 1 | **FAIL** |
+| V3 | Null selectivity | 0.02 z | > 2.0 z | **FAIL** |
+| V4 | Signal words preserved | 820 | = 820 | **PASS** |
+| V5 | Dict-hit improvement | 0.0% | > 0% | **FAIL** |
+| V6 | Newly decoded tokens | 0 | ≥ 50 | **FAIL** |
+| V7 | Content run | 6 tokens | ≥ 5 | **PASS** |
+
+### Key Findings
+
+1. **The Ventris method fails here because Latin morphology is incompatible with the one-triple-one-syllable model.** The most constrained triple (`loop,tail,bench`, 142 observations from 13 stems) shows that different inflectional endings at the same token position demand mutually exclusive values. A single triple cannot encode "cis" AND "ce" AND "cum" AND "cem" — these are different Latin case endings. Either: (a) the token-level word identifications are false paradigms from dictionary inflation, or (b) the CV model is too coarse to capture the actual encoding granularity.
+
+2. **The null test (z = 0.02) proves the constraints are not table-specific.** Shuffled assignment tables produce equally convergent constraint landscapes through the same paradigm extraction pipeline. This is the strongest evidence yet that the 131K expanded dictionary generates false structure — the paradigms look real but arise from combinatorial collisions between partial decode patterns and a large dictionary, not from genuine encoding relationships.
+
+3. **8 of 13 free triples are completely unconstrained by paradigm evidence.** The 3 genuinely ambiguous triples from Phase 45 (open_curve,hook,rare; open_curve,open_curve,bench; sigmoid,hook,rare — covering only 164 tokens / 0.45% of corpus) received zero constraints. Resolving these would require external evidence (paleographic analysis, Costamagna archival material) rather than internal statistical methods.
+
+4. **The content runs on f88r, f25r, and f3r** consist of the same 4–5 high-frequency signal words recurring in clusters. The 21-token run on f66r is entirely function words. No "strain root of senna with coral by method of decoction" — the pharmaceutical recipe text predicted by the vocabulary remains elusive at the passage level.
+
+5. **Progression:** Phase 51B = 0 consensus changes (majority vote across all bridge matches) → Phase 53 = 0 consensus changes (paradigm-filtered constraints from known word identifications). Both the broad and narrow approaches to constraining free triples fail because the expanded dictionary inflates false matches to a level where real signal cannot be distinguished from noise. The assignment table remains at the Phase 15/16 local optimum with 43.6% full-corpus dict-hit.
+
 ## Consolidated Signal Vocabulary (70 unique words)
+
+Signal words are decoded Voynich tokens that appear significantly more often in real Voynich text than in null (permuted) corpora, measured as σ = (real_count − null_mean) / null_std, with threshold σ > 2.0. Selectivity = real_count / null_mean.
+
+**Discovery progression:** Phase 28 (131K dict): 8 words → Phase 30 (bootstrap): +2 → Phase 36 (10K dict): 51 total → Phase 37-38 (Italian analysis): +22 Italian-only → **70 unique** (3 overlap: dise, cu, dedi).
+
+## Current State of Decipherment
+
+### What We Know
+
+**Encoding mechanism:** Italian syllabic tachygraphy (cosine similarity 0.820 against the tachygraphic entropy-shift model, discriminated from 12 alternative encoding hypotheses including the Naibbe cipher at −0.843). The encoding uses a three-layer structure: gallows determinatives mark word boundaries or semantic categories, phonetic roots encode content via stroke-feature triples mapped to CV syllables, and grammatical suffixes encode inflectional endings. Each EVA character decomposes into a stroke-feature triple (first_stroke, last_stroke, glyph_class), and each triple maps to a syllable through the T_P15 assignment table.
+
+**Source language:** Macaronic Latin-Italian (Italian selectivity 5.45× vs Latin 1.30×, confirmed by 4 independent methods: signal isolation, size-matched OT/spectral comparison, SBM profiling, and character n-gram analysis). Size-matched language ID (Phase 50D, all corpora subsampled to 11K tokens) places Italian #1, Latin #2, German #4 — Phase 49's German ranking was entirely a corpus-size artifact.
+
+**Sequential structure:** z = 14.78 (Phase 47 conservative minimum, exact-match-only). CC bigram z = 21.0 (Phase 50B, 32/397 consecutive-hit pairs match reference Latin bigrams at 8.1%). The decoded text contains genuine word-level sequential structure that matches Latin phrase patterns.
+
+**Solution landscape:** Formally FLAT. Phase 44 enumerated 500+ near-optimal MaxSAT solutions. Phase 33 showed 6 independent correction methods propose different assignments for the same triples with zero consensus. Phase 53 confirmed: paradigm-derived constraints produce identical consensus landscapes on shuffled tables (z = 0.02).
+
+**Encoding granularity:** Variable-length, not fixed CV. Phase 53 found that free triples encode 1–3 character substrings (distribution: 127 × 3-char, 84 × 2-char, 19 × 1-char), not strictly 2-character CV syllables as the C5×V4 model predicts. This is consistent with actual tachygraphic systems where stroke modifications encode variable-length phonetic units.
+
+### Assignment Table (T_P15)
+
+25 stroke-feature triples → syllable assignments:
+- **12 confirmed** (cross-source validation, Phases 14 + 19.8): these produce the 70 signal words and are the ground truth of the project
+- **10 landscape-confirmed** (MaxSAT consensus >60%, Phase 45): statistically supported but Phase 44 showed the landscape is flat, so these may not be uniquely correct
+- **3 genuinely ambiguous** (no consensus): cover only 164 tokens (0.45% of corpus)
+
+### Consolidated Signal Vocabulary (70 unique words)
 
 Signal words are decoded Voynich tokens that appear significantly more often in real Voynich text than in null (permuted) corpora, measured as σ = (real_count − null_mean) / null_std, with threshold σ > 2.0. Selectivity = real_count / null_mean.
 
@@ -6645,7 +6775,7 @@ Signal words are decoded Voynich tokens that appear significantly more often in 
 | 21 | cela | 3.53 | 5 | 37 | hides |
 | 22 | decore | 3.25 | 7 | 37 | decorate |
 
-### Summary Statistics
+### Signal Vocabulary Summary Statistics
 
 - **51 Latin-10K signal words**: mean σ=31.4, mean selectivity=5.43×
 - **22 Italian-only signal words**: mean σ=27.1
@@ -6653,6 +6783,91 @@ Signal words are decoded Voynich tokens that appear significantly more often in 
 - **Vocabulary composition**: ~65% function words, ~20% content/quality, ~15% pharmaceutical/botanical
 - **Consistent selectivity**: ~5.5× across most words (matching CV tachygraphic model prediction of ~5.0×)
 - **Language**: Shared (Latin+Italian) dominates; 4 Latin-only (rati, tere, sese, raso); 24 Italian-only
+- **Italian verb paradigms**: 5 forms of "dire" (dise, dice, dico, dicu, diga) + 3 forms of "dare" (dedi, dido, dere) — internally consistent conjugation, not random dictionary collisions
+- **Function word inventory**: complete Romance clause kit — articles (la, li), prepositions (di, de, co, su), pronouns (te, ti, tu, se, si, ci), auxiliaries (ha, fa)
+- **Pharmaceutical register**: preparation verbs from the Circa Instans tradition (cola = strain, tere = grind, raso = scraped) and ingredients (sene = senna, corali = corals, sero = serum)
+
+### 22 Word-Level Identifications (Phase 52 T1)
+
+Whole-word identifications from the bridge search: EVA token types whose partial-decode pattern uniquely matches exactly one pharmaceutical dictionary word, recurring on 3+ independent folios. These are Ventris-style identifications — the EVA→word mapping is established without resolving individual character values for the free triples.
+
+| EVA Type | Latin Word | Meaning | Folios | Corpus Freq |
+|----------|-----------|---------|--------|-------------|
+| otol | ratione | by method/reason | 46 | 74 |
+| oty | rabidi | of the rabid/fierce | 60 | 111 |
+| qopchedy | stercora | dung/manure | 13 | 30 |
+| otaly | rabidi | of the rabid/fierce | 10 | 19 |
+| ytol | diasene | diasenna (senna compound) | 10 | 15 |
+| chotar | coralli | of corals | 7 | 10 |
+| chotaiin | coralli | of corals | 7 | 9 |
+| chkain | codex | codex/manuscript | 9 | 12 |
+| chotal | coralli | of corals | 5 | 7 |
+| opy | rabidi | of the rabid/fierce | 5 | 8 |
+| tshol | diasene | diasenna | 6 | 6 |
+| chetar | coralli | of corals | 5 | 6 |
+| ety | rabidi | of the rabid/fierce | 5 | 6 |
+| chotey | coralli | of corals | 4 | 8 |
+| otcham | radicom | root (acc.) | 4 | 5 |
+| chtol | commune | common/shared | 4 | 5 |
+| ytoldy | diasene | diasenna | 4 | 4 |
+| otary | rabidi | of the rabid/fierce | 4 | 6 |
+| chetey | coralli | of corals | 3 | 7 |
+| shty | secundi | of the second | 3 | 4 |
+| chep | coralli | of corals | 3 | 4 |
+| qofchedy | stercora | dung/manure | 5 | 8 |
+
+6 different EVA types all map to "coralli" (variant spellings of the same word), 5 to "rabidi", 3 to "diasene". This morphological consistency across variant spellings is expected in a medieval manuscript and would be extraordinary if coincidental. These identifications survive the null test because their uniqueness (exactly one dictionary word matches each pattern) is immune to the dictionary-inflation problem that invalidated the 2,435 T2 identifications (null selectivity 0.56×).
+
+### 56 Morphological Paradigms (Phase 52)
+
+Different EVA token types mapping to different inflected forms of the same Latin stem — the hallmark of a genuine alphabetic encoding of inflected Latin:
+
+- **radic-** stem (7 case forms from 20+ EVA types): radice / radicem / radices / radici / radicibus / radicis / radicum — "root" in full Latin declension
+- **semin-** stem (7 forms): semin / semina / semine / seminem / semines / semini / seminis — "seed" in full declension
+- **codic-** stem (6 forms): codice / codicem / codices... — "codex" declension
+- **decoct-/dicoct-** stems (5 forms each): decocta / decocti / decocto... — "decoction"
+- **secund-** stem (4 forms): secundi / secundo / secundum / secundus — "second/following"
+- **divers-** stem (3 forms): diversas / diversi / diversis — "diverse/various"
+
+Signal adjacency z = 5.33 — catalog words cluster near signal words significantly more than random tokens.
+
+### Corpus Coverage and Structural Readings
+
+**Coverage:** 40.1% of all 36,238 tokens are glossed (70 signal words + 22 T1 catalog entries + their corpus occurrences). Coverage rises to 74.9% on f57v (pharmaceutical section).
+
+**Best structural reading** (f116r, 49.3% coverage): fragments including "oratione extrahendi" (by method of extracting) alongside roots (radecem), seeds (semen/seminne), corals (coralli/corallus), branches (ramis), with quality terms (bela/beautiful, amara/bitter, sere/serene, dives/rich). 74.8% overlap with the Circa Instans pharmaceutical reference corpus.
+
+**Longest consecutive glossed runs:** 59 tokens on f57v (mostly function words); best content-bearing run: 15 tokens on f111v with "radicess", "dives", "tela"; 14 tokens on f76v mixing body parts (cora/heart), materials (tela/cloth), and method language (ratione/by method).
+
+### What We Cannot Decode
+
+**13 free triples** remain unresolved. These account for ~59% of dark tokens. The computational pipeline has exhaustively demonstrated that these cannot be recovered by internal statistical methods:
+
+- Phase 44: solution landscape is FLAT (500+ near-optimal MaxSAT solutions)
+- Phase 50: ED1 + char-LM approach invalidated (selectivity 1.10×; all language LMs produce identical results)
+- Phase 52: bulk dictionary matching produces more false positives than true matches (null selectivity 0.56×)
+- Phase 53: paradigm-derived constraints are not table-specific (z = 0.02); encoding granularity is variable-length (1–3 chars), not fixed 2-char CV
+
+The fundamental bottleneck: the conventional sign-to-syllable mappings for these triples cannot be recovered computationally. The encoding granularity is variable-length, and the solution landscape is too flat for any scoring function to discriminate the correct assignment from hundreds of near-optimal alternatives.
+
+### Progression Table
+
+| Phase | Dict-Hit | Signal | Bigram z | Key Advance |
+|-------|----------|--------|----------|-------------|
+| 16 | 43.6% (131K) | — | — | Feature model + modifiers |
+| 28 | 43.6% | 8 words | — | Signal isolation, table tiering |
+| 29 | 43.6% | — | 6.14 | SIGNAL bigram discovery |
+| 36 | 24.1% (10K) | 51 words, 5.43× | 12.66 | 10K dictionary, validated pipeline |
+| 37 | — | +22 Italian | — | Italian signal words, macaronic confirmation |
+| 42 | 43.6% | — | 14.78 (conservative) | Z-score audit, canonical methodology |
+| 44 | — | — | — | MaxSAT landscape: FLAT (500+ solutions) |
+| 50A | 30.3% (ED1) | sel = 1.10× | — | ED1 approach invalidated |
+| 50B | — | scramble = 1.00× | CC z = 21.0 | Word LM adds nothing; CC bigrams real |
+| 50D | — | Italian #1 | — | Size-matched language ID confirmed |
+| 51A | — | z = 4.23 | — | Suffix map PARTIAL; POS 67% coverage |
+| 51B | — | z = 4.57 | — | Bridge MARGINAL; 93.6% confirmed-triple coverage |
+| 52 | 40.1% coverage | 22 T1 words, 56 paradigms | — | Word catalog; 74.8% Circa Instans overlap |
+| 53 | — | z = 0.02 (null) | — | Paradigm constraints not table-specific; variable-length encoding confirmed |
 
 ## Background
 

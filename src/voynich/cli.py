@@ -5087,6 +5087,31 @@ def cmd_phase52():
     print(f"\nPhase 52 completed in {time.time() - t0:.1f}s")
 
 
+def cmd_paradigm_constraints():
+    from voynich.phases.paradigm_constraints import run_paradigm_constraints
+    t0 = time.time()
+    run_paradigm_constraints()
+    print(f"\nTrack A completed in {time.time() - t0:.1f}s")
+
+def cmd_triple_resolve():
+    from voynich.phases.triple_resolution import run_triple_resolution
+    t0 = time.time()
+    run_triple_resolution()
+    print(f"\nTrack B completed in {time.time() - t0:.1f}s")
+
+def cmd_resolved_decode():
+    from voynich.phases.resolved_decode import run_resolved_decode
+    t0 = time.time()
+    run_resolved_decode()
+    print(f"\nTrack C completed in {time.time() - t0:.1f}s")
+
+def cmd_phase53():
+    from voynich.phases.phase53_integrate import run_phase53
+    t0 = time.time()
+    run_phase53()
+    print(f"\nPhase 53 completed in {time.time() - t0:.1f}s")
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -5787,6 +5812,11 @@ def main():
         'word-validate': cmd_word_validate,
         'word-reading': cmd_word_reading,
         'phase52': cmd_phase52,
+        # Phase 53: Paradigm-Constrained Free Triple Resolution
+        'paradigm-constraints': cmd_paradigm_constraints,
+        'triple-resolve': cmd_triple_resolve,
+        'resolved-decode': cmd_resolved_decode,
+        'phase53': cmd_phase53,
     }
 
     if len(sys.argv) < 2:
