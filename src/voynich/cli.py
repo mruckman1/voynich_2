@@ -5060,6 +5060,33 @@ def cmd_phase51():
     print(f"\nPhase 51 completed in {time.time() - t0:.1f}s")
 
 
+# Phase 52: Word-Level Identification Catalog
+
+def cmd_word_catalog():
+    from voynich.phases.word_catalog import run_word_catalog
+    t0 = time.time()
+    run_word_catalog()
+    print(f"\nTrack A completed in {time.time() - t0:.1f}s")
+
+def cmd_word_validate():
+    from voynich.phases.word_validation import run_word_validation
+    t0 = time.time()
+    run_word_validation()
+    print(f"\nTrack B completed in {time.time() - t0:.1f}s")
+
+def cmd_word_reading():
+    from voynich.phases.word_reading import run_word_reading
+    t0 = time.time()
+    run_word_reading()
+    print(f"\nTrack C completed in {time.time() - t0:.1f}s")
+
+def cmd_phase52():
+    from voynich.phases.phase52_integrate import run_phase52
+    t0 = time.time()
+    run_phase52()
+    print(f"\nPhase 52 completed in {time.time() - t0:.1f}s")
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -5755,6 +5782,11 @@ def main():
         'suffix-cal': cmd_suffix_cal,
         'concat-bridge': cmd_concat_bridge,
         'phase51': cmd_phase51,
+        # Phase 52: Word-Level Identification Catalog
+        'word-catalog': cmd_word_catalog,
+        'word-validate': cmd_word_validate,
+        'word-reading': cmd_word_reading,
+        'phase52': cmd_phase52,
     }
 
     if len(sys.argv) < 2:
