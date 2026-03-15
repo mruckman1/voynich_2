@@ -5087,6 +5087,13 @@ def cmd_phase52():
     print(f"\nPhase 52 completed in {time.time() - t0:.1f}s")
 
 
+def cmd_word_perm_null():
+    from voynich.phases.word_permutation_null import run_word_permutation_null
+    t0 = time.time()
+    run_word_permutation_null()
+    print(f"\nWord permutation null test completed in {time.time() - t0:.1f}s")
+
+
 def cmd_paradigm_constraints():
     from voynich.phases.paradigm_constraints import run_paradigm_constraints
     t0 = time.time()
@@ -5866,6 +5873,8 @@ def main():
         'word-validate': cmd_word_validate,
         'word-reading': cmd_word_reading,
         'phase52': cmd_phase52,
+        # Word-Level Permutation Null Test
+        'word-perm-null': cmd_word_perm_null,
         # Phase 53: Paradigm-Constrained Free Triple Resolution
         'paradigm-constraints': cmd_paradigm_constraints,
         'triple-resolve': cmd_triple_resolve,

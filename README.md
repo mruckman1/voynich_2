@@ -667,7 +667,8 @@ voynich_2/
 │       ├── reviewer_permutation.py  # Reviewer: random syllabary permutation test (1000 trials)
 │       ├── reviewer_rabidi.py       # Reviewer: rabidi sensitivity analysis
 │       ├── reviewer_fingerprint.py  # Reviewer: fingerprint cosine gap analysis
-│       └── reviewer_integrate.py    # Reviewer: integration + paper-ready summary
+│       ├── reviewer_integrate.py    # Reviewer: integration + paper-ready summary
+│       └── word_permutation_null.py # Reviewer: word-level permutation null test (200 trials)
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   ├── 2Translate/              # Transcribed historical sources (Chatelain, Schmitz, Cappelli, Fontana)
@@ -6673,11 +6674,11 @@ All three runs are dominated by the same high-frequency signal words (bene, cola
 
 ## Reviewer Response Analyses (Ad Hoc Validation)
 
-Three targeted analyses addressing specific reviewer concerns about the headline results. These are post-hoc validations, not numbered phases — they don't modify the assignment table or produce new decodings.
+Targeted analyses addressing specific reviewer concerns about the headline results. These are post-hoc validations, not numbered phases — they don't modify the assignment table or produce new decodings.
 
-- **Files**: `reviewer_permutation.py`, `reviewer_rabidi.py`, `reviewer_fingerprint.py`, `reviewer_integrate.py`
-- **CLI**: `reviewer-perm`, `reviewer-rabidi`, `reviewer-fingerprint`, `reviewer-all`
-- **Results**: `reviewer_permutation.json`, `reviewer_rabidi.json`, `reviewer_fingerprint.json`, `reviewer_integrate.json`
+- **Files**: `reviewer_permutation.py`, `reviewer_rabidi.py`, `reviewer_fingerprint.py`, `reviewer_integrate.py`, `word_permutation_null.py`
+- **CLI**: `reviewer-perm`, `reviewer-rabidi`, `reviewer-fingerprint`, `reviewer-all`, `word-perm-null`
+- **Results**: `reviewer_permutation.json`, `reviewer_rabidi.json`, `reviewer_fingerprint.json`, `reviewer_integrate.json`, `word_permutation_null.json`
 
 ### Analysis 1: Random Syllabary Permutation Test — SIGNAL_MARGINAL
 
@@ -6753,6 +6754,35 @@ Selectivity (random/real): **1.28×** (Phase 19.5 reported 1.61× using characte
 
 **Verdict: FAMILY_ARTIFACT.** Random syllable assignments to the same visual families produce within-family entropy of 1.092 bits vs T_P15's 0.851 (p = 0.070 — marginal, not significant at 0.05). No individual family is significant. The minim family (the showcase at 0.592 bits) has p = 0.284 against random tables averaging 0.989 bits. The within-family phonetic regularity is partially an artifact of the feature model's structure: with only 21 syllables distributed across 25 triples shared by 44 characters grouped into 6 families, random assignments also produce some within-family regularity through pigeonhole effects. The paper's core tachygraphic argument rests on the entropy shift discriminator (cos = 0.820, Phase 19.2) and the permutation test signal word count (p = 0.001), not the sign-family analysis.
 
+### Analysis 1d: Word-Level Permutation Test — GENUINE
+
+**Question**: Are the 22 T1 content-vocabulary identifications (ratione, coralli, diasene, etc.) specific to T_P15, or does ANY random assignment table produce comparable T1 counts through the same bridge search → scoring → tiering pipeline?
+
+Analysis 1 tested signal word counts. This test goes further downstream: for each random table, it identifies that table's own signal words (via lightweight σ > 2.0 proxy), determines its own confirmed triples, runs the full bridge search with those table-specific anchors, and applies the same scoring/tiering criteria. Each random table gets every opportunity the real table had.
+
+**Method**: 200 fully-permuted assignment tables (all 25 triple values shuffled). Each table independently: (1) decoded the real corpus + 5 null corpora, (2) identified its own signal words and confirmed triples via per-word σ calculation, (3) ran the bridge search using its own signal words as anchors and its own confirmed triples for partial decoding, (4) grouped matches by (EVA type, Latin word), scored confidence, and applied T1/T2/T3 tiering. Same pharmaceutical dictionary (8,141 words) and T1 criteria (confidence ≥ 0.7, ≥ 3 folios, unique pattern match) throughout.
+
+**Results:**
+
+| Metric | T_P15 (real) | Random null (mean ± std) | z-score | p-value |
+|--------|-------------|--------------------------|---------|---------|
+| T1 count | **22** | 1.6 ± 4.6 | **+4.44** | **0.010** |
+| Distinct T1 words | **9** | 0.9 ± 2.1 | **+3.93** | **0.010** |
+| CI overlap | 0.889 | 0.248 ± 0.416 | +1.54 | — |
+| Mean folio spread | 10.1 | 2.8 ± 5.0 | +1.45 | — |
+
+T1 count distribution (200 trials): 142 trials (71%) produced **zero** T1 identifications. Only 9 trials (4.5%) reached T1 ≥ 10. Two trials (1%) reached or exceeded 22.
+
+The infrastructure was NOT the bottleneck: random tables averaged 58.0 ± 10.4 signal words (comparable to T_P15's ~70) and confirmed 17.3 ± 1.2 triples (more than T_P15's 12). The bottleneck is **specificity** — T_P15's partial-decode patterns uniquely match pharmaceutical Latin words recurring across 3+ folios, while random tables produce patterns that either match nothing, match many words (failing uniqueness), or match words on too few folios.
+
+**Word-level specificity**: 7 of T_P15's 9 distinct T1 words (codex, commune, coralli, rabidi, radicom, secundi, stercora) were **never** produced as T1 by any of the 200 random tables. Only diasene (5/200) and ratione (3/200) appeared occasionally. The most common random T1 words (rufa 8×, mihi 7×, ordine 5×) are entirely different vocabulary.
+
+**Outlier analysis**: One random table (trial 31) produced 44 T1 identifications — double the real table. Its 16 distinct words included pharmaceutical terms (clara, distila, nigredo, ordine) but also non-pharmaceutical items (disdo, colanto, plagas) and had lower CI overlap (0.688 vs 0.889). Only 2 of its 16 words overlapped with T_P15's 9. The p = 0.01 accounts for this heavy right tail.
+
+**CI overlap caveat**: Among the 58 trials with T1 > 0, CI overlap averaged 0.856 (median 1.000) — comparable to T_P15's 0.889. This is because the pharmaceutical dictionary is constructed largely from reference corpus words, so any word passing dictionary search is likely in CI vocabulary by construction. The **count** of identifications, not their CI membership, is what separates real from random.
+
+**Verdict: GENUINE.** The 22 T1 word-level identifications are table-specific at p = 0.01 (z = 4.44). The pipeline's multi-layered filtering (≥ 3 folios, unique dictionary match, confidence ≥ 0.7) is highly discriminating — 71% of random tables produce zero T1, and only 1% match T_P15's count. This gives the content vocabulary permutation-tested credibility comparable to the signal words' bigram z-test (Phase 29, z = 6.14).
+
 ### Analysis 2: Rabidi Sensitivity — ROBUST
 
 **Question**: Are the 22 T1 word-level identifications robust to removing *rabidi* (5 of 22 entries, appearing on 60 folios)?
@@ -6804,6 +6834,7 @@ Selectivity (random/real): **1.28×** (Phase 19.5 reported 1.61× using characte
 | 1. Permutation | **SIGNAL_MARGINAL** | p(n_signal)=0.001, p(mean_sel)=0.26 | T_P15 finds more signal words than random (56 vs 33), but per-word selectivity magnitude is structural |
 | 1b. Coherence | **COHERENCE_UNCOMMON** | **11/1000 (1.1%, p=0.011)** | T_P15's signal words form Italian verb paradigms + function kit + pharma register simultaneously — only 1.1% of random tables do |
 | 1c. Family entropy | **FAMILY_ARTIFACT** | p=0.070, sel=1.28× | Within-family phonetic regularity is partially an artifact; tachygraphic argument rests on entropy shift + permutation test instead |
+| 1d. Word-level perm | **GENUINE** | **z=4.44, p=0.010** | 22 T1 content-vocabulary IDs are table-specific; 71% of random tables produce zero T1; 7/9 distinct words never appear in any random trial |
 | 2. Rabidi | **ROBUST** | Coverage Δ = −0.4% | Removing rabidi does not materially affect the catalog |
 | 3. Fingerprint | **WEAK** | Gap = 0.000345 | Fingerprint identifies Romance family, not Latin specifically |
 
