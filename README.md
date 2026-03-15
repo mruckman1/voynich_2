@@ -419,6 +419,7 @@ voynich phase48            # Run full Phase 48 pipeline (all 4 tracks + integrat
 # Reviewer Response Analyses (ad hoc validation)
 voynich reviewer-perm          # Random syllabary permutation test (1000 trials, ~30 min)
 voynich reviewer-coherence     # Signal word coherence check (1000 trials, ~30 min)
+voynich reviewer-family        # Within-family phonetic entropy test (1000 trials, <1 sec)
 voynich reviewer-rabidi        # Rabidi sensitivity analysis
 voynich reviewer-fingerprint   # Fingerprint cosine gap analysis
 voynich reviewer-all           # All three + integration
@@ -6728,6 +6729,30 @@ Coherence distribution: 0/3 = 201 trials, 1/3 = 648, 2/3 = 140, **3/3 = 11**.
 
 **Verdict: COHERENCE_UNCOMMON.** Only 1.1% of random trials achieved 3/3 coherence (p = 0.011). The function-word kit alone is easy (74.5% achieve it — short function words are ubiquitous in the merged dictionary). The pharmaceutical register is moderately rare (14.7%). The verb paradigm is uncommon (6.9%) — having ≥3 conjugated forms of a single Italian verb among ~33 signal words requires specific alignment of syllable assignments to Italian morphology. Having all three simultaneously is rare: T_P15's signal words form Italian verb conjugations (dire: 5 forms) AND a complete clause kit (5/5 categories) AND pharmaceutical terminology (8 terms) — a combination only 11 random tables out of 1,000 reproduce.
 
+### Analysis 1c: Within-Family Phonetic Entropy — FAMILY_ARTIFACT
+
+**Question**: Is the low within-family phonetic entropy (minim family: 0.592 bits, selectivity 1.61× vs null) a genuine property of T_P15, or an artifact of the stroke-feature model that assigns syllables based on visual features?
+
+Phase 19.5's null test shuffled characters across families (testing whether the family *grouping* matters). This test keeps families fixed and shuffles syllable *assignments* (testing whether the specific syllable values matter) — the correct null for the circularity concern.
+
+**Method**: For each of the same 1,000 random assignment tables, computed within-family phonetic entropy using the 6 visual families (bench/minim/gallows/compound/rare/suffix). Metric: Shannon entropy of consonant values and vowel values within each family, taking the minimum (the "regular dimension" — same as Phase 19.5).
+
+**Results:**
+
+| Family | T_P15 | Random (mean ± std) | z | p |
+|--------|-------|---------------------|---|---|
+| bench (24) | 1.864 | 1.758 ± 0.263 | +0.40 | 0.633 |
+| compound (3) | 0.918 | 1.078 ± 0.441 | −0.36 | 0.653 |
+| gallows (4) | 0.811 | 1.007 ± 0.431 | −0.45 | 0.476 |
+| minim (7) | 0.592 | 0.989 ± 0.400 | −0.99 | 0.284 |
+| rare (3) | 0.918 | 1.072 ± 0.423 | −0.36 | 0.675 |
+| suffix (3) | 0.000 | 0.650 ± 0.418 | −1.56 | 0.292 |
+| **OVERALL** | **0.851** | **1.092 ± 0.162** | **−1.49** | **0.070** |
+
+Selectivity (random/real): **1.28×** (Phase 19.5 reported 1.61× using character-shuffle null).
+
+**Verdict: FAMILY_ARTIFACT.** Random syllable assignments to the same visual families produce within-family entropy of 1.092 bits vs T_P15's 0.851 (p = 0.070 — marginal, not significant at 0.05). No individual family is significant. The minim family (the showcase at 0.592 bits) has p = 0.284 against random tables averaging 0.989 bits. The within-family phonetic regularity is partially an artifact of the feature model's structure: with only 21 syllables distributed across 25 triples shared by 44 characters grouped into 6 families, random assignments also produce some within-family regularity through pigeonhole effects. The paper's core tachygraphic argument rests on the entropy shift discriminator (cos = 0.820, Phase 19.2) and the permutation test signal word count (p = 0.001), not the sign-family analysis.
+
 ### Analysis 2: Rabidi Sensitivity — ROBUST
 
 **Question**: Are the 22 T1 word-level identifications robust to removing *rabidi* (5 of 22 entries, appearing on 60 folios)?
@@ -6778,6 +6803,7 @@ Coherence distribution: 0/3 = 201 trials, 1/3 = 648, 2/3 = 140, **3/3 = 11**.
 |----------|---------|------------|-------------------|
 | 1. Permutation | **SIGNAL_MARGINAL** | p(n_signal)=0.001, p(mean_sel)=0.26 | T_P15 finds more signal words than random (56 vs 33), but per-word selectivity magnitude is structural |
 | 1b. Coherence | **COHERENCE_UNCOMMON** | **11/1000 (1.1%, p=0.011)** | T_P15's signal words form Italian verb paradigms + function kit + pharma register simultaneously — only 1.1% of random tables do |
+| 1c. Family entropy | **FAMILY_ARTIFACT** | p=0.070, sel=1.28× | Within-family phonetic regularity is partially an artifact; tachygraphic argument rests on entropy shift + permutation test instead |
 | 2. Rabidi | **ROBUST** | Coverage Δ = −0.4% | Removing rabidi does not materially affect the catalog |
 | 3. Fingerprint | **WEAK** | Gap = 0.000345 | Fingerprint identifies Romance family, not Latin specifically |
 

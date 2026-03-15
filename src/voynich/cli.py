@@ -5128,6 +5128,14 @@ def cmd_reviewer_coherence():
     print(f"\nCompleted in {time.time() - t0:.1f}s")
 
 
+def cmd_reviewer_family():
+    """Reviewer Analysis: within-family phonetic entropy test."""
+    from voynich.phases.reviewer_permutation import run_reviewer_family_entropy
+    t0 = time.time()
+    run_reviewer_family_entropy()
+    print(f"\nCompleted in {time.time() - t0:.1f}s")
+
+
 def cmd_reviewer_rabidi():
     """Reviewer Analysis 2: rabidi sensitivity."""
     from voynich.phases.reviewer_rabidi import run_reviewer_rabidi
@@ -5866,6 +5874,7 @@ def main():
         # Reviewer response analyses
         'reviewer-perm': cmd_reviewer_perm,
         'reviewer-coherence': cmd_reviewer_coherence,
+        'reviewer-family': cmd_reviewer_family,
         'reviewer-rabidi': cmd_reviewer_rabidi,
         'reviewer-fingerprint': cmd_reviewer_fingerprint,
         'reviewer-all': cmd_reviewer_all,

@@ -90,6 +90,252 @@ def _fast_decode_r3(
     return decoded
 
 
+# ---------------------------------------------------------------------------
+# Within-family phonetic entropy (reviewer circularity test)
+# ---------------------------------------------------------------------------
+
+def _shannon_entropy(values: List[str]) -> float:
+    """Shannon entropy in bits of a list of categorical values."""
+    counts = Counter(values)
+    total = len(values)
+    if total == 0:
+        return 0.0
+    return -sum((c / total) * np.log2(c / total)
+                for c in counts.values() if c > 0)
+
+
+def _family_min_entropy(
+    family_members: List[str],
+    eva_to_triple: Dict[str, str],
+    assignment: Dict[str, str],
+) -> Dict:
+    """Compute within-family phonetic entropy for one family under one table.
+
+    Returns consonant entropy, vowel entropy, and min of the two (the
+    "regular dimension" metric from Phase 19.5).
+    """
+    consonants = []
+    vowels = []
+    for char in family_members:
+        triple = eva_to_triple.get(char)
+        if triple is None:
+            continue
+        syl = assignment.get(triple, "")
+        if len(syl) >= 2:
+            consonants.append(syl[0])
+            vowels.append(syl[1:])
+        elif len(syl) == 1:
+            consonants.append("")
+            vowels.append(syl)
+
+    c_ent = _shannon_entropy(consonants)
+    v_ent = _shannon_entropy(vowels)
+    return {
+        "consonant_entropy": c_ent,
+        "vowel_entropy": v_ent,
+        "min_entropy": min(c_ent, v_ent),
+        "n_consonants": len(set(consonants)),
+        "n_vowels": len(set(vowels)),
+    }
+
+
+def run_reviewer_family_entropy() -> None:
+    """Test whether within-family phonetic regularity is an artifact of the
+    stroke-feature model or a genuine property of T_P15.
+
+    For each of 1,000 random assignment tables (same seeds as the permutation
+    test), computes within-family phonetic entropy using the same 6 visual
+    families.  Compares T_P15's real entropy against the random distribution.
+    """
+    t0 = time.time()
+    rd = _results_dir()
+
+    print("=" * 70)
+    print("REVIEWER ANALYSIS: Within-Family Phonetic Entropy")
+    print("=" * 70)
+
+    # ── Build families from EVA_VISUAL_COMPONENTS ──
+    from collections import defaultdict
+    from voynich.core.reference import EVA_VISUAL_COMPONENTS
+
+    families: Dict[str, List[str]] = defaultdict(list)
+    for glyph, comp in EVA_VISUAL_COMPONENTS.items():
+        families[comp["glyph_class"]].append(glyph)
+    families = dict(families)  # freeze
+    family_names = sorted(families.keys())
+
+    eva_to_triple = build_eva_to_triple_lookup()
+
+    print(f"\n  Families: {', '.join(f'{n}({len(m)})' for n, m in sorted(families.items()))}")
+
+    # ── Load T_P15 assignment ──
+    refine_path = os.path.join(rd, "combined_refine.json")
+    with open(refine_path) as f:
+        assignment = json.load(f)["best_assignment"]
+    triple_names = sorted(assignment.keys())
+    inventory = sorted(set(assignment.values()))
+
+    # ── Compute real table's per-family entropy ──
+    real_entropies = {}
+    for fname in family_names:
+        real_entropies[fname] = _family_min_entropy(
+            families[fname], eva_to_triple, assignment,
+        )
+    real_mean = float(np.mean([real_entropies[f]["min_entropy"]
+                               for f in family_names]))
+
+    print(f"\n  T_P15 per-family min_entropy:")
+    for fname in family_names:
+        e = real_entropies[fname]
+        print(f"    {fname:12s}  C={e['consonant_entropy']:.3f}  "
+              f"V={e['vowel_entropy']:.3f}  min={e['min_entropy']:.3f}  "
+              f"(nC={e['n_consonants']}, nV={e['n_vowels']})")
+    print(f"  Mean min_entropy: {real_mean:.4f}")
+
+    # ── Generate 1000 random tables and compute per-family entropy ──
+    N_TRIALS = 1000
+    inventory_arr = np.array(inventory)
+
+    # Per-family: list of 1000 min_entropy values
+    random_family_ent: Dict[str, List[float]] = {f: [] for f in family_names}
+    random_means: List[float] = []
+
+    print(f"\n  Running {N_TRIALS} random trials...", flush=True)
+    for trial in range(N_TRIALS):
+        rng = np.random.default_rng(seed=trial)
+        random_syls = rng.choice(inventory_arr, size=len(triple_names),
+                                 replace=True)
+        random_table = dict(zip(triple_names, random_syls.tolist()))
+
+        trial_mins = []
+        for fname in family_names:
+            ent = _family_min_entropy(
+                families[fname], eva_to_triple, random_table,
+            )
+            random_family_ent[fname].append(ent["min_entropy"])
+            trial_mins.append(ent["min_entropy"])
+        random_means.append(float(np.mean(trial_mins)))
+
+    elapsed = time.time() - t0
+    print(f"  {N_TRIALS} trials in {elapsed:.1f}s", flush=True)
+
+    # ── Compare ──
+    random_means_arr = np.array(random_means)
+    overall_random_mean = float(np.mean(random_means_arr))
+    overall_selectivity = overall_random_mean / real_mean if real_mean > 0 else 0.0
+    overall_p = float(np.mean(random_means_arr <= real_mean))
+    overall_z = float(
+        (real_mean - np.mean(random_means_arr)) / np.std(random_means_arr)
+    ) if np.std(random_means_arr) > 0 else 0.0
+
+    per_family_results = {}
+    for fname in family_names:
+        real_val = real_entropies[fname]["min_entropy"]
+        rand_vals = np.array(random_family_ent[fname])
+        rand_mean = float(np.mean(rand_vals))
+        rand_std = float(np.std(rand_vals))
+        p = float(np.mean(rand_vals <= real_val))
+        z = float((real_val - rand_mean) / rand_std) if rand_std > 0 else 0.0
+        per_family_results[fname] = {
+            "real_min_entropy": real_val,
+            "random_mean": rand_mean,
+            "random_std": rand_std,
+            "z_score": z,
+            "p_value": p,
+        }
+
+    # ── Verdict ──
+    if overall_p < 0.01:
+        verdict = "FAMILY_GENUINE"
+        interp = (
+            f"Random tables show significantly higher within-family entropy "
+            f"(mean {overall_random_mean:.3f}) than T_P15 ({real_mean:.3f}), "
+            f"p={overall_p:.4f}. The visual-phonetic alignment is NOT an "
+            f"artifact of the feature model — the real table's low entropy "
+            f"reflects genuine structure."
+        )
+    elif overall_p > 0.05:
+        verdict = "FAMILY_ARTIFACT"
+        interp = (
+            f"Random tables produce comparable within-family entropy "
+            f"(mean {overall_random_mean:.3f}) to T_P15 ({real_mean:.3f}), "
+            f"p={overall_p:.4f}. The low entropy is an artifact of the "
+            f"feature model's structure, not evidence for tachygraphy."
+        )
+    else:
+        verdict = "FAMILY_MARGINAL"
+        interp = (
+            f"T_P15 shows lower within-family entropy ({real_mean:.3f}) "
+            f"than random tables (mean {overall_random_mean:.3f}), but the "
+            f"difference is only marginally significant (p={overall_p:.4f})."
+        )
+
+    result = {
+        "test": "within_family_phonetic_entropy",
+        "n_trials": N_TRIALS,
+        "n_families": len(family_names),
+        "family_sizes": {f: len(families[f]) for f in family_names},
+        "inventory_size": len(inventory),
+        "real_table": {
+            "per_family": {
+                fname: {
+                    "min_entropy": real_entropies[fname]["min_entropy"],
+                    "consonant_entropy": real_entropies[fname]["consonant_entropy"],
+                    "vowel_entropy": real_entropies[fname]["vowel_entropy"],
+                    "n_consonants": real_entropies[fname]["n_consonants"],
+                    "n_vowels": real_entropies[fname]["n_vowels"],
+                }
+                for fname in family_names
+            },
+            "mean_min_entropy": real_mean,
+        },
+        "null_distribution": {
+            "per_family": per_family_results,
+            "overall_mean": overall_random_mean,
+            "overall_std": float(np.std(random_means_arr)),
+        },
+        "overall_selectivity": overall_selectivity,
+        "overall_z": overall_z,
+        "overall_p": overall_p,
+        "phase19_5_comparison": {
+            "phase19_5_real_mean": 0.851,
+            "phase19_5_null_mean": 1.372,
+            "phase19_5_selectivity": 1.61,
+            "phase19_5_null_type": "character_shuffle",
+            "this_test_null_type": "syllable_assignment_shuffle",
+        },
+        "verdict": verdict,
+        "interpretation": interp,
+        "runtime_seconds": time.time() - t0,
+    }
+
+    # ── Print ──
+    print("\n" + "=" * 70)
+    print("RESULTS")
+    print("=" * 70)
+    print(f"\n  {'Family':<12s}  {'Real':>6s}  {'Random':>12s}  {'z':>6s}  {'p':>6s}")
+    print("  " + "-" * 50)
+    for fname in family_names:
+        r = per_family_results[fname]
+        print(f"  {fname:<12s}  {r['real_min_entropy']:>6.3f}  "
+              f"{r['random_mean']:>5.3f}±{r['random_std']:.3f}  "
+              f"{r['z_score']:>6.2f}  {r['p_value']:>6.4f}")
+    print("  " + "-" * 50)
+    print(f"  {'OVERALL':<12s}  {real_mean:>6.3f}  "
+          f"{overall_random_mean:>5.3f}±{np.std(random_means_arr):.3f}  "
+          f"{overall_z:>6.2f}  {overall_p:>6.4f}")
+    print(f"\n  Selectivity (random/real): {overall_selectivity:.2f}×")
+    print(f"  Phase 19.5 selectivity (char-shuffle): 1.61×")
+    print(f"\n  Verdict: {verdict}")
+    print(f"  {interp}")
+
+    # ── Save ──
+    out_path = os.path.join(rd, "reviewer_family_entropy.json")
+    with open(out_path, "w") as f:
+        json.dump(_convert(result), f, indent=2)
+    print(f"\n  Saved to {out_path}")
+
+
 def _compute_signal_stats(
     real_decoded: List[str],
     null_decoded_list: List[List[str]],
