@@ -66,7 +66,7 @@ from voynich.phases.word_catalog import _detect_ambiguity, _score_and_tier
 # Constants
 # ---------------------------------------------------------------------------
 
-N_TRIALS = 200
+N_TRIALS = 1000
 SIGMA_THRESHOLD = 2.0
 MIN_SIGNAL_BACKING = 2     # triples must back ≥ N signal words to be confirmed
 NULL_SEEDS = [100, 101, 102, 103, 104]
