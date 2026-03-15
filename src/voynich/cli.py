@@ -5112,6 +5112,52 @@ def cmd_phase53():
     print(f"\nPhase 53 completed in {time.time() - t0:.1f}s")
 
 
+def cmd_reviewer_perm():
+    """Reviewer Analysis 1: random syllabary permutation test."""
+    from voynich.phases.reviewer_permutation import run_reviewer_permutation
+    t0 = time.time()
+    run_reviewer_permutation()
+    print(f"\nCompleted in {time.time() - t0:.1f}s")
+
+
+def cmd_reviewer_coherence():
+    """Reviewer Analysis 1b: signal word coherence check."""
+    from voynich.phases.reviewer_permutation import run_reviewer_coherence
+    t0 = time.time()
+    run_reviewer_coherence()
+    print(f"\nCompleted in {time.time() - t0:.1f}s")
+
+
+def cmd_reviewer_rabidi():
+    """Reviewer Analysis 2: rabidi sensitivity."""
+    from voynich.phases.reviewer_rabidi import run_reviewer_rabidi
+    t0 = time.time()
+    run_reviewer_rabidi()
+    print(f"\nCompleted in {time.time() - t0:.1f}s")
+
+
+def cmd_reviewer_fingerprint():
+    """Reviewer Analysis 3: fingerprint gap."""
+    from voynich.phases.reviewer_fingerprint import run_reviewer_fingerprint
+    t0 = time.time()
+    run_reviewer_fingerprint()
+    print(f"\nCompleted in {time.time() - t0:.1f}s")
+
+
+def cmd_reviewer_all():
+    """Run all reviewer analyses + integration."""
+    from voynich.phases.reviewer_permutation import run_reviewer_permutation
+    from voynich.phases.reviewer_rabidi import run_reviewer_rabidi
+    from voynich.phases.reviewer_fingerprint import run_reviewer_fingerprint
+    from voynich.phases.reviewer_integrate import run_reviewer_integrate
+    t0 = time.time()
+    run_reviewer_permutation()
+    run_reviewer_rabidi()
+    run_reviewer_fingerprint()
+    run_reviewer_integrate()
+    print(f"\nAll reviewer analyses completed in {time.time() - t0:.1f}s")
+
+
 def cmd_phase24():
     """Run full Phase 24 pipeline: targeted error correction + exploratory analysis."""
     print("=" * 70)
@@ -5817,6 +5863,12 @@ def main():
         'triple-resolve': cmd_triple_resolve,
         'resolved-decode': cmd_resolved_decode,
         'phase53': cmd_phase53,
+        # Reviewer response analyses
+        'reviewer-perm': cmd_reviewer_perm,
+        'reviewer-coherence': cmd_reviewer_coherence,
+        'reviewer-rabidi': cmd_reviewer_rabidi,
+        'reviewer-fingerprint': cmd_reviewer_fingerprint,
+        'reviewer-all': cmd_reviewer_all,
     }
 
     if len(sys.argv) < 2:

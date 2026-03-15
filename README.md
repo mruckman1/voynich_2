@@ -415,6 +415,13 @@ voynich crib-validate      # Step 48D.5: canonical bigram z-score validation
 voynich track-d-48         # Run full Track D (crib propagation)
 voynich phase48-integrate  # Integration: 8-validation battery + verdict
 voynich phase48            # Run full Phase 48 pipeline (all 4 tracks + integration)
+
+# Reviewer Response Analyses (ad hoc validation)
+voynich reviewer-perm          # Random syllabary permutation test (1000 trials, ~30 min)
+voynich reviewer-coherence     # Signal word coherence check (1000 trials, ~30 min)
+voynich reviewer-rabidi        # Rabidi sensitivity analysis
+voynich reviewer-fingerprint   # Fingerprint cosine gap analysis
+voynich reviewer-all           # All three + integration
 ```
 
 Alternatively, use `python -m voynich <command>` without installing.
@@ -655,7 +662,11 @@ voynich_2/
 │       ├── token_pair_freq.py   # Phase 33.13: token pair frequency tables
 │       ├── distributional_match.py # Phase 33.14: distributional match (Hungarian algorithm)
 │       ├── distributional_validate.py # Phase 33.15: distributional cross-validation
-│       └── phase33_integrate.py # Phase 33.16: cross-approach consensus and final verdict
+│       ├── phase33_integrate.py # Phase 33.16: cross-approach consensus and final verdict
+│       ├── reviewer_permutation.py  # Reviewer: random syllabary permutation test (1000 trials)
+│       ├── reviewer_rabidi.py       # Reviewer: rabidi sensitivity analysis
+│       ├── reviewer_fingerprint.py  # Reviewer: fingerprint cosine gap analysis
+│       └── reviewer_integrate.py    # Reviewer: integration + paper-ready summary
 ├── data/
 │   ├── corpus/                  # EVA transcription files (ZL3b-n.txt, RF1b-e.txt, IT2a-n.txt)
 │   ├── 2Translate/              # Transcribed historical sources (Chatelain, Schmitz, Cappelli, Fontana)
@@ -6658,6 +6669,117 @@ All three runs are dominated by the same high-frequency signal words (bene, cola
 4. **The content runs on f88r, f25r, and f3r** consist of the same 4–5 high-frequency signal words recurring in clusters. The 21-token run on f66r is entirely function words. No "strain root of senna with coral by method of decoction" — the pharmaceutical recipe text predicted by the vocabulary remains elusive at the passage level.
 
 5. **Progression:** Phase 51B = 0 consensus changes (majority vote across all bridge matches) → Phase 53 = 0 consensus changes (paradigm-filtered constraints from known word identifications). Both the broad and narrow approaches to constraining free triples fail because the expanded dictionary inflates false matches to a level where real signal cannot be distinguished from noise. The assignment table remains at the Phase 15/16 local optimum with 43.6% full-corpus dict-hit.
+
+## Reviewer Response Analyses (Ad Hoc Validation)
+
+Three targeted analyses addressing specific reviewer concerns about the headline results. These are post-hoc validations, not numbered phases — they don't modify the assignment table or produce new decodings.
+
+- **Files**: `reviewer_permutation.py`, `reviewer_rabidi.py`, `reviewer_fingerprint.py`, `reviewer_integrate.py`
+- **CLI**: `reviewer-perm`, `reviewer-rabidi`, `reviewer-fingerprint`, `reviewer-all`
+- **Results**: `reviewer_permutation.json`, `reviewer_rabidi.json`, `reviewer_fingerprint.json`, `reviewer_integrate.json`
+
+### Analysis 1: Random Syllabary Permutation Test — SIGNAL_MARGINAL
+
+**Question**: Does ANY random CV syllable assignment produce ~5.5× selectivity for its top-hitting decoded words, or is 5.5× specific to the T_P15 table?
+
+Phase 50A tested whether shuffling syllables AMONG the 25 existing triples matters (answer: barely, 1.10×). This test is fundamentally different: it asks whether the CHOICE of syllables matters — whether "di,se,ne,co..." is special compared to "pa,ku,vo,ri..." drawn from the same phonological inventory.
+
+**Method**: 1,000 random assignment tables generated for two inventories — Option A (21 syllables from T_P15's vocabulary) and Option B (202 syllables from 2-char merged-dictionary words + full CV grid). Each random table decoded the real Voynich corpus AND 5 null corpora (seeds 100–104) with that same random table, computing per-word σ = (real_count − null_mean) / null_std. Signal words are those with σ > 2.0. Dictionary: merged Latin 10K + Italian 10K (19,363 words) — the same dictionary that produces the project's 70 headline signal words.
+
+**Results (Option A — tighter null, same 21-syllable inventory):**
+
+| Metric | T_P15 (real) | Random null (mean ± std) | z-score | p-value |
+|--------|-------------|--------------------------|---------|---------|
+| Signal word count | **56** | 32.7 ± 7.8 | **+3.00** | **0.001** |
+| Mean selectivity | 3.81× | 3.43× ± 0.59 | +0.65 | 0.259 |
+| Selectivity CV | 0.850 | 0.89 ± 0.16 | +0.35 | — |
+
+**Results (Option B — broader null, 202-syllable inventory):**
+
+| Metric | T_P15 (real) | Random null (mean ± std) | z-score | p-value |
+|--------|-------------|--------------------------|---------|---------|
+| Signal word count | **56** | 22.6 ± 4.8 | **+6.93** | **< 0.00001** |
+| Mean selectivity | 3.81× | 3.61× ± 0.47 | +0.41 | 0.341 |
+
+**Verdict: SIGNAL_MARGINAL.** The result splits cleanly along two dimensions:
+
+1. **Signal word COUNT is table-specific (p = 0.001).** T_P15 produces 56 signal words — far more than the typical random table's ~33 (Option A) or ~23 (Option B). The real assignment table genuinely finds more words where real Voynich differs from null corpora.
+
+2. **Per-word selectivity magnitude is NOT table-specific (p = 0.26).** The 3.81× mean selectivity of T_P15's signal words is not significantly above what random tables produce (3.43×). Random tables find fewer signal words, but those that pass σ > 2.0 tend to have individually higher selectivity — because with fewer words clearing the threshold, the survivors are stronger outliers.
+
+**Interpretation:** The T_P15 table is genuinely special in *how many* decoded words discriminate real from null text, but the *magnitude* of per-word discrimination (~3–4× selectivity) is a structural property of the Voynich's token frequency distribution interacting with any CV syllabary. The signal word count is table-specific evidence; the per-word selectivity is not.
+
+### Analysis 1b: Signal Word Coherence Check — COHERENCE_UNCOMMON
+
+**Question**: Do any of the 1,000 random trials produce signal words that form coherent linguistic structure — Italian verb paradigms, complete function-word inventories, or pharmaceutical register terms?
+
+**Method**: Same 1,000 Option A trials as Analysis 1. For each trial's signal word set, scored three coherence tests: (1) verb paradigm — ≥3 conjugated forms of any single Italian verb (dire: dise/dice/dico/dici/diri; dare: dedi/dido/dere; etc.); (2) function-word kit — items from ≥4 of 5 Romance clause categories (articles, prepositions, pronouns, auxiliaries, conjunctions); (3) pharmaceutical register — ≥3 terms from the Circa Instans tradition (cola, tere, raso, bene, sene, sero, etc.).
+
+**Results:**
+
+| Coherence test | T_P15 | Random trials (1000) | p-value |
+|----------------|-------|---------------------|---------|
+| Verb paradigm (≥3 forms) | **Yes** (dire: 5 forms) | 69/1000 (6.9%) | 0.069 |
+| Function-word kit (≥4/5 cats) | **Yes** (5/5 categories) | 745/1000 (74.5%) | 0.745 |
+| Pharma register (≥3 terms) | **Yes** (8 terms) | 147/1000 (14.7%) | 0.147 |
+| **All three simultaneously** | **Yes (3/3)** | **11/1000 (1.1%)** | **0.011** |
+
+Coherence distribution: 0/3 = 201 trials, 1/3 = 648, 2/3 = 140, **3/3 = 11**.
+
+**Verdict: COHERENCE_UNCOMMON.** Only 1.1% of random trials achieved 3/3 coherence (p = 0.011). The function-word kit alone is easy (74.5% achieve it — short function words are ubiquitous in the merged dictionary). The pharmaceutical register is moderately rare (14.7%). The verb paradigm is uncommon (6.9%) — having ≥3 conjugated forms of a single Italian verb among ~33 signal words requires specific alignment of syllable assignments to Italian morphology. Having all three simultaneously is rare: T_P15's signal words form Italian verb conjugations (dire: 5 forms) AND a complete clause kit (5/5 categories) AND pharmaceutical terminology (8 terms) — a combination only 11 random tables out of 1,000 reproduce.
+
+### Analysis 2: Rabidi Sensitivity — ROBUST
+
+**Question**: Are the 22 T1 word-level identifications robust to removing *rabidi* (5 of 22 entries, appearing on 60 folios)?
+
+**Method**: Partitioned the 22 T1 catalog entries into 5 rabidi entries (EVA types: ety, opy, otaly, otary, oty) and 17 non-rabidi entries. Recomputed all reported statistics for both sets.
+
+**Results:**
+
+| Metric | All 22 T1 | Without rabidi (17) | Delta |
+|--------|-----------|---------------------|-------|
+| Distinct Latin words | 9 | 8 | −1 |
+| EVA types | 22 | 17 | −5 |
+| Folios covered | 133 | 102 | −31 |
+| Corpus coverage | 32.0% | 31.6% | −0.4% |
+| Circa Instans overlap | 88.9% | 87.5% | −1.4% |
+| Morphological paradigms | 20 | 20 | 0 |
+
+**Verdict: ROBUST.** Coverage drops by only 0.4 percentage points (dominated by the 70 signal words from Phase 36, which are unaffected). CI overlap remains high (87.5%). All 20 morphological paradigms are preserved — no paradigm included any rabidi EVA type. The remaining 8 words form a coherent pharmaceutical vocabulary: ratione (method), stercora (medicinal dung), coralli (corals), diasene (senna compound), radicom (root), commune (common), codex (manuscript), secundi (second).
+
+### Analysis 3: Fingerprint Cosine Gap — WEAK
+
+**Question**: Is there a meaningful gap between the top-5 Latin fingerprint matches and the next-best non-Latin profile?
+
+**Method**: Loaded the 63-entry fingerprint ranking from Phase 2 (Approach 2) and measured the gap between rank 5 and rank 6.
+
+**Results (top 10):**
+
+| Rank | Profile | Family | Cosine |
+|------|---------|--------|--------|
+| 1 | latin+simple_substitution | Romance | 0.9857 |
+| 2 | latin+raw | Romance | 0.9854 |
+| 3 | latin+abbreviation_light | Romance | 0.9853 |
+| 4 | occitan+raw | Romance | 0.9852 |
+| 5 | latin+nomenclator | Romance | 0.9848 |
+| **6** | **occitan+abbreviation_light** | **Romance** | **0.9845** |
+| 7 | occitan+simple_substitution | Romance | 0.9839 |
+| 8 | occitan+null_insertion | Romance | 0.9832 |
+| 9 | german+null_insertion | Germanic | 0.9828 |
+| 10 | hebrew+null_insertion | Semitic | 0.9827 |
+
+**Gap rank 5→6: 0.000345 cosine.** Gap rank 5→10: 0.002108. Romance mean (top 20): 0.9832 vs non-Romance mean: 0.9825 (gap = 0.0008). First non-Romance profile at rank 9.
+
+**Verdict: WEAK discrimination.** The gap of 0.000345 cosine is well below the 0.005 threshold for meaningful discrimination. All top-8 profiles are Romance (Latin and Occitan). The fingerprint correctly identifies the Romance language *family* but cannot distinguish Latin from Occitan or from other Romance languages. The cosine similarity of 0.9857 reflects generic European text statistical properties rather than Latin-specific structure. The language identification in the paper rests on 4 independent methods that DO discriminate: signal word isolation (Phase 36), size-matched optimal transport (Phase 50D), SBM frequency profiling (Phase 46B), and character n-gram analysis (Phase 50D).
+
+### Integration Summary
+
+| Analysis | Verdict | Key Number | Paper Implication |
+|----------|---------|------------|-------------------|
+| 1. Permutation | **SIGNAL_MARGINAL** | p(n_signal)=0.001, p(mean_sel)=0.26 | T_P15 finds more signal words than random (56 vs 33), but per-word selectivity magnitude is structural |
+| 1b. Coherence | **COHERENCE_UNCOMMON** | **11/1000 (1.1%, p=0.011)** | T_P15's signal words form Italian verb paradigms + function kit + pharma register simultaneously — only 1.1% of random tables do |
+| 2. Rabidi | **ROBUST** | Coverage Δ = −0.4% | Removing rabidi does not materially affect the catalog |
+| 3. Fingerprint | **WEAK** | Gap = 0.000345 | Fingerprint identifies Romance family, not Latin specifically |
 
 ## Consolidated Signal Vocabulary (70 unique words)
 
