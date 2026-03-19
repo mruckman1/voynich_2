@@ -25,6 +25,7 @@ Detailed documentation for each analysis phase. Phases are grouped thematically.
 | 49-53 | Novel Approaches & Final Consolidation | Italian #1 (size-matched); CC z=21.0; variable-length encoding | [phase-49-53.md](phase-49-53.md) |
 | Reviewer | Permutation Tests & Validation | p=0.001 (count), p=0.011 (coherence), p=0.009 (word-level) | [reviewer-analyses.md](reviewer-analyses.md) |
 | 54 | Gallo-Italic Dialect Identification | **INDETERMINATE** — macaronic (Tuscan grammar + northern phonology) | [phase-54.md](phase-54.md) |
+| 55 | Entropy Shift Generalization + Currier Prediction | **Track A**: SCHINNER_ABOVE (Cardan discriminated, Schinner exposes scope limit) / **Track B**: PREDICTION_CONFIRMED_UNIQUE (tachy 1.284× ≈ Voynich 1.450×) | [phase-55.md](phase-55.md) |
 
 ## Cross-References
 

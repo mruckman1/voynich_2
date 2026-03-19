@@ -25,6 +25,8 @@ Key metrics tracked across phases. Dict-Hit = percentage of decoded tokens match
 | 52 | 40.1% coverage | 22 T1 words, 56 paradigms | — | Word catalog; 74.8% Circa Instans overlap |
 | 53 | — | z = 0.02 (null) | — | Paradigm constraints not table-specific; variable-length encoding confirmed |
 | 54 | — | INDETERMINATE | — | Dialect ID: Ligurian #1 (0.248), gap 0.012; 40% agreement; Fisher p=0.019 |
+| 55A | — | SCHINNER_ABOVE | — | Entropy shift extended: 13 mechanisms; Cardan +0.49–0.59 (discriminated); Schinner +0.95–0.97 (above tachy, scope limitation exposed) |
+| 55B | — | PREDICTION_CONFIRMED_UNIQUE | — | Currier cross-boundary MI: Voynich 0.190 bits / 1.450× (z=24.9σ); tachy-syl 1.284× (11% off); Schinner 1.044× (same as null) |
 
 ## Background
 

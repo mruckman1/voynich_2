@@ -583,3 +583,22 @@ voynich zodiac-dialect     # Phase 54.8: zodiac label dialect decode
 voynich dialect-verdict    # Phase 54: aggregate all experiments into final verdict
 voynich phase54            # Run full Phase 54 pipeline (all 8 experiments + integration)
 ```
+
+## Phase 55: Entropy Shift Generalization + Currier Self-Correlation
+
+```bash
+# Track A: extend entropy shift ranking to Schinner + Cardan
+voynich schinner-gen       # Phase 55A.1: Schinner stochastic model (2 variants × 20 seeds × 36K tokens)
+voynich cardan-gen         # Phase 55A.2: Rugg-Taylor Cardan grille (2 variants × 20 seeds × 36K tokens)
+voynich entropy-extended   # Phase 55A.3: merge into 13-mechanism ranking; verdict SCHINNER_ABOVE_TACHYGRAPHY
+
+# Track B: Currier cross-boundary self-correlation prediction
+voynich currier-voynich    # Phase 55B.1: MI on real Voynich + 1000-shuffle null (ratio=1.450×, z=24.9σ)
+voynich currier-tachy      # Phase 55B.2: tachygraphic simulation (syl=1.284×, word=1.061×)
+voynich currier-controls   # Phase 55B.3: Latin (1.147×), Schinner (1.044×), Cardan (1.001×)
+voynich currier-verdict    # Phase 55B.4: integrate Track B; verdict PREDICTION_CONFIRMED_UNIQUE
+
+# Integration
+voynich phase55-verdict    # Phase 55: integrate Track A + Track B (verdict PARTIAL, 3/6)
+voynich phase55            # Run full Phase 55 pipeline (~15–25 min)
+```

@@ -5332,6 +5332,64 @@ def cmd_phase54():
     cmd_dialect_verdict()
 
 
+# ---------------------------------------------------------------------------
+# Phase 55: Entropy Shift Generalization + Currier Self-Correlation
+# ---------------------------------------------------------------------------
+
+def cmd_schinner_gen():
+    """Phase 55A.1: Schinner stochastic generator entropy shift (2 variants × 20 seeds)."""
+    from voynich.phases.schinner_generator import run_schinner_gen
+    run_schinner_gen()
+
+
+def cmd_cardan_gen():
+    """Phase 55A.2: Rugg-Taylor Cardan grille generator entropy shift (2 variants × 20 seeds)."""
+    from voynich.phases.cardan_generator import run_cardan_gen
+    run_cardan_gen()
+
+
+def cmd_entropy_extended():
+    """Phase 55A.3: Extended entropy shift ranking (Schinner + Cardan added to Phase 19.2)."""
+    from voynich.phases.entropy_shift_extended import run_entropy_extended
+    run_entropy_extended()
+
+
+def cmd_currier_voynich():
+    """Phase 55B.1: Measure Currier cross-boundary self-correlation on real Voynich."""
+    from voynich.phases.currier_selfcorr import run_currier_voynich
+    run_currier_voynich()
+
+
+def cmd_currier_tachy():
+    """Phase 55B.2: Measure Currier self-correlation on tachygraphic simulation."""
+    from voynich.phases.currier_selfcorr import run_currier_tachy
+    run_currier_tachy()
+
+
+def cmd_currier_controls():
+    """Phase 55B.3: Measure Currier self-correlation on Latin, Schinner, Cardan controls."""
+    from voynich.phases.currier_selfcorr import run_currier_controls
+    run_currier_controls()
+
+
+def cmd_currier_verdict():
+    """Phase 55B.4: Integrate Currier self-correlation measurements into verdict."""
+    from voynich.phases.currier_selfcorr import run_currier_verdict
+    run_currier_verdict()
+
+
+def cmd_phase55_verdict():
+    """Phase 55: Integrate Track A (entropy) + Track B (Currier) into final verdict."""
+    from voynich.phases.phase55_integrate import run_phase55_integrate
+    run_phase55_integrate()
+
+
+def cmd_phase55():
+    """Run full Phase 55 pipeline (entropy shift generalization + Currier prediction)."""
+    from voynich.phases.phase55_integrate import run_phase55
+    run_phase55()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -6009,6 +6067,16 @@ def main():
         'zodiac-dialect': cmd_zodiac_dialect,
         'dialect-verdict': cmd_dialect_verdict,
         'phase54': cmd_phase54,
+        # Phase 55: Entropy Shift Generalization + Currier Self-Correlation
+        'schinner-gen': cmd_schinner_gen,
+        'cardan-gen': cmd_cardan_gen,
+        'entropy-extended': cmd_entropy_extended,
+        'currier-voynich': cmd_currier_voynich,
+        'currier-tachy': cmd_currier_tachy,
+        'currier-controls': cmd_currier_controls,
+        'currier-verdict': cmd_currier_verdict,
+        'phase55-verdict': cmd_phase55_verdict,
+        'phase55': cmd_phase55,
     }
 
     if len(sys.argv) < 2:

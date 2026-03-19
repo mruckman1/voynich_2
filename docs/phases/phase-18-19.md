@@ -104,7 +104,7 @@ Computed the entropy curve (H0–H6) for both Voynich and Latin, then calculated
 
 This signature is distinctive: entropy is *lower* than Latin at low orders (H0–H2) but *higher* at high orders (H4–H6) — exactly what a syllabic tachygraphic system produces by reducing alphabet size while introducing systematic patterns.
 
-**Cipher ranking by cosine similarity:**
+**Cipher ranking by cosine similarity (9-mechanism original; see Phase 55 for 13-mechanism update):**
 
 | Rank | Mechanism | Cosine Sim | Euclidean Dist |
 |---|---|---|---|
@@ -119,6 +119,8 @@ This signature is distinctive: entropy is *lower* than Latin at low orders (H0�
 | 9 | abbreviation_heavy | −0.950 | 2.865 |
 
 95% CIs for tachygraphic [0.820, 0.820] and homophonic [0.350, 0.682] do not overlap — the tachygraphic mechanism is cleanly **DISCRIMINATED** from all alternatives. Null (shuffled) cosine similarity = −0.173. Pure syllabic (rank 6) and syllabic+modifier (rank 7) produce shift vectors in the *opposite* direction, confirming the encoding is not any standard cipher but a notational system rooted in Italian medieval shorthand.
+
+**Phase 55 extension (13-mechanism ranking):** Schinner (2007)'s position-conditioned Markov model scores +0.953–+0.968, displacing tachygraphy to rank 3. This is a scope limitation of the discriminator: Schinner's model is trained on the Voynich's own character statistics and trivially reproduces the entropy signature. The test is designed for encoding mechanisms applied to independent plaintext (Latin), and cannot evaluate models that memorize the target corpus. Rugg-Taylor's Cardan grille scores +0.490–+0.590 (well below tachygraphy) and is cleanly discriminated. See [phase-55.md](phase-55.md) for the full 13-mechanism table.
 
 ### Test 19.3 — Affix Isolation and Latin Mapping
 
@@ -282,7 +284,7 @@ Updated probability: **tachygraphic cipher = 0.70**, residual H1/H2/H3 = 0.10 ea
 1. **STRONG**: Both stroke-rule test (19.5) and simulation (19.6) independently confirm tachygraphic encoding — the manuscript uses an Italian syllabic tachygraphic cipher
 2. **STRONG**: Cross-approach convergence at 32.26× selectivity — two independent methods decode to the same Latin text
 3. **STRONG**: Illustration-text link at p<0.0001 — decoded text matches depicted plants
-4. **STRONG**: Entropy shift analysis uniquely identifies tachygraphic encoding (cos=0.820, cleanly discriminated from all 8 alternatives)
+4. **STRONG**: Entropy shift analysis identifies tachygraphic encoding (cos=0.820, cleanly discriminated from all 8 independent-plaintext mechanisms; the discriminator's scope is limited to mechanisms applied to independent plaintext — see Phase 55 for the scope boundary)
 
 ### What Didn't Work
 
