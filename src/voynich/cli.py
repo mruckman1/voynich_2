@@ -174,6 +174,36 @@ Usage:
     voynich track-c-45        # Run all Track C steps
     voynich phase45-integrate # Phase 45 integration verdict
     voynich phase45           # Run full Phase 45 pipeline
+
+Additional phases and commands not listed above are also available:
+    voynich phase17           # Phase 17: Honesty Diagnostics
+    voynich phase18           # Phase 18: Hypothesis Discrimination
+    voynich phase19           # Phase 19: Convergent Constraint Exploitation
+    voynich phase20           # Phase 20: Tachygraphic Table Construction
+    voynich phase21           # Phase 21: Paleographic Reference Pipeline
+    voynich phase22           # Phase 22: Evidence Priority Merge
+    voynich phase23           # Phase 23: Statistical Inversion Analysis
+    voynich phase26           # Phase 26: Zodiac Known-Plaintext Attack
+    voynich phase27           # Phase 27: Gibberish Typology
+    voynich phase28           # Phase 28: Ventris-Style Crib Propagation
+    voynich phase29           # Phase 29: Signal-Filtered Readability
+    voynich phase30           # Phase 30: Iterative Ventris Bootstrap
+    voynich phase31           # Phase 31: Botanical Anchors
+    voynich phase32           # Phase 32: Compound Sign Collisions
+    voynich phase33           # Phase 33: Encoding Reformation
+    voynich phase46           # Phase 46: Consolidation
+    voynich phase47           # Phase 47: Structural Reading
+    voynich phase48           # Phase 48: Bilingual Cribs
+    voynich phase49           # Phase 49: Novel Computational Approaches
+    voynich phase50           # Phase 50: WFST Validation + Word-Level LM
+    voynich phase51           # Phase 51: Reverse Suffix Calibration
+    voynich phase52           # Phase 52: Word-Level Identification Catalog
+    voynich phase53           # Phase 53: Paradigm-Constrained Resolution
+    voynich reviewer-all      # Reviewer response analyses
+    voynich word-perm-null    # Word-level permutation null test
+
+Each phase also has individual step commands (e.g., phase17 has dict-cal,
+honesty-keywords, etc.). See docs/phases/ for full details.
 """
 import sys
 import time
@@ -5221,6 +5251,87 @@ def cmd_phase24():
     cmd_phase24_integrate()
 
 
+# Phase 54: Gallo-Italic Dialect Identification
+def cmd_degemination():
+    """Phase 54.1: Systematic degemination test."""
+    from voynich.phases.dialect_degemination import run_degemination
+    run_degemination()
+
+
+def cmd_articles():
+    """Phase 54.3: Article and pronoun system matching."""
+    from voynich.phases.dialect_articles import run_articles
+    run_articles()
+
+
+def cmd_verb_morph():
+    """Phase 54.6: Verb morphology deep dive."""
+    from voynich.phases.dialect_verbs import run_verb_morph
+    run_verb_morph()
+
+
+def cmd_co_syntax():
+    """Phase 54.5: Co syntactic validation."""
+    from voynich.phases.dialect_co_syntax import run_co_syntax
+    run_co_syntax()
+
+
+def cmd_lenition():
+    """Phase 54.2: Lenition pattern test."""
+    from voynich.phases.dialect_lenition import run_lenition
+    run_lenition()
+
+
+def cmd_pharma_region():
+    """Phase 54.4: Pharmaceutical terminology regionalization."""
+    from voynich.phases.dialect_pharma import run_pharma_region
+    run_pharma_region()
+
+
+def cmd_dialect_sim():
+    """Phase 54.7: Simulated macaronic text comparison."""
+    from voynich.phases.dialect_simulation import run_dialect_sim
+    run_dialect_sim()
+
+
+def cmd_zodiac_dialect():
+    """Phase 54.8: Zodiac label dialect decode."""
+    from voynich.phases.dialect_zodiac import run_zodiac_dialect
+    run_zodiac_dialect()
+
+
+def cmd_dialect_verdict():
+    """Phase 54: Aggregate all experiments into final dialect verdict."""
+    from voynich.phases.dialect_integrate import run_dialect_verdict
+    run_dialect_verdict()
+
+
+def cmd_phase54():
+    """Run full Phase 54 dialect identification pipeline."""
+    # Phase A: Immediate (existing data only)
+    cmd_degemination()
+    print("\n" + "=" * 70 + "\n")
+    cmd_articles()
+    print("\n" + "=" * 70 + "\n")
+    cmd_verb_morph()
+    # Phase B: Short-term (targeted corpus analysis)
+    print("\n" + "=" * 70 + "\n")
+    cmd_co_syntax()
+    print("\n" + "=" * 70 + "\n")
+    cmd_lenition()
+    # Phase C: Medium-term (external reference)
+    print("\n" + "=" * 70 + "\n")
+    cmd_pharma_region()
+    print("\n" + "=" * 70 + "\n")
+    cmd_dialect_sim()
+    # Phase D: Manuscript-specific
+    print("\n" + "=" * 70 + "\n")
+    cmd_zodiac_dialect()
+    # Integration
+    print("\n" + "=" * 70 + "\n")
+    cmd_dialect_verdict()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -5887,6 +5998,17 @@ def main():
         'reviewer-rabidi': cmd_reviewer_rabidi,
         'reviewer-fingerprint': cmd_reviewer_fingerprint,
         'reviewer-all': cmd_reviewer_all,
+        # Phase 54: Gallo-Italic Dialect Identification
+        'degemination': cmd_degemination,
+        'articles': cmd_articles,
+        'verb-morph': cmd_verb_morph,
+        'co-syntax': cmd_co_syntax,
+        'lenition': cmd_lenition,
+        'pharma-region': cmd_pharma_region,
+        'dialect-sim': cmd_dialect_sim,
+        'zodiac-dialect': cmd_zodiac_dialect,
+        'dialect-verdict': cmd_dialect_verdict,
+        'phase54': cmd_phase54,
     }
 
     if len(sys.argv) < 2:

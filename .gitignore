@@ -3,9 +3,11 @@ __pycache__/
 *.pyc
 *.egg-info/
 .claude/
-results/
+results/*
+!results/README.md
 archive/
 data/reference/
 .env
 *.pdf
+!We_Know_the_Voice_but_Not_the_Song_v17.pdf
 gibberish_transcriptions/
