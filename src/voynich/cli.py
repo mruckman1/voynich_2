@@ -5390,6 +5390,166 @@ def cmd_phase55():
     run_phase55()
 
 
+def cmd_costamagna_compare():
+    """Phase 56: Costamagna structural compatibility analysis."""
+    from voynich.phases.costamagna_structural import run_costamagna_structural
+    run_costamagna_structural()
+
+
+# Phase 57: CVC Coda Decode
+def cmd_coda_table():
+    """Phase 57.1: Build coda marker mapping table."""
+    from voynich.phases.coda_markers import run_coda_table
+    run_coda_table()
+
+
+def cmd_cvc_coda_signal():
+    """Phase 57.4: Signal isolation on CVC decoded corpus."""
+    from voynich.phases.cvc_coda_signal import run_cvc_coda_signal
+    run_cvc_coda_signal()
+
+
+def cmd_cvc_compare():
+    """Phase 57.5: Compare CV vs CVC decode strategies."""
+    from voynich.phases.cvc_coda_signal import run_cvc_compare
+    run_cvc_compare()
+
+
+def cmd_cvc_tokens():
+    """Phase 57.8: Token-level diagnostic comparison."""
+    from voynich.phases.phase57_verdict import run_cvc_tokens
+    run_cvc_tokens()
+
+
+def cmd_phase57_verdict():
+    """Phase 57: CVC coda decode validation gates and verdict."""
+    from voynich.phases.phase57_verdict import run_phase57_verdict
+    run_phase57_verdict()
+
+
+def cmd_phase57():
+    """Run full Phase 57 pipeline (CVC coda decode)."""
+    from voynich.phases.phase57_verdict import run_phase57
+    run_phase57()
+
+
+# Phase 58: Costamagna-Constrained CSP
+def cmd_cost_domains():
+    """Phase 58.1: Build Costamagna-constrained CSP domains."""
+    from voynich.phases.costamagna_csp import run_cost_domains
+    run_cost_domains()
+
+
+def cmd_cost_reduction():
+    """Phase 58.2: Compare domain sizes across phases."""
+    from voynich.phases.costamagna_csp import run_cost_reduction
+    run_cost_reduction()
+
+
+def cmd_cost_csp():
+    """Phase 58.3: Run CSP with Costamagna domains."""
+    from voynich.phases.costamagna_csp import run_cost_csp
+    run_cost_csp()
+
+
+def cmd_cost_compare():
+    """Phase 58.5: Compare CSP result vs T_P15."""
+    from voynich.phases.phase58_verdict import run_cost_compare
+    run_cost_compare()
+
+
+def cmd_phase58_verdict():
+    """Phase 58: Costamagna CSP validation gates and verdict."""
+    from voynich.phases.phase58_verdict import run_phase58_verdict
+    run_phase58_verdict()
+
+
+def cmd_phase58():
+    """Run full Phase 58 pipeline (Costamagna-constrained CSP)."""
+    from voynich.phases.phase58_verdict import run_phase58
+    run_phase58()
+
+
+# ---- Phase 59: CVC Refinement + Deep Investigation -----------------------
+
+def cmd_cvc_segment():
+    """Phase 59.1: Syllable segmentation of CVC output."""
+    from voynich.phases.cvc_segmentation import run_cvc_segmentation
+    run_cvc_segmentation()
+
+
+def cmd_cvc_position():
+    """Phase 59.6: Positional distribution of coda markers."""
+    from voynich.phases.cvc_positional import run_cvc_positional
+    run_cvc_positional()
+
+
+def cmd_cvc_tm():
+    """Phase 59.3: Resolve t/m coda ambiguity."""
+    from voynich.phases.cvc_tm_ambiguity import run_cvc_tm
+    run_cvc_tm()
+
+
+def cmd_cvc_connector():
+    """Phase 59.7: Test connector group coda candidates."""
+    from voynich.phases.cvc_connectors import run_cvc_connector
+    run_cvc_connector()
+
+
+def cmd_cvc_dict():
+    """Phase 59.2: Build CVC-aware dictionary and re-score."""
+    from voynich.phases.cvc_dictionary import run_cvc_dict
+    run_cvc_dict()
+
+
+def cmd_cvc_gloss():
+    """Phase 59.4: Gloss CVC signal words."""
+    from voynich.phases.cvc_glossing import run_cvc_gloss
+    run_cvc_gloss()
+
+
+def cmd_cvc_recipe():
+    """Phase 59.9: Recipe reading under CVC decode."""
+    from voynich.phases.cvc_recipes import run_cvc_recipe
+    run_cvc_recipe()
+
+
+def cmd_cvc_aiin():
+    """Phase 59.10: The aiin family deep dive."""
+    from voynich.phases.cvc_aiin_family import run_cvc_aiin
+    run_cvc_aiin()
+
+
+def cmd_cvc_mi():
+    """Phase 59.5: Cross-boundary MI under CVC decode."""
+    from voynich.phases.cvc_cross_mi import run_cvc_mi
+    run_cvc_mi()
+
+
+def cmd_cvc_combo():
+    """Phase 59.8: Test Costamagna combination rules."""
+    from voynich.phases.cvc_combination import run_cvc_combo
+    run_cvc_combo()
+
+
+def cmd_cvc_perm():
+    """Phase 59.11: CVC permutation coherence test."""
+    from voynich.phases.cvc_permutation import run_cvc_perm
+    run_cvc_perm()
+
+
+def cmd_phase59_verdict():
+    """Phase 59: CVC refinement integration and verdict."""
+    from voynich.phases.phase59_integrate import run_phase59_verdict
+    run_phase59_verdict()
+
+
+def cmd_phase59():
+    """Run full Phase 59 pipeline (CVC refinement + deep investigation)."""
+    from voynich.phases.phase59_integrate import run_phase59
+    run_phase59()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -6077,6 +6237,36 @@ def main():
         'currier-verdict': cmd_currier_verdict,
         'phase55-verdict': cmd_phase55_verdict,
         'phase55': cmd_phase55,
+        # Phase 56: Costamagna Structural Compatibility
+        'costamagna-compare': cmd_costamagna_compare,
+        # Phase 57: CVC Coda Decode
+        'coda-table': cmd_coda_table,
+        'cvc-coda-signal': cmd_cvc_coda_signal,
+        'cvc-compare': cmd_cvc_compare,
+        'cvc-tokens': cmd_cvc_tokens,
+        'phase57-verdict': cmd_phase57_verdict,
+        'phase57': cmd_phase57,
+        # Phase 58: Costamagna-Constrained CSP
+        'cost-domains': cmd_cost_domains,
+        'cost-reduction': cmd_cost_reduction,
+        'cost-csp': cmd_cost_csp,
+        'cost-compare': cmd_cost_compare,
+        'phase58-verdict': cmd_phase58_verdict,
+        'phase58': cmd_phase58,
+        # Phase 59: CVC Refinement + Deep Investigation
+        'cvc-segment': cmd_cvc_segment,
+        'cvc-position': cmd_cvc_position,
+        'cvc-tm': cmd_cvc_tm,
+        'cvc-connector': cmd_cvc_connector,
+        'cvc-dict': cmd_cvc_dict,
+        'cvc-gloss': cmd_cvc_gloss,
+        'cvc-recipe': cmd_cvc_recipe,
+        'cvc-aiin': cmd_cvc_aiin,
+        'cvc-mi': cmd_cvc_mi,
+        'cvc-combo': cmd_cvc_combo,
+        'cvc-perm': cmd_cvc_perm,
+        'phase59-verdict': cmd_phase59_verdict,
+        'phase59': cmd_phase59,
     }
 
     if len(sys.argv) < 2:

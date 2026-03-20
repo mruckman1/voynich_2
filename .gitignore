@@ -9,5 +9,6 @@ archive/
 data/reference/
 .env
 *.pdf
+*.jpg
 !We_Know_the_Voice_but_Not_the_Song_v17.pdf
 gibberish_transcriptions/

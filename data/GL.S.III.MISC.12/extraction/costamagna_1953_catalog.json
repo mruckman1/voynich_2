@@ -1,0 +1,2165 @@
+{
+  "metadata": {
+    "source": "Giorgio Costamagna, Il sistema tachigrafico sillabico usato dai notai medioevali italiani (sec. VIII-XI), regole fondamentali, Genova, Opera SS. Vergine di Pompei, 1953",
+    "copy": "Biblioteca Marucelliana, Firenze, shelfmark GL.S.III.Misc.12, bequest of Avv. Francesco Giulietti 1978",
+    "catalog_number": 836936,
+    "digitized_from": "41 high-resolution photographs (GL_S_III_MISC_12_02.jpg through _41.jpg)",
+    "transcription_date": "2026-03-19",
+    "transcription_method": "Manual transcription from photograph images by Claude (Anthropic), verified against plate layout",
+    "notes": "Signs are hand-drawn glyphs with no Unicode representation. Each entry gives the syllable value, plate location, and grid position. Individual sign images must be cropped from the plate photographs using the companion script."
+  },
+  "page_map": {
+    "GL_S_III_MISC_12_02.jpg": {
+      "page": "title",
+      "content": "Title page"
+    },
+    "GL_S_III_MISC_12_03.jpg": {
+      "page": 3,
+      "content": "Introduzione"
+    },
+    "GL_S_III_MISC_12_04.jpg": {
+      "page": 5,
+      "content": "Premesse"
+    },
+    "GL_S_III_MISC_12_05.jpg": {
+      "page": 7,
+      "content": "Alfabeto"
+    },
+    "GL_S_III_MISC_12_06.jpg": {
+      "page": 8,
+      "content": "Collegamento dei segni alfabetici"
+    },
+    "GL_S_III_MISC_12_07.jpg": {
+      "page": 9,
+      "content": "Formazione delle sillabe"
+    },
+    "GL_S_III_MISC_12_08.jpg": {
+      "page": 10,
+      "content": "Formazione delle sillabe (cont.)"
+    },
+    "GL_S_III_MISC_12_09.jpg": {
+      "page": 11,
+      "content": "Terminazioni: consonanti m-n-r-s-t"
+    },
+    "GL_S_III_MISC_12_10.jpg": {
+      "page": 12,
+      "content": "Terminazioni (cont.)"
+    },
+    "GL_S_III_MISC_12_11.jpg": {
+      "page": 13,
+      "content": "Formazione delle parole: sigle, prefissi, abbreviature"
+    },
+    "GL_S_III_MISC_12_12.jpg": {
+      "page": 14,
+      "content": "Formazione delle parole (cont.)"
+    },
+    "GL_S_III_MISC_12_13.jpg": {
+      "page": "divider",
+      "content": "Elenco delle note sillabiche più frequentemente usate"
+    },
+    "GL_S_III_MISC_12_14.jpg": {
+      "page": 15,
+      "content": "Blank or section divider (verso of Elenco)"
+    },
+    "GL_S_III_MISC_12_15.jpg": {
+      "page": 17,
+      "content": "Tavola I"
+    },
+    "GL_S_III_MISC_12_16.jpg": {
+      "page": 19,
+      "content": "Tavola II"
+    },
+    "GL_S_III_MISC_12_17.jpg": {
+      "page": 21,
+      "content": "Tavola III"
+    },
+    "GL_S_III_MISC_12_18.jpg": {
+      "page": 23,
+      "content": "Tavola IV"
+    },
+    "GL_S_III_MISC_12_19.jpg": {
+      "page": 25,
+      "content": "Tavola V"
+    },
+    "GL_S_III_MISC_12_20.jpg": {
+      "page": 27,
+      "content": "Tavola VI"
+    },
+    "GL_S_III_MISC_12_21.jpg": {
+      "page": "flyleaf",
+      "content": "Inside front cover, Marucelliana stamp, shelfmark"
+    },
+    "GL_S_III_MISC_12_22.jpg": {
+      "page": 31,
+      "content": "Tavola VIII"
+    },
+    "GL_S_III_MISC_12_23.jpg": {
+      "page": 33,
+      "content": "Tavola IX"
+    },
+    "GL_S_III_MISC_12_24.jpg": {
+      "page": 35,
+      "content": "Tavola X"
+    },
+    "GL_S_III_MISC_12_25.jpg": {
+      "page": 37,
+      "content": "Tavola XI"
+    },
+    "GL_S_III_MISC_12_26.jpg": {
+      "page": 39,
+      "content": "Tavola XII"
+    },
+    "GL_S_III_MISC_12_27.jpg": {
+      "page": 41,
+      "content": "Tavola XIII"
+    },
+    "GL_S_III_MISC_12_28.jpg": {
+      "page": 43,
+      "content": "Bibliografia"
+    },
+    "GL_S_III_MISC_12_29.jpg": {
+      "page": 44,
+      "content": "Bibliografia (cont.)"
+    },
+    "GL_S_III_MISC_12_30.jpg": {
+      "page": "divider",
+      "content": "APPENDICE"
+    },
+    "GL_S_III_MISC_12_31.jpg": {
+      "page": "divider",
+      "content": "Liste des signes tachygraphiques (Chatelain title)"
+    },
+    "GL_S_III_MISC_12_32.jpg": {
+      "page": "chatelain_1",
+      "content": "Liste des signes tachygraphiques p.1"
+    },
+    "GL_S_III_MISC_12_33.jpg": {
+      "page": "chatelain_2",
+      "content": "Signes tachygraphiques p.2"
+    },
+    "GL_S_III_MISC_12_34.jpg": {
+      "page": 49,
+      "content": "Note aggiunte a sottoscrizioni notarili"
+    },
+    "GL_S_III_MISC_12_35.jpg": {
+      "page": 50,
+      "content": "Note aggiunte (cont.)"
+    },
+    "GL_S_III_MISC_12_36.jpg": {
+      "page": "facsimile_1",
+      "content": "Facsimile plates 1-3"
+    },
+    "GL_S_III_MISC_12_37.jpg": {
+      "page": "facsimile_2",
+      "content": "Facsimile plates 4-6"
+    },
+    "GL_S_III_MISC_12_38.jpg": {
+      "page": "facsimile_3",
+      "content": "Facsimile plates 7-9"
+    },
+    "GL_S_III_MISC_12_39.jpg": {
+      "page": "facsimile_4",
+      "content": "Facsimile plates 10-12"
+    },
+    "GL_S_III_MISC_12_40.jpg": {
+      "page": "facsimile_5",
+      "content": "Facsimile plate 13"
+    },
+    "GL_S_III_MISC_12_41.jpg": {
+      "page": "endpaper",
+      "content": "Back endpaper"
+    }
+  },
+  "alphabet": {
+    "source_image": "GL_S_III_MISC_12_05.jpg",
+    "page": 7,
+    "description": "Base alphabet. Unlike Tironian notes which used many derived signs, syllabic tachygraphy used the base forms sparingly. Cursive writing causes frequent deformations.",
+    "signs": [
+      {
+        "letter": "a",
+        "row": 1,
+        "col": 1,
+        "notes": "open loop left"
+      },
+      {
+        "letter": "b",
+        "row": 1,
+        "col": 2,
+        "notes": "numeral-3 shape"
+      },
+      {
+        "letter": "c",
+        "row": 1,
+        "col": 3,
+        "notes": "open C shape (before a,o,u)"
+      },
+      {
+        "letter": "c",
+        "row": 1,
+        "col": 4,
+        "notes": "reversed C shape (before e,i)",
+        "variant": true
+      },
+      {
+        "letter": "d",
+        "row": 1,
+        "col": 5,
+        "notes": "closing parenthesis shape"
+      },
+      {
+        "letter": "e",
+        "row": 1,
+        "col": 6,
+        "notes": "two dots (colon)"
+      },
+      {
+        "letter": "e",
+        "row": 2,
+        "col": 1,
+        "notes": "single dot",
+        "variant": true
+      },
+      {
+        "letter": "f",
+        "row": 2,
+        "col": 2,
+        "notes": "arch/caret shape"
+      },
+      {
+        "letter": "g",
+        "row": 2,
+        "col": 3,
+        "notes": "inverted arch"
+      },
+      {
+        "letter": "h",
+        "row": 2,
+        "col": 4,
+        "notes": "mirrored N shape"
+      },
+      {
+        "letter": "i",
+        "row": 2,
+        "col": 5,
+        "notes": "vertical stroke"
+      },
+      {
+        "letter": "i",
+        "row": 2,
+        "col": 6,
+        "notes": "horizontal stroke",
+        "variant": true
+      },
+      {
+        "letter": "l",
+        "row": 3,
+        "col": 1,
+        "notes": "hook left (variant 1)"
+      },
+      {
+        "letter": "l",
+        "row": 3,
+        "col": 2,
+        "notes": "vertical stroke (variant 2)",
+        "variant": true
+      },
+      {
+        "letter": "l",
+        "row": 3,
+        "col": 3,
+        "notes": "horizontal with descender (variant 3)",
+        "variant": true
+      },
+      {
+        "letter": "m",
+        "row": 3,
+        "col": 4,
+        "notes": "reversed-9 or hook"
+      },
+      {
+        "letter": "n",
+        "row": 3,
+        "col": 5,
+        "notes": "tilde/wave shape"
+      },
+      {
+        "letter": "n",
+        "row": 3,
+        "col": 6,
+        "notes": "mirrored-4 shape",
+        "variant": true
+      },
+      {
+        "letter": "o",
+        "row": 4,
+        "col": 1,
+        "notes": "small circle"
+      },
+      {
+        "letter": "p",
+        "row": 4,
+        "col": 2,
+        "notes": "numeral-1 shape"
+      },
+      {
+        "letter": "q",
+        "row": 4,
+        "col": 3,
+        "notes": "numeral-4 reversed"
+      },
+      {
+        "letter": "r",
+        "row": 4,
+        "col": 4,
+        "notes": "reversed-q hook"
+      },
+      {
+        "letter": "r",
+        "row": 4,
+        "col": 5,
+        "notes": "small wave/curl",
+        "variant": true
+      },
+      {
+        "letter": "s",
+        "row": 4,
+        "col": 6,
+        "notes": "integral/long-s shape"
+      },
+      {
+        "letter": "t",
+        "row": 5,
+        "col": 1,
+        "notes": "numeral-7 shape"
+      },
+      {
+        "letter": "t",
+        "row": 5,
+        "col": 2,
+        "notes": "horizontal dash",
+        "variant": true
+      },
+      {
+        "letter": "u",
+        "row": 5,
+        "col": 3,
+        "notes": "cup/breve shape"
+      },
+      {
+        "letter": "x",
+        "row": 5,
+        "col": 4,
+        "notes": "forward slash"
+      },
+      {
+        "letter": "z",
+        "row": 5,
+        "col": 5,
+        "notes": "V or checkmark shape"
+      }
+    ]
+  },
+  "combination_rules": {
+    "source_images": [
+      "GL_S_III_MISC_12_06.jpg",
+      "GL_S_III_MISC_12_07.jpg",
+      "GL_S_III_MISC_12_08.jpg",
+      "GL_S_III_MISC_12_09.jpg",
+      "GL_S_III_MISC_12_10.jpg"
+    ],
+    "pages": [
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "sign_connection_methods": [
+      {
+        "method": "simple_union",
+        "description": "Second sign drawn immediately after the first",
+        "page": 8,
+        "examples": [
+          "tr",
+          "cl",
+          "pl",
+          "fl",
+          "fr",
+          "pr"
+        ]
+      },
+      {
+        "method": "fusion",
+        "description": "Part of one sign absorbed into the preceding or following sign",
+        "page": 8,
+        "examples": [
+          "sa",
+          "ta",
+          "ma",
+          "co",
+          "au",
+          "pau"
+        ]
+      },
+      {
+        "method": "crossing",
+        "description": "Sign crosses one of the preceding signs",
+        "page": 8,
+        "examples": [
+          "cit",
+          "rit"
+        ]
+      },
+      {
+        "method": "intermediate_stroke_or_loop",
+        "description": "Signs joined with an intermediate stroke or loop (occhiello)",
+        "page": 8,
+        "examples": [
+          "ris",
+          "stris"
+        ]
+      }
+    ],
+    "open_syllables": {
+      "description": "Open syllables (beginning or ending with a vowel) are formed by simple union or fusion of signs, sometimes with the vowel implied. Vowel signs are well recognizable. Open syllables opening to the left often fall among the prefixes.",
+      "page": 9,
+      "examples": [
+        "al",
+        "au",
+        "be",
+        "bo",
+        "ce",
+        "da",
+        "me",
+        "mo",
+        "fo",
+        "fu",
+        "pe",
+        "po"
+      ]
+    },
+    "closed_syllables_and_compound_consonants": {
+      "description": "In closed syllables, vocalic signs are connected to consonant signs in the ways previously indicated. Compound consonants (from union of two consonants, essentially l-n-r-s preceded or followed by other consonants) follow the same rules.",
+      "pages": [
+        9,
+        10
+      ],
+      "closed_syllable_examples": [
+        "bar",
+        "cal",
+        "dul",
+        "mer",
+        "mul",
+        "nul",
+        "dal",
+        "ful",
+        "mal",
+        "uual",
+        "gel",
+        "bel"
+      ],
+      "compound_consonant_examples": [
+        "bri",
+        "cle",
+        "dre",
+        "fro",
+        "gna",
+        "fre",
+        "pli",
+        "tra",
+        "tri",
+        "tre",
+        "tres",
+        "dri"
+      ]
+    },
+    "diphthongs": {
+      "description": "Diphthongs are represented with simple alphabetic indication; exceptions are oe and ae, represented with simple e.",
+      "page": 10
+    },
+    "syllable_final_consonants": {
+      "description": "The indication of syllable-final consonants m, n, r, s, t is of particular interest.",
+      "pages": [
+        11,
+        12
+      ],
+      "rules": [
+        {
+          "consonant": "m",
+          "indicator": "two_dots",
+          "description": "Final m indicated by two dots placed after/above the vowel sign",
+          "examples": [
+            "bem",
+            "cam"
+          ]
+        },
+        {
+          "consonant": "n",
+          "indicator": "one_dot",
+          "description": "Final n indicated by a single dot",
+          "examples": [
+            "can",
+            "fun",
+            "lan"
+          ]
+        },
+        {
+          "consonant": "r",
+          "indicator_after_a": "vertical_descender",
+          "description_after_a": "After vowel a: vertical downward extension of the vowel sign",
+          "examples_after_a": [
+            "bar",
+            "car",
+            "mar"
+          ],
+          "indicator_after_other_vowels": "dot_right",
+          "description_after_other_vowels": "After other vowels: a dot to the right",
+          "examples_after_other_vowels": [
+            "uir",
+            "tur"
+          ]
+        },
+        {
+          "consonant": "s",
+          "indicator_after_a_e_o_u": "downward_curve_left",
+          "description_after_a_e_o_u": "After a, e, o, u: downward extension curving left from the vowel sign",
+          "examples_after_a_e_o_u": [
+            "cas",
+            "dos"
+          ],
+          "indicator_after_i": "oblique_stroke_upper_left",
+          "description_after_i": "After i: an oblique stroke upward to the left",
+          "examples_after_i": [
+            "sis"
+          ]
+        },
+        {
+          "consonant": "t",
+          "indicator": "crossbar",
+          "description": "A horizontal or vertical stroke, superscribed, subscribed, or crossing the preceding sign",
+          "examples": [
+            "sunt",
+            "stat",
+            "rit"
+          ]
+        }
+      ]
+    }
+  },
+  "syllable_tables": {
+    "description": "Elenco delle note sillabiche più frequentemente usate. Each tavola presents sign-syllable pairs in a 3-row × 6-column grid (except Tav. XIII which has a partial 4th row).",
+    "tavola_I": {
+      "source_image": "GL_S_III_MISC_12_15.jpg",
+      "page": 17,
+      "signs": [
+        {
+          "syllable": "ac",
+          "row": 1,
+          "col": 1
+        },
+        {
+          "syllable": "ad-at",
+          "row": 1,
+          "col": 2,
+          "notes": "ad and at share one sign"
+        },
+        {
+          "syllable": "al",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "an",
+          "row": 1,
+          "col": 4
+        },
+        {
+          "syllable": "ar",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "as",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "atque",
+          "row": 2,
+          "col": 1,
+          "notes": "whole-word sigla from Tironian system"
+        },
+        {
+          "syllable": "au",
+          "row": 2,
+          "col": 2
+        },
+        {
+          "syllable": "ba",
+          "row": 2,
+          "col": 3
+        },
+        {
+          "syllable": "bal",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "bar",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "bas",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "be",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "bel",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "bem",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "ber",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "bi",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "bis",
+          "row": 3,
+          "col": 6
+        }
+      ]
+    },
+    "tavola_II": {
+      "source_image": "GL_S_III_MISC_12_16.jpg",
+      "page": 19,
+      "signs": [
+        {
+          "syllable": "bli",
+          "row": 1,
+          "col": 1
+        },
+        {
+          "syllable": "bo",
+          "row": 1,
+          "col": 2
+        },
+        {
+          "syllable": "bro",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "bru",
+          "row": 1,
+          "col": 4
+        },
+        {
+          "syllable": "bu",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "bus",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "ca",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "cal",
+          "row": 2,
+          "col": 2
+        },
+        {
+          "syllable": "cam",
+          "row": 2,
+          "col": 3
+        },
+        {
+          "syllable": "can",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "car",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "cas",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "ce",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "ce",
+          "row": 3,
+          "col": 2,
+          "notes": "variant form",
+          "variant": true
+        },
+        {
+          "syllable": "cen",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "ces",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "ci",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "cin",
+          "row": 3,
+          "col": 6
+        }
+      ]
+    },
+    "tavola_III": {
+      "source_image": "GL_S_III_MISC_12_17.jpg",
+      "page": 21,
+      "signs": [
+        {
+          "syllable": "cit",
+          "row": 1,
+          "col": 1
+        },
+        {
+          "syllable": "cle",
+          "row": 1,
+          "col": 2
+        },
+        {
+          "syllable": "co",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "con",
+          "row": 1,
+          "col": 4
+        },
+        {
+          "syllable": "cri",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "cu",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "cum",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "cum",
+          "row": 2,
+          "col": 2,
+          "notes": "variant form",
+          "variant": true
+        },
+        {
+          "syllable": "cus",
+          "row": 2,
+          "col": 3
+        },
+        {
+          "syllable": "da",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "dal",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "dan",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "de",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "del",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "des",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "dex",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "di",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "do",
+          "row": 3,
+          "col": 6
+        }
+      ]
+    },
+    "tavola_IV": {
+      "source_image": "GL_S_III_MISC_12_18.jpg",
+      "page": 23,
+      "signs": [
+        {
+          "syllable": "don",
+          "row": 1,
+          "col": 1
+        },
+        {
+          "syllable": "dos",
+          "row": 1,
+          "col": 2
+        },
+        {
+          "syllable": "dra",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "dre",
+          "row": 1,
+          "col": 4
+        },
+        {
+          "syllable": "dri",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "du",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "dul",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "dus",
+          "row": 2,
+          "col": 2
+        },
+        {
+          "syllable": "e",
+          "row": 2,
+          "col": 3,
+          "notes": "two-dot form"
+        },
+        {
+          "syllable": "e",
+          "row": 2,
+          "col": 4,
+          "notes": "single-dot form",
+          "variant": true
+        },
+        {
+          "syllable": "er",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "est",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "eu",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "fa",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "fe",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "fer",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "fi",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "flu",
+          "row": 3,
+          "col": 6
+        }
+      ]
+    },
+    "tavola_V": {
+      "source_image": "GL_S_III_MISC_12_19.jpg",
+      "page": 25,
+      "signs": [
+        {
+          "syllable": "fo",
+          "row": 1,
+          "col": 1
+        },
+        {
+          "syllable": "fre",
+          "row": 1,
+          "col": 2
+        },
+        {
+          "syllable": "fro",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "fu",
+          "row": 1,
+          "col": 4
+        },
+        {
+          "syllable": "ful",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "fun",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "fus",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "ga",
+          "row": 2,
+          "col": 2
+        },
+        {
+          "syllable": "gau",
+          "row": 2,
+          "col": 3
+        },
+        {
+          "syllable": "ge",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "gel",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "gen",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "ger",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "gi",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "gin",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "gle",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "gis",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "go",
+          "row": 3,
+          "col": 6
+        }
+      ]
+    },
+    "tavola_VI": {
+      "source_image": "GL_S_III_MISC_12_20.jpg",
+      "page": 27,
+      "signs": [
+        {
+          "syllable": "gum",
+          "row": 1,
+          "col": 1
+        },
+        {
+          "syllable": "gun",
+          "row": 1,
+          "col": 2
+        },
+        {
+          "syllable": "hi",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "ho",
+          "row": 1,
+          "col": 4
+        },
+        {
+          "syllable": "ha",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "ia",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "il",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "in",
+          "row": 2,
+          "col": 2
+        },
+        {
+          "syllable": "io",
+          "row": 2,
+          "col": 3
+        },
+        {
+          "syllable": "ip",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "is",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "iu",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "la",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "lan",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "las",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "le",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "ler",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "lis",
+          "row": 3,
+          "col": 6
+        }
+      ]
+    },
+    "tavola_VII": {
+      "source_image": "GL_S_III_MISC_12_21.jpg",
+      "page": 29,
+      "signs": [
+        {
+          "syllable": "lo",
+          "row": 1,
+          "col": 1
+        },
+        {
+          "syllable": "lon",
+          "row": 1,
+          "col": 2
+        },
+        {
+          "syllable": "ma",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "mal",
+          "row": 1,
+          "col": 4
+        },
+        {
+          "syllable": "mar",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "mas",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "mau",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "me-mi",
+          "row": 2,
+          "col": 2,
+          "notes": "me and mi share one sign"
+        },
+        {
+          "syllable": "mel",
+          "row": 2,
+          "col": 3
+        },
+        {
+          "syllable": "men",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "mer",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "mo",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "mu",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "mul",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "mus",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "na",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "nam",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "nar",
+          "row": 3,
+          "col": 6
+        }
+      ]
+    },
+    "tavola_VIII": {
+      "source_image": "GL_S_III_MISC_12_22.jpg",
+      "page": 31,
+      "signs": [
+        {
+          "syllable": "ne-ni",
+          "row": 1,
+          "col": 1,
+          "notes": "ne and ni share one sign"
+        },
+        {
+          "syllable": "ner",
+          "row": 1,
+          "col": 2
+        },
+        {
+          "syllable": "nes",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "nes",
+          "row": 1,
+          "col": 4,
+          "notes": "variant form",
+          "variant": true
+        },
+        {
+          "syllable": "nit",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "nis",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "no",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "nos",
+          "row": 2,
+          "col": 2
+        },
+        {
+          "syllable": "nu",
+          "row": 2,
+          "col": 3
+        },
+        {
+          "syllable": "nul",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "num",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "num",
+          "row": 2,
+          "col": 6,
+          "notes": "variant form",
+          "variant": true
+        },
+        {
+          "syllable": "nus",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "oc",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "om",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "os",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "pa",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "par",
+          "row": 3,
+          "col": 6
+        }
+      ]
+    },
+    "tavola_IX": {
+      "source_image": "GL_S_III_MISC_12_23.jpg",
+      "page": 33,
+      "signs": [
+        {
+          "syllable": "pau",
+          "row": 1,
+          "col": 1
+        },
+        {
+          "syllable": "pe",
+          "row": 1,
+          "col": 2
+        },
+        {
+          "syllable": "per",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "pi",
+          "row": 1,
+          "col": 4
+        },
+        {
+          "syllable": "pl",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "ple",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "po",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "pon",
+          "row": 2,
+          "col": 2
+        },
+        {
+          "syllable": "por",
+          "row": 2,
+          "col": 3
+        },
+        {
+          "syllable": "post",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "pra",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "pri",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "pro",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "pu",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "quar",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "que",
+          "row": 3,
+          "col": 4,
+          "notes": "whole-word sigla from Tironian system"
+        },
+        {
+          "syllable": "qui",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "quin",
+          "row": 3,
+          "col": 6
+        }
+      ]
+    },
+    "tavola_X": {
+      "source_image": "GL_S_III_MISC_12_24.jpg",
+      "page": 35,
+      "signs": [
+        {
+          "syllable": "quod",
+          "row": 1,
+          "col": 1,
+          "notes": "whole-word sigla from Tironian system"
+        },
+        {
+          "syllable": "ra",
+          "row": 1,
+          "col": 2
+        },
+        {
+          "syllable": "rar",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "re",
+          "row": 1,
+          "col": 4
+        },
+        {
+          "syllable": "rer",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "res",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "rex",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "ri",
+          "row": 2,
+          "col": 2
+        },
+        {
+          "syllable": "ri",
+          "row": 2,
+          "col": 3,
+          "notes": "variant form",
+          "variant": true
+        },
+        {
+          "syllable": "rim",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "ris",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "rit",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "ro",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "ru",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "sa",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "san",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "sco",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "se",
+          "row": 3,
+          "col": 6
+        }
+      ]
+    },
+    "tavola_XI": {
+      "source_image": "GL_S_III_MISC_12_25.jpg",
+      "page": 37,
+      "signs": [
+        {
+          "syllable": "sel",
+          "row": 1,
+          "col": 1
+        },
+        {
+          "syllable": "sep",
+          "row": 1,
+          "col": 2
+        },
+        {
+          "syllable": "ser",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "ses",
+          "row": 1,
+          "col": 4
+        },
+        {
+          "syllable": "si",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "sis",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "so",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "stat",
+          "row": 2,
+          "col": 2
+        },
+        {
+          "syllable": "ste",
+          "row": 2,
+          "col": 3
+        },
+        {
+          "syllable": "sti",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "sto",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "stri",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "stris",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "stro",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "su",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "sum",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "sunt",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "sunt",
+          "row": 3,
+          "col": 6,
+          "notes": "variant form",
+          "variant": true
+        }
+      ]
+    },
+    "tavola_XII": {
+      "source_image": "GL_S_III_MISC_12_26.jpg",
+      "page": 39,
+      "signs": [
+        {
+          "syllable": "super",
+          "row": 1,
+          "col": 1,
+          "notes": "prefix/sigla from Tironian system"
+        },
+        {
+          "syllable": "supra",
+          "row": 1,
+          "col": 2,
+          "notes": "prefix/sigla from Tironian system"
+        },
+        {
+          "syllable": "ta",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "tar",
+          "row": 1,
+          "col": 4
+        },
+        {
+          "syllable": "te",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "tem",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "tes",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "ter",
+          "row": 2,
+          "col": 2
+        },
+        {
+          "syllable": "ti",
+          "row": 2,
+          "col": 3
+        },
+        {
+          "syllable": "tis",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "to",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "tor",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "tr",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "tra",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "tre",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "tres",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "tri",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "tru",
+          "row": 3,
+          "col": 6
+        }
+      ]
+    },
+    "tavola_XIII": {
+      "source_image": "GL_S_III_MISC_12_27.jpg",
+      "page": 41,
+      "signs": [
+        {
+          "syllable": "tu",
+          "row": 1,
+          "col": 1
+        },
+        {
+          "syllable": "tul",
+          "row": 1,
+          "col": 2
+        },
+        {
+          "syllable": "tum",
+          "row": 1,
+          "col": 3
+        },
+        {
+          "syllable": "tum",
+          "row": 1,
+          "col": 4,
+          "notes": "variant form",
+          "variant": true
+        },
+        {
+          "syllable": "tur",
+          "row": 1,
+          "col": 5
+        },
+        {
+          "syllable": "tus",
+          "row": 1,
+          "col": 6
+        },
+        {
+          "syllable": "u",
+          "row": 2,
+          "col": 1
+        },
+        {
+          "syllable": "ue",
+          "row": 2,
+          "col": 2
+        },
+        {
+          "syllable": "uel",
+          "row": 2,
+          "col": 3
+        },
+        {
+          "syllable": "uer",
+          "row": 2,
+          "col": 4
+        },
+        {
+          "syllable": "ui",
+          "row": 2,
+          "col": 5
+        },
+        {
+          "syllable": "uir",
+          "row": 2,
+          "col": 6
+        },
+        {
+          "syllable": "um",
+          "row": 3,
+          "col": 1
+        },
+        {
+          "syllable": "uo",
+          "row": 3,
+          "col": 2
+        },
+        {
+          "syllable": "ur",
+          "row": 3,
+          "col": 3
+        },
+        {
+          "syllable": "us",
+          "row": 3,
+          "col": 4
+        },
+        {
+          "syllable": "uui",
+          "row": 3,
+          "col": 5
+        },
+        {
+          "syllable": "uua",
+          "row": 3,
+          "col": 6
+        },
+        {
+          "syllable": "uual",
+          "row": 4,
+          "col": 1
+        },
+        {
+          "syllable": "zo",
+          "row": 4,
+          "col": 2
+        }
+      ]
+    }
+  },
+  "word_formation": {
+    "source_images": [
+      "GL_S_III_MISC_12_11.jpg",
+      "GL_S_III_MISC_12_12.jpg"
+    ],
+    "pages": [
+      13,
+      14
+    ],
+    "basic_principle": "Words are formed by writing the simple succession of syllabic notes representing individual syllables.",
+    "examples": [
+      {
+        "word": "consoprino",
+        "syllables": [
+          "con",
+          "so",
+          "pri",
+          "no"
+        ]
+      },
+      {
+        "word": "bonifiedus",
+        "syllables": [
+          "bo",
+          "ni",
+          "fre",
+          "dus"
+        ]
+      }
+    ],
+    "sigla": {
+      "description": "For frequently recurring words, the graphic elements lose their letter value and take on a representative one, standing alone for the entire word. These are mostly grammatical determiners (pronouns, auxiliaries) and relational words (prepositions, conjunctions). True sigla are rare in syllabic tachygraphy; the few found are borrowed from the Tironian system.",
+      "tironian_sigla": [
+        "atque",
+        "super",
+        "supra",
+        "est",
+        "qui",
+        "que",
+        "quod",
+        "etc."
+      ]
+    },
+    "prefixes": {
+      "description": "Syllabic tachygraphy made extensive use of particular notes representing prefixes. Graphically these have all the prerogatives and characteristics of sigla for isolated words.",
+      "notes": "See plates for specific prefix signs"
+    },
+    "abbreviations": {
+      "description": "Very rarely abbreviations are used, obtained mostly by suppressing some entire intermediate syllable in the word.",
+      "examples": [
+        {
+          "abbreviation": "mo-ne-rio",
+          "full_word": "monesterio"
+        },
+        {
+          "abbreviation": "di",
+          "full_word": "dicitur",
+          "notes": "Sometimes very common words represented by initial letter or syllable alone"
+        }
+      ]
+    }
+  },
+  "notarial_subscriptions": {
+    "source_images": [
+      "GL_S_III_MISC_12_34.jpg",
+      "GL_S_III_MISC_12_35.jpg"
+    ],
+    "pages": [
+      49,
+      50
+    ],
+    "description": "Tachygraphic subscriptions appended to notarial acts (placita). Each entry: number, syllabic decomposition, full name, placitum date and location, archive reference. Corresponding facsimiles show: original photograph, enhanced photograph, decomposition into syllabic elements.",
+    "facsimile_images": [
+      "GL_S_III_MISC_12_36.jpg",
+      "GL_S_III_MISC_12_37.jpg",
+      "GL_S_III_MISC_12_38.jpg",
+      "GL_S_III_MISC_12_39.jpg",
+      "GL_S_III_MISC_12_40.jpg"
+    ],
+    "subscriptions": [
+      {
+        "number": 1,
+        "decomposition": "Ben-zo iu-dex",
+        "name": "Benzo",
+        "title": "iudex",
+        "placitum_date": "970-11-03",
+        "placitum_location": "Chiassa",
+        "archive": "Arezzo, Archivio Capitolare, carte di Ss. Flora e Lucilla, n. 17"
+      },
+      {
+        "number": 2,
+        "decomposition": "Bo-ni-zo",
+        "name": "Bonizo",
+        "title": null,
+        "placitum_date": "970-11-03",
+        "placitum_location": "Chiassa",
+        "archive": "Arezzo, Archivio Capitolare, carte di Ss. Flora e Lucilla, n. 17"
+      },
+      {
+        "number": 3,
+        "decomposition": "Cu-ni-ber-tus iu-dex",
+        "name": "Cunibertus",
+        "title": "iudex",
+        "placitum_date": "927-05-14",
+        "placitum_location": "Pavia",
+        "archive": "Halle, Biblioteca Universitaria"
+      },
+      {
+        "number": 4,
+        "decomposition": "E-bo iu-dex",
+        "name": "Ebbo",
+        "title": "iudex",
+        "placitum_date": "970-11-03",
+        "placitum_location": "Chiassa",
+        "archive": "Arezzo, Archivio Capitolare, carte di Ss. Flora e Lucilla, n. 17"
+      },
+      {
+        "number": 5,
+        "decomposition": "E-bo iu-dex",
+        "name": "Ebbo",
+        "title": "iudex",
+        "placitum_date": "995-05-08",
+        "placitum_location": "Bergamo",
+        "archive": "Bergamo, Archivio Capitolare, Canc. B, fasc. 16"
+      },
+      {
+        "number": 6,
+        "decomposition": "E-ve-rar-dus",
+        "name": "Everardus",
+        "title": null,
+        "placitum_date": "927-05-14",
+        "placitum_location": "Pavia",
+        "archive": "Halle, Biblioteca Universitaria"
+      },
+      {
+        "number": 7,
+        "decomposition": "Gi-se-pr-an-dus",
+        "name": "Giseprandus",
+        "title": null,
+        "placitum_date": "970-11-03",
+        "placitum_location": "Chiassa",
+        "archive": "Arezzo, Archivio Capitolare, carte di Ss. Flora e Lucilla, n. 17"
+      },
+      {
+        "number": 8,
+        "decomposition": "Jo-an-nes",
+        "name": "Johannes",
+        "title": null,
+        "placitum_date": "967-07-16",
+        "placitum_location": "Pavia",
+        "archive": "Parigi, Bibliothèque Nationale, Fond de Cluny, N. 156, orig. 43"
+      },
+      {
+        "number": 9,
+        "decomposition": "La-(n)-fr-an-cus iu-dex",
+        "name": "Lanfrancus",
+        "title": "iudex",
+        "placitum_date": "983-05-08",
+        "placitum_location": "Cremona",
+        "archive": "Halle, Biblioteca Universitaria"
+      },
+      {
+        "number": 10,
+        "decomposition": "Si-ge-pr-an-dus iu-dex",
+        "name": "Sigeprandus",
+        "title": "iudex",
+        "placitum_date": "998-01-26",
+        "placitum_location": "Piacenza",
+        "archive": "Piacenza, Archivio Cattedrale, cart. I, cassetta 5, giudizi n. 9"
+      },
+      {
+        "number": 11,
+        "decomposition": "Ste-fa-nus",
+        "name": "Stefanus",
+        "title": null,
+        "placitum_date": "995-05-08",
+        "placitum_location": "Pavia",
+        "archive": "Bergamo, Archivio Capitolare, Canc. B, fasc. 16"
+      },
+      {
+        "number": 12,
+        "decomposition": "U-ber-tus iu-dex",
+        "name": "Ubertus",
+        "title": "iudex",
+        "placitum_date": "995-05-08",
+        "placitum_location": "Pavia",
+        "archive": "Bergamo, Archivio Capitolare, Canc. B, fasc. 16"
+      },
+      {
+        "number": 13,
+        "decomposition": "U-go (iu) dex",
+        "name": "Ugo",
+        "title": "iudex",
+        "placitum_date": "927-05-14",
+        "placitum_location": "Pavia",
+        "archive": "Halle, Biblioteca Universitaria"
+      }
+    ]
+  },
+  "chatelain_sign_list": {
+    "source_images": [
+      "GL_S_III_MISC_12_31.jpg",
+      "GL_S_III_MISC_12_32.jpg",
+      "GL_S_III_MISC_12_33.jpg"
+    ],
+    "original_source": "E. Chatelain, La tachygraphie latine des manuscrits de Verone, in Revue des Bibliothèques, XV, 1905",
+    "description": "Handwritten reproduction of Chatelain's complete sign list from Veronese manuscripts. Each entry maps a sign to a syllable value with manuscript line-number references. This represents the codex-scribal tradition (literary manuscripts) as opposed to Costamagna's notarial tradition (legal documents).",
+    "notes": "The two handwritten pages are densely packed with hundreds of entries in three columns each. Full transcription requires dedicated OCR or manual effort beyond what can be done from the photographs alone. Key structural observation: signs are organized alphabetically by syllable value, with each entry giving the sign glyph, the syllable reading (underlined), and one or more manuscript reference numbers. Some entries include Tironian-system cross-references. The list also includes three whole-word sigla at the bottom of page 2: dominus, domini, domine."
+  },
+  "bibliography": {
+    "source_images": [
+      "GL_S_III_MISC_12_28.jpg",
+      "GL_S_III_MISC_12_29.jpg"
+    ],
+    "pages": [
+      43,
+      44
+    ],
+    "entries": [
+      {
+        "author": "Havet, J.",
+        "year": 1888,
+        "title": "L'écriture secrète de Gerbert; La tachygraphie italienne du X siècle",
+        "in": "Académie des inscriptions et belles-lettres, Comptes rendus des séances de l'année 1887, 4. sér. XV",
+        "place": "Paris"
+      },
+      {
+        "author": "Chatelain, E.",
+        "year": 1910,
+        "title": "Introduction à la lecture des notes tironiennes",
+        "place": "Paris",
+        "notes": "pp. 152-160 treat syllabic tachygraphy; cf. also La tachygraphie latine des manuscrits de Vérone, in Revue des Bibliothèques XII (1902) and XV (1905)"
+      },
+      {
+        "author": "Jusselin, M.",
+        "year": 1905,
+        "title": "Monogrammes en tachygraphie syllabique italienne",
+        "in": "Bibliothèque de l'École des chartes, LXVI",
+        "place": "Paris",
+        "notes": "cf. also Ein Monogram in Silbentachygraphie, in Archiv für Stenographie 58, Berlin 1907; cf. also chapter by Jusselin in Prou, Manuel de Paléographie latine et française, IV ed., Paris 1924"
+      },
+      {
+        "author": "Johnen, C.",
+        "year": 1911,
+        "title": "Geschichte der Stenographie, vol. I",
+        "place": "Berlin",
+        "notes": "pp. 230-247 treat syllabic tachygraphy"
+      },
+      {
+        "author": "Mentz, A.",
+        "year": 1918,
+        "title": "Beiträge zu den Tironischen Noten in Mittelalter",
+        "in": "Archiv für Urkundenforschung, VI",
+        "notes": "cf. also same journal: Beiträge zu den Tironischen Noten (XI, 1930) and Ein Brief des 9. Jahrhunderts in Tironischen Noten (XIV, 1936)"
+      },
+      {
+        "author": "Cacurri, A.",
+        "year": 1908,
+        "title": "La tachigrafia latina del Cod. Vat. lat. 5750",
+        "place": "Roma",
+        "notes": "cf. also La tachigrafia latina del Cod. Vat. lat. 5757, Roma 1908; cf. also La tachigrafia sillabica latina, Roma 1908"
+      },
+      {
+        "author": "Schmitz, W.",
+        "year": 1869,
+        "title": "Studien zur lateinischen Stenographie; I Die Madrider Noten",
+        "in": "Panstenographikon, I, fasc. II",
+        "place": "Lipsia",
+        "notes": "cf. also Tironischen Noten des Escorialensis S. III, 23, in Literaturblatt-Beilage zum Correspondenzblatt des K. Sten. Instituts zu Dresden, 5, 1879"
+      },
+      {
+        "author": "Schiaparelli, L.",
+        "year": "1910/1913",
+        "title": "Tachigrafia sillabica nelle carte Italiane",
+        "in": "Bullettino dell'Istituto Storico Italiano, p. I, n. 31, 1910 e p. II, n. 33, 1913",
+        "notes": "cf. also Tachigrafia sillabica in Italia - Appunti, in Bollettino dell'Accademia Italiana di Stenografia, Padova 1928, n. 1-2-4"
+      }
+    ]
+  },
+  "summary_statistics": {
+    "total_syllable_entries": 236,
+    "total_tavole": 13,
+    "syllable_entries_per_tavola": {
+      "I": 18,
+      "II": 18,
+      "III": 18,
+      "IV": 18,
+      "V": 18,
+      "VI": 18,
+      "VII": 18,
+      "VIII": 18,
+      "IX": 18,
+      "X": 18,
+      "XI": 18,
+      "XII": 18,
+      "XIII": 20
+    },
+    "alphabet_entries": 29,
+    "variant_signs_in_tavole": 10,
+    "unique_syllable_values": 218,
+    "sigla_from_tironian": [
+      "atque",
+      "est",
+      "que",
+      "qui",
+      "quod",
+      "super",
+      "supra"
+    ],
+    "shared_sign_pairs": [
+      "ad-at",
+      "me-mi",
+      "ne-ni"
+    ],
+    "notarial_subscriptions": 13,
+    "subscription_date_range": "927-998 CE",
+    "subscription_locations": [
+      "Chiassa",
+      "Pavia",
+      "Cremona",
+      "Piacenza",
+      "Bergamo"
+    ],
+    "consonant_categories_in_syllabary": {
+      "simple_CV": "ba, be, bi, bo, bu, ca, ce, ci, co, cu, da, de, di, do, du, fa, fe, fi, fo, fu, ga, ge, gi, go, ha, hi, ho, la, le, lo, ma, mo, mu, na, no, nu, pa, pe, pi, po, pu, ra, re, ri, ro, ru, sa, se, si, so, su, ta, te, ti, to, tu, u, zo",
+      "CV_plus_final_consonant": "al, an, ar, as, bal, bar, bas, bel, bem, ber, bis, bus, cal, cam, can, car, cas, cen, ces, cin, cit, con, cum, cus, dal, dan, del, des, dex, don, dos, dul, dus, er, est, fer, ful, fun, fus, gau, gel, gen, ger, gin, gis, gum, gun, il, in, ip, is, iu, lan, las, ler, lis, lon, mal, mar, mas, mau, mel, men, mer, mul, mus, nam, nar, ner, nes, nis, nit, nos, nul, num, nus, oc, om, os, par, pau, per, ple, pon, por, quar, quin, rar, rer, res, rex, rim, ris, rit, san, sel, sep, ser, ses, sis, stat, sum, tar, tem, tes, ter, tis, tor, tres, tul, tum, tur, tus, ue, uel, uer, uir, um, uo, ur, us",
+      "compound_consonant": "bli, bro, bru, cle, cri, dra, dre, dri, flu, fre, fro, gle, pl, ple, post, pra, pri, pro, sco, ste, sti, sto, stri, stris, stro, tr, tra, tre, tri, tru",
+      "diphthong": "au, eu, ia, io, iu, ua, ui, uo, uua, uui, uual"
+    }
+  }
+}

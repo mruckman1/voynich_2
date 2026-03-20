@@ -26,6 +26,10 @@ Detailed documentation for each analysis phase. Phases are grouped thematically.
 | Reviewer | Permutation Tests & Validation | p=0.001 (count), p=0.011 (coherence), p=0.009 (word-level) | [reviewer-analyses.md](reviewer-analyses.md) |
 | 54 | Gallo-Italic Dialect Identification | **INDETERMINATE** — macaronic (Tuscan grammar + northern phonology) | [phase-54.md](phase-54.md) |
 | 55 | Entropy Shift Generalization + Currier Prediction | **Track A**: SCHINNER_ABOVE (Cardan discriminated, Schinner exposes scope limit) / **Track B**: PREDICTION_CONFIRMED_UNIQUE (tachy 1.284× ≈ Voynich 1.450×) | [phase-55.md](phase-55.md) |
+| 56 | Costamagna Structural Compatibility | **COMPATIBLE** (10/10) — all confirmed syllables attested; 5 codas = 5 modifier types; 3 shared = 3 ambiguous | [phase-56.md](phase-56.md) |
+| 57 | CVC Coda Decode | **PASS** (5/7) — bigram z 96.19 (CVC) vs 55.74 (R3); net signal 3855 vs 370; dict_hit drops to 27.5% | [phase-57.md](phase-57.md) |
+| 58 | Costamagna-Constrained CSP | **FAIL** (3/8) — only 3 genuinely ambiguous triples; CSP finds no improvement over T_P15; visual matching needed | [phase-58.md](phase-58.md) |
+| 59 | CVC Refinement + Deep Investigation | **CVC_VALIDATED** (8/11) — attestation 4.3%→79.9% (artifact); connector→r; vertical→t (p=0.003); -aiin=Latin declensions (62.3%) | [phase-59.md](phase-59.md) |
 
 ## Cross-References
 

@@ -1,0 +1,1838 @@
+[
+  {
+    "syllable": "ac",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "a",
+    "final_consonant": "c"
+  },
+  {
+    "syllable": "ad-at",
+    "length": 2,
+    "structure": "shared_sign",
+    "initial_consonant": null,
+    "vowel": "a",
+    "final_consonant": "d",
+    "alt_values": [
+      "ad",
+      "at"
+    ]
+  },
+  {
+    "syllable": "al",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "a",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "an",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "a",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "ar",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "a",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "as",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "a",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "atque",
+    "length": 5,
+    "structure": "sigla",
+    "initial_consonant": null,
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "au",
+    "length": 2,
+    "structure": "VV",
+    "initial_consonant": null,
+    "vowel": "au",
+    "final_consonant": null
+  },
+  {
+    "syllable": "ba",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "b",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "bal",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "b",
+    "vowel": "a",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "bar",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "b",
+    "vowel": "a",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "bas",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "b",
+    "vowel": "a",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "be",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "b",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "bel",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "b",
+    "vowel": "e",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "bem",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "b",
+    "vowel": "e",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "ber",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "b",
+    "vowel": "e",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "bi",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "b",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "bis",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "b",
+    "vowel": "i",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "bli",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "bl",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "bo",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "b",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "bro",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "br",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "bru",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "br",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "bu",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "b",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "bus",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "b",
+    "vowel": "u",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "ca",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "c",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "cal",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "a",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "cam",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "a",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "can",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "a",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "car",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "a",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "cas",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "a",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "ce",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "c",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "cen",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "e",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "ces",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "e",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "ci",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "c",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "cin",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "i",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "cit",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "i",
+    "final_consonant": "t"
+  },
+  {
+    "syllable": "cle",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "cl",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "co",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "c",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "con",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "o",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "cri",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "cr",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "cu",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "c",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "cum",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "u",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "cus",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "c",
+    "vowel": "u",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "da",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "d",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "dal",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "d",
+    "vowel": "a",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "dan",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "d",
+    "vowel": "a",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "de",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "d",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "del",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "d",
+    "vowel": "e",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "des",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "d",
+    "vowel": "e",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "dex",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "d",
+    "vowel": "e",
+    "final_consonant": "x"
+  },
+  {
+    "syllable": "di",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "d",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "do",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "d",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "don",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "d",
+    "vowel": "o",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "dos",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "d",
+    "vowel": "o",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "dra",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "dr",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "dre",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "dr",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "dri",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "dr",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "du",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "d",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "dul",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "d",
+    "vowel": "u",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "dus",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "d",
+    "vowel": "u",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "e",
+    "length": 1,
+    "structure": "V",
+    "initial_consonant": null,
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "er",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "e",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "est",
+    "length": 3,
+    "structure": "sigla",
+    "initial_consonant": null,
+    "vowel": "e",
+    "final_consonant": "st"
+  },
+  {
+    "syllable": "eu",
+    "length": 2,
+    "structure": "VV",
+    "initial_consonant": null,
+    "vowel": "eu",
+    "final_consonant": null
+  },
+  {
+    "syllable": "fa",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "f",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "fe",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "f",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "fer",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "f",
+    "vowel": "e",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "fi",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "f",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "flu",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "fl",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "fo",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "f",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "fre",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "fr",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "fro",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "fr",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "fu",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "f",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "ful",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "f",
+    "vowel": "u",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "fun",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "f",
+    "vowel": "u",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "fus",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "f",
+    "vowel": "u",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "ga",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "g",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "gau",
+    "length": 3,
+    "structure": "CVV",
+    "initial_consonant": "g",
+    "vowel": "au",
+    "final_consonant": null
+  },
+  {
+    "syllable": "ge",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "g",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "gel",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "g",
+    "vowel": "e",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "gen",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "g",
+    "vowel": "e",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "ger",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "g",
+    "vowel": "e",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "gi",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "g",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "gin",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "g",
+    "vowel": "i",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "gis",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "g",
+    "vowel": "i",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "gle",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "gl",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "go",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "g",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "gum",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "g",
+    "vowel": "u",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "gun",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "g",
+    "vowel": "u",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "ha",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "h",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "hi",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "h",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "ho",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "h",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "ia",
+    "length": 2,
+    "structure": "VV",
+    "initial_consonant": null,
+    "vowel": "ia",
+    "final_consonant": null
+  },
+  {
+    "syllable": "il",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "i",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "in",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "i",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "io",
+    "length": 2,
+    "structure": "VV",
+    "initial_consonant": null,
+    "vowel": "io",
+    "final_consonant": null
+  },
+  {
+    "syllable": "ip",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "i",
+    "final_consonant": "p"
+  },
+  {
+    "syllable": "is",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "i",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "iu",
+    "length": 2,
+    "structure": "VV",
+    "initial_consonant": null,
+    "vowel": "iu",
+    "final_consonant": null
+  },
+  {
+    "syllable": "la",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "l",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "lan",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "l",
+    "vowel": "a",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "las",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "l",
+    "vowel": "a",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "le",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "l",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "ler",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "l",
+    "vowel": "e",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "lis",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "l",
+    "vowel": "i",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "lo",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "l",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "lon",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "l",
+    "vowel": "o",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "ma",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "m",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "mal",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "m",
+    "vowel": "a",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "mar",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "m",
+    "vowel": "a",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "mas",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "m",
+    "vowel": "a",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "mau",
+    "length": 3,
+    "structure": "CVV",
+    "initial_consonant": "m",
+    "vowel": "au",
+    "final_consonant": null
+  },
+  {
+    "syllable": "me-mi",
+    "length": 2,
+    "structure": "shared_sign",
+    "initial_consonant": "m",
+    "vowel": "e",
+    "final_consonant": null,
+    "alt_values": [
+      "me",
+      "mi"
+    ]
+  },
+  {
+    "syllable": "mel",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "m",
+    "vowel": "e",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "men",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "m",
+    "vowel": "e",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "mer",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "m",
+    "vowel": "e",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "mo",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "m",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "mu",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "m",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "mul",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "m",
+    "vowel": "u",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "mus",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "m",
+    "vowel": "u",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "na",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "n",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "nam",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "n",
+    "vowel": "a",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "nar",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "n",
+    "vowel": "a",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "ne-ni",
+    "length": 2,
+    "structure": "shared_sign",
+    "initial_consonant": "n",
+    "vowel": "e",
+    "final_consonant": null,
+    "alt_values": [
+      "ne",
+      "ni"
+    ]
+  },
+  {
+    "syllable": "ner",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "n",
+    "vowel": "e",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "nes",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "n",
+    "vowel": "e",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "nis",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "n",
+    "vowel": "i",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "nit",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "n",
+    "vowel": "i",
+    "final_consonant": "t"
+  },
+  {
+    "syllable": "no",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "n",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "nos",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "n",
+    "vowel": "o",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "nu",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "n",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "nul",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "n",
+    "vowel": "u",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "num",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "n",
+    "vowel": "u",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "nus",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "n",
+    "vowel": "u",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "oc",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "o",
+    "final_consonant": "c"
+  },
+  {
+    "syllable": "om",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "o",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "os",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "o",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "pa",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "p",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "par",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "p",
+    "vowel": "a",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "pau",
+    "length": 3,
+    "structure": "CVV",
+    "initial_consonant": "p",
+    "vowel": "au",
+    "final_consonant": null
+  },
+  {
+    "syllable": "pe",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "p",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "per",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "p",
+    "vowel": "e",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "pi",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "p",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "pl",
+    "length": 2,
+    "structure": "CC",
+    "initial_consonant": "pl",
+    "vowel": null,
+    "final_consonant": null
+  },
+  {
+    "syllable": "ple",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "pl",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "po",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "p",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "pon",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "p",
+    "vowel": "o",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "por",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "p",
+    "vowel": "o",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "post",
+    "length": 4,
+    "structure": "sigla",
+    "initial_consonant": "p",
+    "vowel": "o",
+    "final_consonant": "st"
+  },
+  {
+    "syllable": "pra",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "pr",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "pri",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "pr",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "pro",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "pr",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "pu",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "p",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "quar",
+    "length": 4,
+    "structure": "CVVC",
+    "initial_consonant": "q",
+    "vowel": "ua",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "que",
+    "length": 3,
+    "structure": "sigla",
+    "initial_consonant": "q",
+    "vowel": "ue",
+    "final_consonant": null
+  },
+  {
+    "syllable": "qui",
+    "length": 3,
+    "structure": "sigla",
+    "initial_consonant": "q",
+    "vowel": "ui",
+    "final_consonant": null
+  },
+  {
+    "syllable": "quin",
+    "length": 4,
+    "structure": "CVVC",
+    "initial_consonant": "q",
+    "vowel": "ui",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "quod",
+    "length": 4,
+    "structure": "sigla",
+    "initial_consonant": "q",
+    "vowel": "uo",
+    "final_consonant": "d"
+  },
+  {
+    "syllable": "ra",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "r",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "rar",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "r",
+    "vowel": "a",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "re",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "r",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "rer",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "r",
+    "vowel": "e",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "res",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "r",
+    "vowel": "e",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "rex",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "r",
+    "vowel": "e",
+    "final_consonant": "x"
+  },
+  {
+    "syllable": "ri",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "r",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "rim",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "r",
+    "vowel": "i",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "ris",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "r",
+    "vowel": "i",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "rit",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "r",
+    "vowel": "i",
+    "final_consonant": "t"
+  },
+  {
+    "syllable": "ro",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "r",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "ru",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "r",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "sa",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "s",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "san",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "s",
+    "vowel": "a",
+    "final_consonant": "n"
+  },
+  {
+    "syllable": "sco",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "sc",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "se",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "s",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "sel",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "s",
+    "vowel": "e",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "sep",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "s",
+    "vowel": "e",
+    "final_consonant": "p"
+  },
+  {
+    "syllable": "ser",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "s",
+    "vowel": "e",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "ses",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "s",
+    "vowel": "e",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "si",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "s",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "sis",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "s",
+    "vowel": "i",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "so",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "s",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "stat",
+    "length": 4,
+    "structure": "sigla",
+    "initial_consonant": "st",
+    "vowel": "a",
+    "final_consonant": "t"
+  },
+  {
+    "syllable": "ste",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "st",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "sti",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "st",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "sto",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "st",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "stri",
+    "length": 4,
+    "structure": "CCCV",
+    "initial_consonant": "str",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "stris",
+    "length": 5,
+    "structure": "CCCVC",
+    "initial_consonant": "str",
+    "vowel": "i",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "stro",
+    "length": 4,
+    "structure": "CCCV",
+    "initial_consonant": "str",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "su",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "s",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "sum",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "s",
+    "vowel": "u",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "sunt",
+    "length": 4,
+    "structure": "sigla",
+    "initial_consonant": "s",
+    "vowel": "u",
+    "final_consonant": "nt"
+  },
+  {
+    "syllable": "super",
+    "length": 5,
+    "structure": "sigla",
+    "initial_consonant": "s",
+    "vowel": "u",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "supra",
+    "length": 5,
+    "structure": "sigla",
+    "initial_consonant": "s",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "ta",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "t",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "tar",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "t",
+    "vowel": "a",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "te",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "t",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "tem",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "t",
+    "vowel": "e",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "ter",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "t",
+    "vowel": "e",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "tes",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "t",
+    "vowel": "e",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "ti",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "t",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "tis",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "t",
+    "vowel": "i",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "to",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "t",
+    "vowel": "o",
+    "final_consonant": null
+  },
+  {
+    "syllable": "tor",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "t",
+    "vowel": "o",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "tr",
+    "length": 2,
+    "structure": "CC",
+    "initial_consonant": "tr",
+    "vowel": null,
+    "final_consonant": null
+  },
+  {
+    "syllable": "tra",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "tr",
+    "vowel": "a",
+    "final_consonant": null
+  },
+  {
+    "syllable": "tre",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "tr",
+    "vowel": "e",
+    "final_consonant": null
+  },
+  {
+    "syllable": "tres",
+    "length": 4,
+    "structure": "CCVC",
+    "initial_consonant": "tr",
+    "vowel": "e",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "tri",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "tr",
+    "vowel": "i",
+    "final_consonant": null
+  },
+  {
+    "syllable": "tru",
+    "length": 3,
+    "structure": "CCV",
+    "initial_consonant": "tr",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "tu",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "t",
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "tul",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "t",
+    "vowel": "u",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "tum",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "t",
+    "vowel": "u",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "tur",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "t",
+    "vowel": "u",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "tus",
+    "length": 3,
+    "structure": "CVC",
+    "initial_consonant": "t",
+    "vowel": "u",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "u",
+    "length": 1,
+    "structure": "V",
+    "initial_consonant": null,
+    "vowel": "u",
+    "final_consonant": null
+  },
+  {
+    "syllable": "ue",
+    "length": 2,
+    "structure": "VV",
+    "initial_consonant": null,
+    "vowel": "ue",
+    "final_consonant": null
+  },
+  {
+    "syllable": "uel",
+    "length": 3,
+    "structure": "VVC",
+    "initial_consonant": null,
+    "vowel": "ue",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "uer",
+    "length": 3,
+    "structure": "VVC",
+    "initial_consonant": null,
+    "vowel": "ue",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "ui",
+    "length": 2,
+    "structure": "VV",
+    "initial_consonant": null,
+    "vowel": "ui",
+    "final_consonant": null
+  },
+  {
+    "syllable": "uir",
+    "length": 3,
+    "structure": "VVC",
+    "initial_consonant": null,
+    "vowel": "ui",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "um",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "u",
+    "final_consonant": "m"
+  },
+  {
+    "syllable": "uo",
+    "length": 2,
+    "structure": "VV",
+    "initial_consonant": null,
+    "vowel": "uo",
+    "final_consonant": null
+  },
+  {
+    "syllable": "ur",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "u",
+    "final_consonant": "r"
+  },
+  {
+    "syllable": "us",
+    "length": 2,
+    "structure": "VC",
+    "initial_consonant": null,
+    "vowel": "u",
+    "final_consonant": "s"
+  },
+  {
+    "syllable": "uua",
+    "length": 3,
+    "structure": "VVV",
+    "initial_consonant": null,
+    "vowel": "uua",
+    "final_consonant": null
+  },
+  {
+    "syllable": "uual",
+    "length": 4,
+    "structure": "VVVC",
+    "initial_consonant": null,
+    "vowel": "uua",
+    "final_consonant": "l"
+  },
+  {
+    "syllable": "uui",
+    "length": 3,
+    "structure": "VVV",
+    "initial_consonant": null,
+    "vowel": "uui",
+    "final_consonant": null
+  },
+  {
+    "syllable": "zo",
+    "length": 2,
+    "structure": "CV",
+    "initial_consonant": "z",
+    "vowel": "o",
+    "final_consonant": null
+  }
+]

@@ -4,7 +4,7 @@
 **Track B verdict:** PREDICTION_CONFIRMED_UNIQUE (4/5 gates — tachygraphic simulation uniquely matches Voynich's cross-boundary anomaly)
 **Integration:** PARTIAL (3/6 validations)
 
-[← Phase 54](phase-54.md) | [Phase Index](README.md)
+[← Phase 54](phase-54.md) | [Phase Index](README.md) | [Phase 56 →](phase-56.md)
 
 ---
 
@@ -296,4 +296,4 @@ This is a double dissociation: Schinner wins on entropy shift but fails on Curri
 
 ---
 
-[← Phase 54](phase-54.md) | [Phase Index](README.md)
+[← Phase 54](phase-54.md) | [Phase Index](README.md) | [Phase 56 →](phase-56.md)

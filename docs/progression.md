@@ -27,6 +27,10 @@ Key metrics tracked across phases. Dict-Hit = percentage of decoded tokens match
 | 54 | — | INDETERMINATE | — | Dialect ID: Ligurian #1 (0.248), gap 0.012; 40% agreement; Fisher p=0.019 |
 | 55A | — | SCHINNER_ABOVE | — | Entropy shift extended: 13 mechanisms; Cardan +0.49–0.59 (discriminated); Schinner +0.95–0.97 (above tachy, scope limitation exposed) |
 | 55B | — | PREDICTION_CONFIRMED_UNIQUE | — | Currier cross-boundary MI: Voynich 0.190 bits / 1.450× (z=24.9σ); tachy-syl 1.284× (11% off); Schinner 1.044× (same as null) |
+| 56 | — | COMPATIBLE (10/10) | — | Costamagna 1953 structural match: 21/21 syllables attested; 5 codas = 5 modifier stroke types; 3 shared pairs = 3 ambiguous triples |
+| 57 | 27.5% (CVC) | 64 words, 4.76× | 96.19 | CVC coda decode: hook→n, descender→r, sigmoid→s, vertical→t, connector→l; dict_hit drops but bigram z and net signal dramatically increase |
+| 58 | — | FAIL (3/8) | — | Costamagna CSP: 22/25 confirmed, 3 ambiguous; search space 10^5.6; no improvement — visual matching essential |
+| 59 | 79.9% (segmented) | CVC_VALIDATED (8/11) | — | CVC refinement: 4.3%→79.9% attestation (measurement artifact); connector→r; vertical→t (1.57×, sub-groups p=0.003); -aiin→Latin declensions (62.3%); cross-MI increased (refuted absorption); permutation coherence degraded (p=0.552) |
 
 ## Background
 

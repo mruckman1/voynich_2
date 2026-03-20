@@ -602,3 +602,58 @@ voynich currier-verdict    # Phase 55B.4: integrate Track B; verdict PREDICTION_
 voynich phase55-verdict    # Phase 55: integrate Track A + Track B (verdict PARTIAL, 3/6)
 voynich phase55            # Run full Phase 55 pipeline (~15–25 min)
 ```
+
+## Phase 56: Costamagna Structural Compatibility
+
+```bash
+voynich costamagna-compare  # Phase 56: 10 structural questions comparing Costamagna 1953 vs Voynich (verdict COMPATIBLE, 10/10)
+```
+
+## Phase 57: CVC Coda Decode
+
+```bash
+voynich coda-table         # Step 57.1: Build coda marker mapping table (stroke → coda consonant)
+voynich cvc-coda-signal    # Step 57.4: Signal isolation on CVC decoded corpus
+voynich cvc-compare        # Step 57.5: Compare CV vs CVC vs R3 decode strategies (4-way battery)
+voynich cvc-tokens         # Step 57.8: Diagnostic detail on top-20 most frequent tokens
+voynich phase57-verdict    # Step 57.7: Validation gates (7) and verdict
+voynich phase57            # Run full Phase 57 pipeline
+```
+
+## Phase 58: Costamagna-Constrained CSP
+
+```bash
+voynich cost-domains       # Step 58.1: Build Costamagna-constrained CSP domains
+voynich cost-reduction     # Step 58.2: Compare domain sizes across phases (11 vs 14 vs Costamagna)
+voynich cost-csp           # Step 58.3: Run CSP with Costamagna domains (greedy hill-climbing)
+voynich cost-compare       # Step 58.5: Compare best CSP solution vs T_P15
+voynich phase58-verdict    # Step 58.6: Validation gates (8) and verdict
+voynich phase58            # Run full Phase 58 pipeline
+```
+
+## Phase 59: CVC Refinement + Deep Investigation
+
+```bash
+# Tier 1: Foundational
+voynich cvc-segment        # Inv 1: Syllable segmentation of CVC output (Costamagna maximal-munch)
+voynich cvc-position       # Inv 6: Positional distribution of coda markers
+
+# Tier 2: Mapping Refinement
+voynich cvc-tm             # Inv 3: Resolve t/m coda ambiguity (vertical stroke group)
+voynich cvc-connector      # Inv 7: Test 7 coda candidates for connector group (b,h,ckh,u)
+
+# Tier 3: Content and Evaluation
+voynich cvc-dict           # Inv 2: Build CVC-aware dictionary and re-score
+voynich cvc-gloss          # Inv 4: Gloss CVC signal words (Latin/Italian lookup)
+voynich cvc-recipe         # Inv 9: Recipe reading under CVC decode
+voynich cvc-aiin           # Inv 10: The "aiin" family deep dive (hook→n Latin morphology)
+
+# Tier 4: Validation and Prediction
+voynich cvc-mi             # Inv 5: Cross-boundary MI under CVC decode
+voynich cvc-combo          # Inv 8: Test Costamagna combination rules
+voynich cvc-perm           # Inv 11: CVC permutation coherence test (1000 trials)
+
+# Integration
+voynich phase59-verdict    # Phase 59 verdict: integrate all 11 investigations
+voynich phase59            # Run full Phase 59 pipeline
+```

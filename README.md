@@ -116,7 +116,7 @@ voynich_2/
 │   ├── cli.py                # CLI entry point (all commands)
 │   ├── core/                 # corpus.py, stats.py, reference.py, ciphers.py, _paths.py
 │   ├── analysis/             # Approaches 1-2 (strokes.py, fingerprint.py)
-│   └── phases/               # Phase modules (2-55 + reviewer analyses)
+│   └── phases/               # Phase modules (2-58 + reviewer analyses)
 ├── data/
 │   ├── corpus/               # EVA transcription files (IVTFF format)
 │   ├── 2Translate/           # Historical source transcriptions
@@ -168,13 +168,17 @@ Reference corpora (Latin, Italian, German, Occitan medical texts) should be plac
 | 54 | — | INDETERMINATE | — | Dialect ID: macaronic (Tuscan grammar + northern phonology) |
 | 55A | — | SCHINNER_ABOVE | — | Entropy shift extended to 13 mechanisms; Cardan discriminated (+0.49–+0.59); Schinner exposes discriminator scope limit |
 | 55B | — | PREDICTION_CONFIRMED_UNIQUE | — | Currier anomaly: Voynich 1.45×, tachygraphic (syl) 1.28×, Schinner 1.04× — tachygraphy uniquely predicts the anomaly |
+| 56 | — | COMPATIBLE (10/10) | — | Costamagna 1953 structural match: 21/21 syllables attested, 5 codas = 5 modifier types, 3 shared = 3 ambiguous |
+| 57 | 27.5% (CVC) | PASS (5/7), 64 words | 96.19 | CVC coda decode: modifiers as coda consonants; dict_hit drops but bigram z and net signal dramatically increase |
+| 58 | — | FAIL (3/8) | — | Costamagna CSP: 22/25 confirmed, 3 ambiguous; no improvement — visual matching essential |
+| 59 | 79.9% (segmented) | CVC_VALIDATED (8/11) | — | CVC refinement: attestation artifact fixed (4.3%→79.9%); connector→r; vertical→t; -aiin=Latin declensions (62.3%) |
 
 Full table: [docs/progression.md](docs/progression.md)
 
 ## Detailed Documentation
 
 - [Complete CLI Command Reference](docs/commands.md) — all commands grouped by phase
-- [Phase-by-Phase Documentation](docs/phases/) — detailed results for all 54 phases
+- [Phase-by-Phase Documentation](docs/phases/) — detailed results for all 56 phases
 - [Signal Vocabulary Tables](docs/signal-vocabulary.md) — 70 signal words + 22 word-level identifications
 - [Progression Table](docs/progression.md) — metrics across all phases
 
