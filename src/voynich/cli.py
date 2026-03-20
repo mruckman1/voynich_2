@@ -5550,6 +5550,44 @@ def cmd_phase59():
     run_phase59()
 
 
+# Phase 60: Corrected CVC + Recalibrated Coherence + Evaluation + Recipes
+
+def cmd_corrected_coda():
+    """Phase 60A: Corrected coda mapping (connector=r, i=syllabic)."""
+    from voynich.phases.corrected_coda import run_corrected_coda
+    run_corrected_coda()
+
+
+def cmd_recal_coherence():
+    """Phase 60B: Recalibrated CVC permutation coherence test."""
+    from voynich.phases.recalibrated_coherence import run_recal_coherence
+    run_recal_coherence()
+
+
+def cmd_cvc_eval():
+    """Phase 60C: Unified CVC evaluation framework."""
+    from voynich.phases.cvc_evaluator import run_cvc_eval
+    run_cvc_eval()
+
+
+def cmd_recipe_annotate():
+    """Phase 60D: Recipe annotation + reading attempts."""
+    from voynich.phases.recipe_annotation import run_recipe_annotate
+    run_recipe_annotate()
+
+
+def cmd_phase60_verdict():
+    """Phase 60 verdict: integrate all 4 tracks."""
+    from voynich.phases.phase60_integrate import run_phase60_verdict
+    run_phase60_verdict()
+
+
+def cmd_phase60():
+    """Run full Phase 60 pipeline (all 4 tracks + verdict)."""
+    from voynich.phases.phase60_integrate import run_phase60
+    run_phase60()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -6267,6 +6305,13 @@ def main():
         'cvc-perm': cmd_cvc_perm,
         'phase59-verdict': cmd_phase59_verdict,
         'phase59': cmd_phase59,
+        # Phase 60
+        'corrected-coda': cmd_corrected_coda,
+        'recal-coherence': cmd_recal_coherence,
+        'cvc-eval': cmd_cvc_eval,
+        'recipe-annotate': cmd_recipe_annotate,
+        'phase60-verdict': cmd_phase60_verdict,
+        'phase60': cmd_phase60,
     }
 
     if len(sys.argv) < 2:

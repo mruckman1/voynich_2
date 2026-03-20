@@ -30,6 +30,7 @@ Detailed documentation for each analysis phase. Phases are grouped thematically.
 | 57 | CVC Coda Decode | **PASS** (5/7) — bigram z 96.19 (CVC) vs 55.74 (R3); net signal 3855 vs 370; dict_hit drops to 27.5% | [phase-57.md](phase-57.md) |
 | 58 | Costamagna-Constrained CSP | **FAIL** (3/8) — only 3 genuinely ambiguous triples; CSP finds no improvement over T_P15; visual matching needed | [phase-58.md](phase-58.md) |
 | 59 | CVC Refinement + Deep Investigation | **CVC_VALIDATED** (8/11) — attestation 4.3%→79.9% (artifact); connector→r; vertical→t (p=0.003); -aiin=Latin declensions (62.3%) | [phase-59.md](phase-59.md) |
+| 60 | Corrected CVC + Evaluation + Recipes | **CVC_CORRECTED_VALIDATED** (4/4 tracks) — connector→r (+5.5%); i→syllabic (+4.0%); composite 0.94 (#1); coherence p=0.006 (recalibrated); 75 signal words; 83% attestation; 340 recipes at 94.9% glossed | [phase-60.md](phase-60.md) |
 
 ## Cross-References
 
