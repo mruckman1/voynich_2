@@ -657,3 +657,253 @@ voynich cvc-perm           # Inv 11: CVC permutation coherence test (1000 trials
 voynich phase59-verdict    # Phase 59 verdict: integrate all 11 investigations
 voynich phase59            # Run full Phase 59 pipeline
 ```
+
+## Phase 60: Corrected CVC + Evaluation + Recipes
+
+```bash
+voynich corrected-coda     # Phase 60A: Corrected coda mapping (connector=r, i=syllabic)
+voynich recal-coherence    # Phase 60B: Recalibrated CVC permutation coherence test
+voynich cvc-eval           # Phase 60C: Unified CVC evaluation framework
+voynich recipe-annotate    # Phase 60D: Recipe annotation + reading attempts
+voynich phase60-verdict    # Phase 60 verdict: integrate all 4 tracks
+voynich phase60            # Run full Phase 60 pipeline
+```
+
+## Phase 61: Deep Reading + Permutation + Sequences + Zodiac
+
+```bash
+voynich deep-recipes       # Phase 61A: Deep pharmaceutical recipe reading
+voynich cvc-full-perm      # Phase 61B: Full CV permutation test under CVC decode
+voynich cost-sequences     # Phase 61C: Costamagna sequence rule testing
+voynich zodiac-cvc         # Phase 61D: Zodiac labels under CVC decode
+voynich phase61-verdict    # Phase 61 verdict
+voynich phase61            # Run full Phase 61 pipeline
+```
+
+## Phase 62: Exhaustive Pre-Visual Analysis
+
+```bash
+voynich t1-reverse         # Phase 62.1: T1 reverse engineering under CVC
+voynich cross-token        # Phase 62.2: Cross-token word reconstruction
+voynich gallows-initial    # Phase 62.3: Gallows as word-initial markers
+voynich decoded-bigram     # Phase 62.4: Decoded bigram frequency vs Latin
+voynich orphaned-coda      # Phase 62.5: Orphaned coda investigation
+voynich double-mod         # Phase 62.6: Double-modifier sequences
+voynich token-length       # Phase 62.7: Token length distribution
+voynich syl-entropy        # Phase 62.8: Syllable-level entropy
+voynich lang-ab-cvc        # Phase 62.9: Language A/B under CVC
+voynich hand-cvc           # Phase 62.10: Hand-by-hand CVC analysis
+voynich multi-entropy      # Phase 62.11: Multi-level entropy comparison
+voynich phase62-verdict    # Phase 62 verdict
+voynich phase62            # Run full Phase 62 pipeline
+```
+
+## Phase 63: Visual Sign Comparison
+
+```bash
+# Workstream A: Font-based comparison
+voynich vis-render         # Phase 63 A1: Render EVA glyphs from font
+voynich vis-normalize      # Phase 63 A2: Normalize EVA + Costamagna images
+voynich vis-embed          # Phase 63 A3: Embed images via Gemini
+voynich vis-similarity     # Phase 63 A4: Compute visual similarity matrix
+voynich vis-validate       # Phase 63 A5: Validate T_P15 against visual rankings
+voynich vis-report         # Phase 63 A6: Generate HTML visual comparison report
+voynich vis-rerun          # Phase 63A: Clear caches and re-run Workstream A
+voynich phase63-verdict    # Phase 63A verdict
+
+# Workstream B: Manuscript segmentation
+voynich ms-index           # Phase 63B B1: Extract and index folio images
+voynich ms-segment         # Phase 63B B2-B4: Segment lines, words, characters
+voynich ms-exemplars       # Phase 63B B5: Select character exemplars
+voynich ms-compare         # Phase 63B B6: Embed exemplars and compare
+voynich phase63b-verdict   # Phase 63B verdict
+voynich phase63b           # Run full Phase 63B pipeline
+```
+
+## Phase 64: Multi-Method Visual Sign Comparison
+
+```bash
+voynich morph-describe     # Phase 64 M1: LLM morphology descriptions
+voynich stroke-extract     # Phase 64 M2: Skeleton graph features
+voynich shape-desc         # Phase 64 M3: Shape descriptors (Hu + Fourier)
+voynich topo-features      # Phase 64 M4: Topological features
+voynich hog-compare        # Phase 64 M5: HOG features
+voynich hybrid-features    # Phase 64 M6: Hybrid combined features
+voynich llm-pairwise       # Phase 64 M7: LLM pairwise comparison
+voynich visual-ensemble    # Phase 64: Ensemble combination + validation
+voynich phase64-verdict    # Phase 64 verdict
+voynich phase64            # Run full Phase 64 pipeline
+```
+
+## Phase 65: Word Boundary Discovery
+
+```bash
+voynich build-stream       # Phase 65.1: Build decoded character streams
+voynich harris-segment     # Phase 65.2: Harris MI boundary detection
+voynich bayesian-segment   # Phase 65.3: Bayesian word segmentation
+voynich lm-segment         # Phase 65.4: Character LM perplexity minimization
+voynich recipe-segment     # Phase 65.5: Recipe template-constrained segmentation
+voynich phase65-verdict    # Phase 65 verdict
+voynich phase65            # Run full Phase 65 pipeline
+```
+
+## Phase 66: Multi-Vector Attack with Hallucination Controls
+
+```bash
+voynich llm-reading        # Phase 66.1: LLM pharmaceutical reading with controls
+voynich reverse-sim        # Phase 66.2: Reverse simulation (Viterbi)
+voynich f116v-crib         # Phase 66.3: f116v crib test
+voynich illus-align        # Phase 66.4: Illustration-text alignment
+voynich parallel-align     # Phase 66.5: CI parallel corpus alignment
+voynich fontana-struct     # Phase 66.6: Fontana structural comparison
+voynich lang-a-66          # Phase 66.7: Language A focus
+voynich hand4              # Phase 66.8: Hand 4 focus
+voynich collocations       # Phase 66.9: Collocational analysis
+voynich ngram-freq         # Phase 66.10: N-gram frequency ranking
+voynich metrical           # Phase 66.11: Metrical analysis
+voynich astro-deep         # Phase 66.12: Astronomical deep dive
+voynich phase66-verdict    # Phase 66 verdict
+voynich phase66            # Run full Phase 66 pipeline
+```
+
+## Phase 67: Multi-Angle Triple Resolution
+
+```bash
+voynich wildcard-match     # Phase 67.1: Wildcard pattern matching
+voynich freq-match         # Phase 67.2: Frequency rank matching
+voynich feat-predict       # Phase 67.3: Feature-based prediction
+voynich evo-optimize       # Phase 67.4: Evolutionary optimization
+voynich distrib-map        # Phase 67.5: Distributional mapping
+voynich phase67-verdict    # Phase 67 verdict
+voynich phase67            # Run full Phase 67 pipeline
+```
+
+## Phase 68: Rare Syllable Recovery
+
+```bash
+voynich full-tokens        # Phase 68.1: Fully-decoded token exploitation
+voynich within-token       # Phase 68.2: Within-token co-occurrence
+voynich paradigmatic       # Phase 68.3: Minimal pair analysis
+voynich expanded-t1        # Phase 68.4: CVC-enhanced T1 pipeline
+voynich formula-decode     # Phase 68.5: Formulaic pattern decode
+voynich distrib-constrain  # Phase 68.6: Distributional constraint propagation
+voynich ed-lattice         # Phase 68.7: Edit-distance lattice
+voynich phase68-verdict    # Phase 68 verdict
+voynich phase68            # Run full Phase 68 pipeline
+```
+
+## Phase 69: The Clean Core — Validation, Exploitation, and Reading
+
+```bash
+voynich build-clean        # Phase 69.0: Build clean corpus partition
+voynich validate-clean     # Phase 69.1: Validate clean subset (3 permutation tests)
+voynich clean-segment      # Phase 69.2: Harris MI + LM segmentation on clean runs
+voynich clean-llm-read     # Phase 69.3: LLM reading of clean passages
+voynich clean-distrib      # Phase 69.4: Enhanced Procrustes with 200+ anchors
+voynich t1-network         # Phase 69.5: T1 vocabulary network analysis
+voynich t1-read            # Phase 69.6: T1-anchored passage reading
+voynich t1-ci-crossref     # Phase 69.7: T1 × CI cross-reference
+voynich phase69-verdict    # Phase 69 verdict
+voynich phase69            # Run full Phase 69 pipeline
+```
+
+## Phase 70: Token-as-Word Exploitation
+
+```bash
+voynich pharma-dict        # Phase 70.1: Pharmaceutical dictionary expansion
+voynich paradigm-map       # Phase 70.2: Morphological paradigm mapping
+voynich phrase-assemble    # Phase 70.3: Phrase fragment assembly
+voynich annotate-read      # Phase 70.4: Annotated pharmaceutical readings
+voynich phase70-verdict    # Phase 70 verdict
+voynich phase70            # Run full Phase 70 pipeline
+```
+
+## Phase 71: Inflectional Reverse Engineering
+
+```bash
+voynich inflect-catalog    # Phase 71.1: Inflectional catalog
+voynich root-id            # Phase 71.2: Root-level paradigm identification
+voynich gram-read          # Phase 71.3: Grammatically-annotated passage reading
+voynich phase71-verdict    # Phase 71 verdict
+voynich phase71            # Run full Phase 71 pipeline
+```
+
+## Phase 72: Decode Model Diagnosis and Revision
+
+```bash
+voynich connector-test     # Phase 72.1: Connector value investigation (13 values)
+voynich xval-diagnosis     # Phase 72.2: Cross-validation failure diagnosis
+voynich combo-models       # Phase 72.3: Alternative CVC combination models
+voynich t1-expand72        # Phase 72.4: Tiered T1 vocabulary expansion
+voynich var-length         # Phase 72.5: Variable-length encoding hypothesis
+voynich phase72-verdict    # Phase 72 verdict
+voynich phase72            # Run full Phase 72 pipeline
+```
+
+## Phase 73: Corrected Model Pipeline (Connector→Null)
+
+```bash
+voynich redecode           # Phase 73.0: Re-decode corpus with connector→null
+voynich revalidate-clean   # Phase 73.1: Re-validate clean subset
+voynich corrected-grammar  # Phase 73.2: Corrected inflectional catalog
+voynich corrected-t1       # Phase 73.3: T1 re-identification + stability check
+voynich corrected-paradigms # Phase 73.4: Paradigm mapping with corrected decode
+voynich corrected-read     # Phase 73.5: Annotated readings with corrected data
+voynich phase73-verdict    # Phase 73 verdict
+voynich phase73            # Run full Phase 73 pipeline
+```
+
+## Phase 74: Descender Investigation + T1 Vocabulary Push
+
+```bash
+# Path A: Descender investigation
+voynich descender-test     # Phase 74.A1: Exhaustive descender value testing (13 values)
+voynich descender-context  # Phase 74.A2: Context-dependent descender analysis
+
+# Path B: T1 vocabulary push
+voynich eva-patterns       # Phase 74.B1: EVA-level distributional + positional expansion
+voynich llm-gap-fill       # Phase 74.B2: LLM gap-filling with hallucination controls
+voynich complete-read      # Phase 74.B3: Assemble complete readings
+
+# Integration
+voynich phase74-verdict    # Phase 74 verdict
+voynich phase74            # Run full Phase 74 pipeline
+```
+
+## Phase 75: 3-Coda Model Pipeline (Connector→Null + Descender→Null)
+
+```bash
+voynich redecode-3coda     # Phase 75.0: Re-decode corpus with 3-coda model
+voynich revalidate-3coda   # Phase 75.1: Re-validate clean subset under 3-coda model
+voynich grammar-3coda      # Phase 75.2: Corrected grammatical analysis (3-coda model)
+voynich t1-3coda           # Phase 75.3: Corrected T1 identification (3-coda model)
+voynich paradigms-3coda    # Phase 75.4: Corrected paradigm mapping (3-coda model)
+voynich read-3coda         # Phase 75.5: Corrected readings with distributional integration
+voynich phase75-verdict    # Phase 75 verdict
+voynich phase75            # Run full Phase 75 pipeline
+```
+
+## Phase 76: Triple Resolution from Vocabulary Convergence
+
+```bash
+voynich wildcard-prop      # Phase 76.1: T1 wildcard constraint extraction + LOO validation
+voynich skeleton-parse     # Phase 76.2: Grammatical skeleton parsing + parallel passages
+voynich freq-gap           # Phase 76.3: Frequency-identification gap analysis
+voynich cond-gapfill       # Phase 76.4: Conditional LLM gap-fill re-run
+voynich phase76-verdict    # Phase 76 verdict
+voynich phase76            # Run full Phase 76 pipeline
+```
+
+## Phase 77: Timm-Schinner Self-Citation Discriminator Test
+
+```bash
+voynich ts-test            # Phase 77: Entropy shift + cross-boundary MI test (540 corpora)
+voynich phase77            # Run Phase 77 (alias for ts-test)
+```
+
+## Phase 78: CVC T1 Permutation Validation
+
+```bash
+voynich cvc-t1-perm        # Phase 78: 1,000 random CV tables through T1 pipeline (p=0.002, z=3.79)
+voynich phase78            # Run Phase 78 (alias for cvc-t1-perm)
+```

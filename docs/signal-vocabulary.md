@@ -2,27 +2,27 @@
 
 [← Back to README](../README.md)
 
-## Consolidated Signal Vocabulary (70 CV + 75 CVC words)
+## Consolidated Signal Vocabulary (70 CV + 76 CVC words)
 
 Signal words are decoded Voynich tokens that appear significantly more often in real Voynich text than in null (permuted) corpora, measured as σ = (real_count − null_mean) / null_std, with threshold σ > 2.0. Selectivity = real_count / null_mean.
 
 **CV discovery progression:** Phase 28 (131K dict): 8 words → Phase 30 (bootstrap): +2 → Phase 36 (10K dict): 51 total → Phase 37-38 (Italian analysis): +22 Italian-only → **70 unique** (3 overlap: dise, cu, dedi).
 
-**CVC discovery progression:** Phase 57 (coda decode): 64 words → Phase 59 (CVC validation): mapping corrections identified → Phase 60 (corrected CVC): **75 words** (+13 new from corrections, −2 lost).
+**CVC discovery progression:** Phase 57 (coda decode): 64 words → Phase 59 (CVC validation): mapping corrections identified → Phase 60 (corrected CVC): 75 words (+13 new from corrections, −2 lost) → Phase 73 (connector→null): **76 words** (+1; 6 doubled-rr words merge with base forms).
 
 ## Current State of Decipherment
 
 ### What We Know
 
-**Encoding mechanism:** Italian syllabic tachygraphy (cosine similarity 0.820 against the tachygraphic entropy-shift model, discriminated from 12 alternative encoding hypotheses including the Naibbe cipher at −0.843). The encoding uses a three-layer structure: gallows determinatives mark word boundaries or semantic categories, phonetic roots encode content via stroke-feature triples mapped to CV syllables, and grammatical suffixes encode inflectional endings. Each EVA character decomposes into a stroke-feature triple (first_stroke, last_stroke, glyph_class), and each triple maps to a syllable through the T_P15 assignment table.
+**Encoding mechanism:** Italian syllabic tachygraphy (cosine similarity 0.820 against the tachygraphic entropy-shift model, discriminated from 13 alternative encoding hypotheses including the Naibbe cipher at −0.843 and Timm & Schinner's self-citation algorithm at −0.153; the self-citation model also fails the cross-boundary MI test at 1.036× vs the Voynich's 1.450×, Phase 77). The encoding uses a three-layer structure: gallows determinatives mark word boundaries or semantic categories, phonetic roots encode content via stroke-feature triples mapped to CV syllables, and grammatical suffixes encode inflectional endings. Each EVA character decomposes into a stroke-feature triple (first_stroke, last_stroke, glyph_class), and each triple maps to a syllable through the T_P15 assignment table.
 
 **Source language:** Macaronic Latin-Italian (Italian selectivity 5.45× vs Latin 1.30×, confirmed by 4 independent methods: signal isolation, size-matched OT/spectral comparison, SBM profiling, and character n-gram analysis). Size-matched language ID (Phase 50D, all corpora subsampled to 11K tokens) places Italian #1, Latin #2, German #4 — Phase 49's German ranking was entirely a corpus-size artifact. Phase 54 dialect identification battery (8 experiments) returns DIALECT_INDETERMINATE: the signal words carry Tuscan morphological markers (*ci*, *si*, *tu*, *dice*, *dico*) alongside Gallo-Italic phonological features (degemination in *bela*/*sene*, lenition in *diga*/*dise*), consistent with a macaronic register mixing standard Italian grammar with northern Italian phonology.
 
-**Sequential structure:** z = 14.78 (Phase 47 conservative minimum, CV exact-match-only). CC bigram z = 21.0 (Phase 50B, 32/397 consecutive-hit pairs match reference Latin bigrams at 8.1%). CVC bigram z = 87.74 (Phase 60 corrected) — the CVC model dramatically amplifies sequential structure because coda consonants create more distinctive decoded words, reducing false-positive SHARED_HIT classifications.
+**Sequential structure:** z = 14.78 (Phase 47 conservative minimum, CV exact-match-only). CC bigram z = 21.0 (Phase 50B, 32/397 consecutive-hit pairs match reference Latin bigrams at 8.1%). CVC bigram z = 90.48 (Phase 73, connector→null corrected; was 87.74 in Phase 60 under connector→r) — the CVC model dramatically amplifies sequential structure because coda consonants create more distinctive decoded words, reducing false-positive SHARED_HIT classifications.
 
-**CVC coda model (Phases 57–60):** EVA modifier characters encode coda consonants rather than being noise. Five stroke types map to five Latin codas (hook→n, descender→r, sigmoid→s, vertical→t, connector→r), producing CVC syllables that match Costamagna's 1953 syllabary at 83.0% attestation. Net signal increases 10× (3,877 vs 370) and Latin declension endings appear in 60.7% of tokens. Phase 60 corrected two mappings (connector l→r, EVA 'i' reclassified as syllabic), adding 13 new signal words.
+**CVC coda model (Phases 57–60, corrected Phase 72–75):** EVA modifier characters encode coda consonants rather than being noise. Three stroke types map to three Latin codas (hook→n, sigmoid→s, vertical→t); two additional types have been revised to null: connector→∅ (Phase 72–73, was 'r') and descender→∅ (Phase 74–75, was 'r'). Phase 72 demonstrated connector strokes are non-phonetic scribal ligatures (98.1% token-medial). Phase 74 demonstrated descender→r ranks 10th of 13 tested values — 13/15 preceding triples independently prefer null. The descender is 94.6% token-final (a genuine coda position), but encodes a diacritic or prosodic feature rather than a consonant. **Phase 75 applied both corrections** and validated the 3-coda model: verbal fraction drops from 57.3% to 25.2%; bootstrap grammar null test passes at p=0.0000 (first significant coda-grammar validation); cross-validation doubles 26.2%→54.7%; dict-hit rises 30.2%→37.6% but signal drops 76→62 and bigram z drops 90.5→71.3 (shorter strings = more dictionary collisions). The remaining codas encode Latin verbal inflection: coda -s → 2nd person singular (99% of 1,707 obs), coda -t → 3rd person singular (95% of 491 obs). **Phase 78 validated the CVC T1 identifications** via permutation test: 1,000 random CV tables produce 209.6 ± 32.0 identifications vs the real table's 331 (z = 3.79, p = 0.002), confirming the identifications are table-specific and not a pipeline artifact.
 
-**Solution landscape:** Formally FLAT. Phase 44 enumerated 500+ near-optimal MaxSAT solutions. Phase 33 showed 6 independent correction methods propose different assignments for the same triples with zero consensus. Phase 53 confirmed: paradigm-derived constraints produce identical consensus landscapes on shuffled tables (z = 0.02).
+**Solution landscape:** Formally FLAT, but narrowing. Phase 44 enumerated 500+ near-optimal MaxSAT solutions. Phase 33 showed 6 independent correction methods propose different assignments for the same triples with zero consensus. Phase 53 confirmed: paradigm-derived constraints produce identical consensus landscapes on shuffled tables (z = 0.02). However, Phase 68 achieved the first RESOLVED triple change (be→de, 3/7 tracks) and 5 LIKELY changes using token-level constraints, demonstrating that local analysis can break ties that corpus-level optimization cannot.
 
 **Encoding granularity:** Variable-length, not fixed CV. Phase 53 found that free triples encode 1–3 character substrings (distribution: 127 × 3-char, 84 × 2-char, 19 × 1-char), not strictly 2-character CV syllables as the C5×V4 model predicts. The CVC model extends this: modifier characters add coda consonants to preceding syllables, making the effective encoding unit a CVC syllable rather than CV. This is consistent with actual tachygraphic systems where stroke modifications encode variable-length phonetic units.
 
@@ -30,12 +30,14 @@ Signal words are decoded Voynich tokens that appear significantly more often in 
 
 **CV layer** — 25 stroke-feature triples → syllable assignments:
 - **12 confirmed** (cross-source validation, Phases 14 + 19.8): these produce the 70 CV signal words and are the ground truth of the project
-- **10 landscape-confirmed** (MaxSAT consensus >60%, Phase 45): statistically supported but Phase 44 showed the landscape is flat, so these may not be uniquely correct
+- **1 Phase 68 RESOLVED** (`ascender,crossbar,compound`: be→de, 3/7 tracks agree): first computationally resolved triple change since Phase 14
+- **5 Phase 68 LIKELY** (2-track agreement each): ga→di, fa→ba, ne→de, la→ce, hi→ba — proposed but awaiting further confirmation
+- **4 remaining landscape-confirmed** (MaxSAT consensus >60%, Phase 45): statistically supported but Phase 44 showed the landscape is flat
 - **3 genuinely ambiguous** (no consensus): cover only 164 tokens (0.45% of corpus)
 
-**CVC layer** — 5 stroke types → coda consonants (Phase 57, corrected Phase 60):
-- **4 confirmed from Costamagna 1953**: hook→n, descender→r, sigmoid→s, vertical→t
-- **1 corrected in Phase 60**: connector→r (was 'l' in Phase 57; Phase 59 Inv 7 found 'r' gives 23.4% vs 0.5%)
+**CVC layer** — 5 stroke types → coda consonants (Phase 57, corrected Phase 60, revised Phase 72–75):
+- **3 genuine codas from Costamagna 1953**: hook→n, sigmoid→s, vertical→t (coda -s at 99% consistency with 1,707 obs, coda -t at 95% with 491 obs under 3-coda model)
+- **2 revised to null**: connector→∅ (Phase 72–73, was 'r'/'l', 98.1% token-medial = scribal ligature) and descender→∅ (Phase 74–75, was 'r', 94.6% token-final = genuine coda position but non-phonetic diacritic/prosodic marker). Phase 75 validated the 3-coda model: bootstrap p=0.0000, verbal 57.3%→25.2%, xval 26.2%→54.7%.
 - **1 per-character override**: EVA 'i' reclassified as SYLLABIC in non-final position (Phase 59 Inv 3)
 - **15 EVA modifier characters** act as coda markers; **14 ambiguous characters** are context-dependent
 
@@ -148,31 +150,33 @@ Phase 57 introduced the CVC (consonant-vowel-consonant) coda decode model, treat
 
 **Coda mapping (Phase 57 → Phase 60 corrected):**
 
-| Stroke Type | Phase 57 Coda | Phase 60 Coda | Costamagna Rule | Affected EVA Chars |
-|-------------|---------------|---------------|-----------------|-------------------|
-| hook | n | n | one dot added | aiin, iin, iiin, n |
-| descender | r | r | descender stroke | ar, or, r |
-| sigmoid | s | s | curve appended | dy, ey, s |
-| vertical | t | t | crossbar through | al, am, g, m, ol |
-| connector | **l** | **r** (corrected) | not in Costamagna | b, ckh, h, u |
+| Stroke Type | Phase 57 | Phase 60 | Phase 73 | Costamagna Rule | Affected EVA Chars |
+|-------------|----------|----------|----------|-----------------|-------------------|
+| hook | n | n | **n** | one dot added | aiin, iin, iiin, n |
+| descender | r | r | **r** | descender stroke | ar, or, r |
+| sigmoid | s | s | **s** | curve appended | dy, ey, s |
+| vertical | t | t | **t** | crossbar through | al, am, g, m, ol |
+| connector | l | r | **∅ (null)** | not in Costamagna | b, ckh, h, u |
 
-**Phase 59 corrections applied in Phase 60:**
-1. **connector → r** (was l): Phase 59 Inv 7 tested all 7 candidates on 950 affected tokens; 'r' gives 23.4% dict-hit vs 0.5% for 'l'. After applying to full corpus: +5.5% dict-hit on 7,990 affected tokens.
-2. **EVA 'i' reclassified as SYLLABIC** in non-final position: Phase 59 Inv 3 found 0 meaningful coda hits from 'i' across 2,807 tokens (5 total hits). Reclassification: +4.0% dict-hit on affected tokens.
+**Correction history:**
+1. **Phase 59/60: connector l → r**: Phase 59 Inv 7 tested all 7 candidates on 950 affected tokens; 'r' gives 23.4% dict-hit vs 0.5% for 'l'. After applying to full corpus: +5.5% dict-hit on 7,990 affected tokens.
+2. **Phase 59/60: EVA 'i' reclassified as SYLLABIC** in non-final position: Phase 59 Inv 3 found 0 meaningful coda hits from 'i' across 2,807 tokens (5 total hits). Reclassification: +4.0% dict-hit on affected tokens.
+3. **Phase 72/73: connector r → ∅ (null)**: Phase 72 exhaustively tested 13 connector values; null wins on composite (0.612 vs r's 0.576), dict-hit (30.2% vs 29.0%), and cross-validation (90.5% vs 77.9%). Phase 73 confirmed corpus-wide: 2,662 tokens changed (7.3%), 419 new dict hits gained vs 2 lost. Connector strokes are scribal ligatures (98.1% token-medial) with no phonetic value.
 
 ### CVC vs CV Performance (Phase 60 Evaluation)
 
-| Metric | CV strip | R3 combined | CVC Phase 57 | CVC Phase 60 |
-|--------|----------|-------------|--------------|--------------|
-| Dict-hit | 39.1% | 43.6% | 27.5% | **29.0%** |
-| Signal words (σ>2) | 23 | 88 | 64 | **75** |
-| Bigram z | 62.14 | 55.74 | **96.19** | 87.74 |
-| Net signal | 242 | 370 | 3,855 | **3,877** |
-| Seg. attestation | — | — | 79.9% | **83.0%** |
-| Latin endings | — | — | 55.7% | **60.7%** |
-| Composite (Phase 60) | 0.047 | 0.111 | 0.914 | **0.939** |
+| Metric | CV strip | R3 combined | CVC Phase 57 | CVC Phase 60 | CVC Phase 73 |
+|--------|----------|-------------|--------------|--------------|--------------|
+| Dict-hit | 39.1% | 43.6% | 27.5% | 29.0% | **30.2%** |
+| Signal words (σ>2) | 23 | 88 | 64 | 75 | **76** |
+| Bigram z | 62.14 | 55.74 | **96.19** | 87.74 | **90.48** |
+| Net signal | 242 | 370 | 3,855 | 3,877 | — |
+| Seg. attestation | — | — | 79.9% | **83.0%** | — |
+| Latin endings | — | — | 55.7% | **60.7%** | — |
+| Cross-validation | — | — | — | 77.9% | **90.5%** |
+| T1 identifications | — | — | — | 223 | **243** |
 
-CVC dict-hit is lower than CV (29% vs 43.6%) because CVC produces longer decoded strings that rarely match whole dictionary words. But on every other metric — signal count, bigram z, net signal, attestation, and Latin endings — CVC dramatically outperforms CV. The composite score (Phase 60 CVCEvaluator) places CVC corrected at 0.939, far above all CV strategies.
+CVC dict-hit is lower than CV (30% vs 43.6%) because CVC produces longer decoded strings that rarely match whole dictionary words. But on every other metric — signal count, bigram z, net signal, attestation, Latin endings, and cross-validation — CVC dramatically outperforms CV. Phase 73's connector→null correction improved every CVC metric over Phase 60's connector→r, with cross-validation showing the most dramatic gain (+12.6pp).
 
 ### 75 CVC Signal Words (Phase 60 Corrected, `results/corrected_coda.json`)
 
@@ -259,6 +263,8 @@ Signal isolation uses the same methodology as the CV pipeline: per-word σ = (re
 **5 infinite-sigma singletons** (σ=999): zero occurrences in all 5 null corpora. Listed separately because their extreme sigma is a statistical artifact of zero null variance. Of these, *secon* (second) and *laten* (hidden) are noteworthy as pharmaceutically relevant Latin.
 
 **13 words NEW in Phase 60** (from connector→r and i→syllabic corrections): cordi, nerr, garne, ladine, corr, terras, serr, rarras, ladin, derr, terr, derra, corn. The connector→r correction opened up decoded forms ending in *-rr* and *-r* that were previously *-lr* and *-l* (non-Latin). The i→syllabic correction produced longer decoded words (extra CV syllable instead of coda *t*), enabling new matches like *ladine* and *cordi*.
+
+**Phase 73 note on doubled-r words:** Phase 72–73 revised connector→∅ (null). This means words that were "NEW in Phase 60" due to connector→r and contain doubled *-rr* from connector+descender are now shorter — `corr`→`cor`, `serr`→`ser`, `nerr`→`ner`, `terr`→`ter`, `derr`→`der`, `derra`→`dera`. These merge with their existing shorter forms rather than being lost. Words from the i→syllabic correction (cordi, ladine, garne, ladin, corn, terras, rarras) are **unaffected** by the connector change and remain valid.
 
 **2 words lost** from Phase 57: *tor* (σ=3.5) and *ner* (σ=3.0) — both marginal, just above the σ>2 threshold.
 
@@ -364,9 +370,63 @@ Signal adjacency z = 5.33 — catalog words cluster near signal words significan
 
 **Longest consecutive CVC glossed run:** 26 tokens (f54r) — an entire recipe fully annotated. However, most annotations are function-word decompositions (e.g., *cone* = "with+e") rather than identifiable content words.
 
+## Phase 68: Rare Syllable Recovery — Triple Resolution
+
+Phase 68 deployed 7 independent tracks using **token-level constraints** rather than corpus-level optimization, specifically targeting rare syllable values that Phases 62–67's statistical methods couldn't distinguish from common defaults. All 7 tracks are independent and produce `triple_candidates: Dict[str, str]` that feed into a majority-vote integration.
+
+### Methodology
+
+| Track | Method | Gates | Key Finding |
+|-------|--------|-------|-------------|
+| 1: Full Tokens | Identify tokens with 0% error (all chars from confirmed triples) | 3/4 | **22,823 tokens (63%)** fully decoded; longest run 29; dict-hit 35.9% on clean subset |
+| 2: Within-Token | Co-occurrence of confirmed+unresolved triples within same token × Latin syllable bigrams | 1/3 | All 13 triples have data (30,703 pairs) but no clear winners |
+| 3: Paradigmatic | Minimal pairs: token types differing by 1 char (one confirmed, one unresolved) | 3/4 | **4,914 minimal pairs**, 2,149 diagnostic; 11 triples constrained |
+| 4: Expanded T1 | CVC-enhanced wildcard matching for unique dictionary identifications | **3/3** | **223 identifications** (up from Phase 52's 22); 6 triples at 61.8% consistency |
+| 5: Formulaic | Match recurring patterns in recipe sections against CI formulae | **3/3** | **82 recurring patterns**, 1,482 formula matches; 10 triples constrained |
+| 6: Distributional | Reuse Phase 67's Procrustes anchors; compare decode to Latin match | 0/2 | Only 2 triples receive constraints (sparse anchor data) |
+| 7: ED Lattice | Dictionary words within ED=2 where edits fall on unresolved positions | 1/3 | 458 types with neighbors (72,812 total); too diffuse for clear signal |
+
+### Triple Resolution Results
+
+**Integration verdict: PARTIAL_RESOLUTION (5/5 gates)**
+
+| Triple Key | T_P15 | Phase 68 | Status | Agreeing Tracks | Impact |
+|------------|-------|----------|--------|----------------|--------|
+| `ascender,crossbar,compound` | be | **de** | **RESOLVED** | full_tokens, paradigmatic, ed_lattice | 3/7 tracks |
+| `ascender,plume,gallows` | ga | **di** | LIKELY | paradigmatic, within_token | 2/7 tracks |
+| `crossbar,crossbar,rare` | fa | **ba** | LIKELY | paradigmatic, ed_lattice | 2/7 tracks |
+| `loop,sigmoid,bench` | ne | **de** | LIKELY | paradigmatic, ed_lattice | 2/7 tracks |
+| `loop,tail,bench` | la | **ce** | LIKELY | full_tokens, paradigmatic | 2/7 tracks |
+| `open_curve,hook,rare` | hi | **ba** | LIKELY | full_tokens, paradigmatic | 2/7 tracks |
+| `ascender,crossbar,gallows` | te | te | UNRESOLVED | — | 6 tracks disagree |
+| `ascender,loop,compound` | to | to | UNRESOLVED | — | 6 tracks disagree |
+| `connector,connector,bench` | ba | ba | UNRESOLVED | — | 3 tracks disagree |
+| `open_curve,open_curve,bench` | ha | ha | UNRESOLVED | — | 5 tracks disagree |
+| `sigmoid,hook,rare` | fe | fe | UNRESOLVED | — | 2 tracks disagree |
+| `vertical,ascender,minim` | do | do | UNRESOLVED | — | 5 tracks disagree |
+| `vertical,descender,suffix` | du | du | UNRESOLVED | — | 6 tracks disagree |
+
+### Evaluation Metrics
+
+| Metric | T_P15 Baseline | Phase 68 | Delta |
+|--------|---------------|----------|-------|
+| Dict hit | 29.04% | 30.61% | **+1.57%** |
+| Signal words | 80 | 81 | +1 |
+| Bigram z | 117.69 | 112.77 | −4.92 (within tolerance) |
+
+### Key Observations
+
+1. **First RESOLVED triple since Phase 14**: `ascender,crossbar,compound` (be→de) receives 3-track agreement — the strongest computational evidence for any unresolved triple assignment change.
+2. **Paradigmatic track dominates**: agreed with other tracks on 5 of 6 changed triples — minimal pair analysis exploits the most constrained local structure.
+3. **63% fully-decoded core**: the clean subset provides a reliable anchor for contextual constraints on the remaining 37%.
+4. **316 T1 identifications** (Phase 75, up from 223 in Phase 68): 14× improvement over Phase 52's 22, enabled by CVC coda markers reducing wildcard positions. Phase 78 validated these as table-specific (p = 0.002, z = 3.79 vs 1,000 random tables).
+5. **Convergence toward common syllables persists**: even token-level methods propose common Latin syllables (de, di, ba, ce) for most triples, consistent with Phase 67's finding. The unresolved triples may genuinely encode common syllables.
+
+---
+
 ## Open Problems
 
-**13 free triples** remain unresolved, accounting for ~59% of dark tokens. Resolving these requires approaches beyond the computational methods explored so far:
+**13 free triples** remain partially resolved. Phase 68 RESOLVED 1 triple and produced LIKELY assignments for 5 more, but 7 remain UNRESOLVED with no inter-track consensus. Resolving these requires approaches beyond the computational methods explored so far:
 
 - Phase 44: the solution landscape contains 500+ near-optimal MaxSAT solutions — a purely score-based method needs additional constraints to discriminate among them
 - Phase 50: character-level language models produce identical rankings across languages (selectivity 1.10×) — higher-order linguistic features or external evidence are needed for discrimination
@@ -379,8 +439,16 @@ Signal adjacency z = 5.33 — catalog words cluster near signal words significan
 - **CVC dict-hit is misleading**: CVC produces concatenated syllable strings (e.g., "coraterr") that don't match whole dictionary words. Phase 60's CVCEvaluator framework replaces dict-hit with segmentation attestation as the primary metric. Future phases should use composite scoring, not raw dict-hit.
 - **Recipe readings are fragmentary**: While glossed fraction is high (94.9%), most annotations decompose tokens into function-word syllables rather than identifying content words. The CVC vocabulary of 75 signal words produces pharmaceutical register terms (senna, heart, serum, daily) but connected readable passages remain out of reach.
 - **Coda ambiguity**: The vertical group (al, am, g, m, ol, i) shows heterogeneous behavior — Phase 59 Inv 3 found 'i' should be syllabic while 'm' is strongly coda (4.0× preference for t). Further per-character refinements within stroke groups may improve the model.
+- **Descender-r overrepresentation (Phase 73)**: Connector→null was adopted but the verbal fraction remains 57% because descender→r produces 14,164 coda tokens (39% of all coda tokens). The descender stroke likely encodes a broad phonological class (passive -tur, agent nouns -or/-er, comparatives -ior, deponent verbs, general word-final /r/) rather than a single grammatical function. Resolving this requires either splitting the descender class into sub-types or abandoning corpus-wide grammatical inference from coda -r.
 
-The most promising directions for resolving these triples include: discovery of additional external cribs (plant identifications, astronomical labels), cross-manuscript comparison with other tachygraphic sources, and physical analysis (multispectral imaging, ink composition) that could reveal erased or faded text providing new anchor points.
+**Phase 68 findings on computational limits:**
+
+- **Token-level constraints improve over corpus-level**: Phase 68's +1.57% dict-hit improvement via local constraints outperforms Phase 67's +0.3% via corpus-level optimization, confirming that rare syllable values are invisible to aggregate metrics but detectable through token-level analysis.
+- **Track disagreement is informative**: the 7 UNRESOLVED triples show zero inter-track agreement across 7 independent methodologies — each method sees a different plausible value because the 56% decode error rate prevents any single local constraint from being definitive.
+- **The fully-decoded core is exploitable**: 63% of tokens have zero decode error, with consecutive runs up to 29 tokens. This clean substrate could support future approaches that leverage known-good context more aggressively.
+- **Expanded T1 scales with decode quality**: 316 identifications (Phase 75, up from 22 in Phase 52) demonstrate that incremental improvements to the assignment table compound through the T1 pipeline. Phase 78 independently validated these as table-specific (p = 0.002), with 5 words unique to the real table. Each future correction could unlock additional unique-match identifications.
+
+The most promising directions for resolving the remaining triples include: discovery of additional external cribs (plant identifications, astronomical labels), cross-manuscript comparison with other tachygraphic sources, physical analysis (multispectral imaging, ink composition) that could reveal erased or faded text providing new anchor points, and iterative re-application of Phase 68's token-level methods after incorporating the RESOLVED and LIKELY changes.
 
 ---
 
@@ -548,12 +616,12 @@ CVC signal words that are inflected or compositional forms of known roots, produ
 | neder | 26.8 | 67 | 57 | ne+de+r | nor + of/from |
 | tecor | 11.2 | 56 | 57 | te+cor | thee + heart |
 | tecos | 6.6 | 23 | 57 | te+cos | thee + with+s |
-| nerr | 14.3 | 52 | 60 | ner+r | nerve (NEW) |
-| corr | 4.6 | 64 | 60 | cor+r | heart+r (NEW) |
-| serr | 4.4 | 34 | 60 | ser+r | serum+r (NEW) |
-| terr | 3.3 | 13 | 60 | ter+r | land+r (NEW) |
-| derr | 3.6 | 9 | 60 | der+r | of/from+r (NEW) |
-| derra | 3.2 | 7 | 60 | der+r+a | from the (NEW) |
+| nerr | 14.3 | 52 | 60 | ner+r | nerve (NEW P60; **P73: connector-r removed → ner**) |
+| corr | 4.6 | 64 | 60 | cor+r | heart+r (NEW P60; **P73: → cor**) |
+| serr | 4.4 | 34 | 60 | ser+r | serum+r (NEW P60; **P73: → ser**) |
+| terr | 3.3 | 13 | 60 | ter+r | land+r (NEW P60; **P73: → ter**) |
+| derr | 3.6 | 9 | 60 | der+r | of/from+r (NEW P60; **P73: → der**) |
+| derra | 3.2 | 7 | 60 | der+r+a | from the (NEW P60; **P73: → dera**) |
 | tess | 3.3 | 8 | 57 | tes+s | weave (tessere) |
 | tott | 3.3 | 2 | 57 | tot+t | so many (emphatic) |
 | netet | 2.5 | 5 | 57 | net+et | nor+t+t |
@@ -579,7 +647,14 @@ CVC signal words that are inflected or compositional forms of known roots, produ
 | Quality/descriptive | 6 | 0 | 6 |
 | T1 whole-word IDs | 22 (9 unique Latin words) | — | 9 |
 | Rare singletons | 0 | 5 | 5 |
-| **Total signal words** | **70** | **75** | **~118 unique decoded forms** |
+| **Total signal words** | **70** | **76** (Phase 73) | **~119 unique decoded forms** |
 | **Total unique Latin/Italian glosses** | ~60 | ~55 | **~90 distinct meanings** |
+| **T1 identifications** | 22 (Phase 52) | 316 (Phase 75) | — |
 
 **Cross-pipeline confirmations:** 8 words appear in both CV and CVC signal lists (ne, ni, du, hi, fa, do, bene, sene), providing independent validation across two different decode methodologies. The word *bene* was additionally confirmed by two independent CV pipelines (Phase 14 and Phase 19.8) — the only triple-confirmed word in the project.
+
+**Phase 68 update:** The integration verdict (PARTIAL_RESOLUTION, 5/5 gates) changed 6 triple assignments. The CVC signal word count shifted from 80 (pre-Phase 68) to 81 under the new assignment. Dict-hit improved from 29.04% to 30.61%. The 1 RESOLVED triple (`ascender,crossbar,compound`: be→de) and 5 LIKELY changes have been incorporated into the evaluation but the master vocabulary tables above reflect the pre-Phase 68 (T_P15) assignments, as only the RESOLVED change has sufficient evidence for permanent adoption.
+
+**Phase 72–73 update:** Connector strokes revised from 'r' to null (∅). Phase 72 established that connector→null wins on all metrics (3 tracks converging independently). Phase 73 applied the correction corpus-wide: dict-hit 29.0%→30.2%, cross-validation 77.9%→90.5%, bigram z 87.15→90.48, signal words 75→76, T1 identifications 223→243 (89.7% stable). The 6 CVC signal words containing doubled -rr from connector+descender (nerr, corr, serr, terr, derr, derra) now lose the connector-r and merge with their shorter base forms (ner, cor, ser, ter, der, dera). The total CVC signal count shifts from 75 to 76 under the corrected model. Connector→null is adopted as the new CVC baseline. The master vocabulary tables above reflect the Phase 60 connector→r assignments; a definitive re-tabulation under the Phase 73 corrected model awaits a future dedicated signal isolation re-run.
+
+**Phase 75 + 78 update:** Phase 75 applied descender→null (3-coda model: only hook, sigmoid, vertical are phonetic codas). T1 identifications rose from 243 to 316 (+73). Phase 78 independently validated these 316 identifications via permutation test: 1,000 random CV tables produce a mean of 209.6 ± 32.0 IDs vs the real table's 331 (z = 3.79, p = 0.002). Five words are unique to the real table: *erradicat*, *ceradis*, *benidiis*, *didit*, *abradi*. Mean word specificity is 0.947 (each real-table word appears in only 5.3% of null trials on average). The CVC T1 identifications are now independently validated as table-specific.

@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite the accompanying paper."
-title: "We Know the Voice but Not the Song: Italian Tachygraphy and the Voynich Manuscript — Companion Code"
+title: "The Voice but Not the Song: Italian Tachygraphy and the Voynich Manuscript — Companion Code"
 authors:
   - family-names: Ruckman
     given-names: Matthew
@@ -10,7 +10,7 @@ date-released: 2026-03-15
 url: "https://github.com/mruckman1/voynich_2"
 preferred-citation:
   type: article
-  title: "We Know the Voice but Not the Song: Italian Tachygraphy and the Voynich Manuscript"
+  title: "The Voice but Not the Song: Italian Tachygraphy and the Voynich Manuscript"
   authors:
     - family-names: Ruckman
       given-names: Matthew

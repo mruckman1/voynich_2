@@ -205,6 +205,7 @@ Additional phases and commands not listed above are also available:
 Each phase also has individual step commands (e.g., phase17 has dict-cal,
 honesty-keywords, etc.). See docs/phases/ for full details.
 """
+import os
 import sys
 import time
 
@@ -5588,6 +5589,865 @@ def cmd_phase60():
     run_phase60()
 
 
+# Phase 61: Deep Reading + Full Permutation + Combination Rules + Zodiac CVC
+
+def cmd_deep_recipes():
+    """Phase 61A: Deep pharmaceutical recipe reading."""
+    from voynich.phases.deep_recipe_reading import run_deep_recipes
+    run_deep_recipes()
+
+
+def cmd_cvc_full_perm():
+    """Phase 61B: Full CV permutation test under CVC decode."""
+    from voynich.phases.cvc_full_permutation import run_cvc_full_perm
+    run_cvc_full_perm()
+
+
+def cmd_cost_sequences():
+    """Phase 61C: Costamagna sequence rule testing."""
+    from voynich.phases.costamagna_sequence_rules import run_cost_sequences
+    run_cost_sequences()
+
+
+def cmd_zodiac_cvc():
+    """Phase 61D: Zodiac labels under CVC decode."""
+    from voynich.phases.zodiac_cvc import run_zodiac_cvc
+    run_zodiac_cvc()
+
+
+def cmd_ph61_verdict():
+    """Phase 61 verdict: integrate all 4 tracks."""
+    from voynich.phases.phase61_integrate import run_phase61_verdict
+    run_phase61_verdict()
+
+
+def cmd_ph61():
+    """Run full Phase 61 pipeline."""
+    from voynich.phases.phase61_integrate import run_phase61
+    run_phase61()
+
+
+# Phase 62: Exhaustive Pre-Visual Analysis
+
+def cmd_t1_reverse():
+    """Phase 62.1: T1 reverse engineering under CVC."""
+    from voynich.phases.p62_t1_reverse import run_t1_reverse
+    run_t1_reverse()
+
+
+def cmd_cross_token():
+    """Phase 62.2: Cross-token word reconstruction."""
+    from voynich.phases.p62_cross_token import run_cross_token
+    run_cross_token()
+
+
+def cmd_gallows_initial():
+    """Phase 62.3: Gallows as word-initial markers."""
+    from voynich.phases.p62_gallows_initial import run_gallows_initial
+    run_gallows_initial()
+
+
+def cmd_decoded_bigram():
+    """Phase 62.4: Decoded bigram frequency vs Latin."""
+    from voynich.phases.p62_decoded_bigram import run_decoded_bigram
+    run_decoded_bigram()
+
+
+def cmd_orphaned_coda():
+    """Phase 62.5: Orphaned coda investigation."""
+    from voynich.phases.p62_orphaned_coda import run_orphaned_coda
+    run_orphaned_coda()
+
+
+def cmd_double_modifier():
+    """Phase 62.6: Double-modifier sequences."""
+    from voynich.phases.p62_double_modifier import run_double_modifier
+    run_double_modifier()
+
+
+def cmd_token_length():
+    """Phase 62.7: Token length distribution."""
+    from voynich.phases.p62_token_length import run_token_length
+    run_token_length()
+
+
+def cmd_syl_entropy():
+    """Phase 62.8: Syllable-level entropy."""
+    from voynich.phases.p62_syllable_entropy import run_syllable_entropy
+    run_syllable_entropy()
+
+
+def cmd_lang_ab_cvc():
+    """Phase 62.9: Language A/B under CVC."""
+    from voynich.phases.p62_lang_ab_cvc import run_lang_ab_cvc
+    run_lang_ab_cvc()
+
+
+def cmd_hand_cvc():
+    """Phase 62.10: Hand-by-hand CVC analysis."""
+    from voynich.phases.p62_hand_cvc import run_hand_cvc
+    run_hand_cvc()
+
+
+def cmd_multi_entropy():
+    """Phase 62.11: Multi-level entropy comparison."""
+    from voynich.phases.p62_multi_entropy import run_multi_entropy
+    run_multi_entropy()
+
+
+def cmd_phase62_verdict():
+    """Phase 62 verdict: integrate all 11 investigations."""
+    from voynich.phases.phase62_integrate import run_phase62_verdict
+    run_phase62_verdict()
+
+
+def cmd_phase62():
+    """Run full Phase 62 pipeline."""
+    from voynich.phases.phase62_integrate import run_phase62
+    run_phase62()
+
+
+def cmd_vis_render():
+    """Phase 63 A1: Render EVA glyphs from font."""
+    from voynich.phases.p63_render import run_p63_render
+    run_p63_render()
+
+
+def cmd_vis_normalize():
+    """Phase 63 A2: Normalize EVA + Costamagna images."""
+    from voynich.phases.p63_normalize import run_p63_normalize
+    run_p63_normalize()
+
+
+def cmd_vis_embed():
+    """Phase 63 A3: Embed images via Gemini."""
+    from voynich.phases.p63_embed import run_p63_embed
+    run_p63_embed()
+
+
+def cmd_vis_similarity():
+    """Phase 63 A4: Compute visual similarity matrix."""
+    from voynich.phases.p63_similarity import run_p63_similarity
+    run_p63_similarity()
+
+
+def cmd_vis_validate():
+    """Phase 63 A5: Validate T_P15 against visual rankings."""
+    from voynich.phases.p63_validate import run_p63_validate
+    run_p63_validate()
+
+
+def cmd_vis_report():
+    """Phase 63 A6: Generate HTML visual comparison report."""
+    from voynich.phases.p63_report import run_p63_report
+    run_p63_report()
+
+
+def cmd_phase63_verdict():
+    """Phase 63 verdict: integrate visual comparison results."""
+    from voynich.phases.p63_integrate import run_phase63_verdict
+    run_phase63_verdict()
+
+
+def cmd_phase63():
+    """Run full Phase 63 pipeline."""
+    from voynich.phases.p63_integrate import run_phase63
+    run_phase63()
+
+
+def cmd_vis_rerun():
+    """Phase 63A: Clear caches and re-run Workstream A (for updated crops)."""
+    import glob
+    from voynich.core._paths import results_dir
+    rd = str(results_dir())
+    # Clear cached results (keep renders since font hasn't changed)
+    for pattern in ['p63_normalize.json', 'p63_embed.json', 'p63_embeddings.npz',
+                    'p63_similarity*.json', 'p63_similarity*.npz',
+                    'p63_validate.json', 'p63_report.json', 'p63_integrate.json',
+                    'p63_visual_report.html']:
+        for f in glob.glob(os.path.join(rd, pattern)):
+            os.remove(f)
+            print(f"  Removed {os.path.basename(f)}")
+    import shutil
+    norm_dir = os.path.join(rd, 'p63_normalized')
+    if os.path.exists(norm_dir):
+        shutil.rmtree(norm_dir)
+        print("  Removed p63_normalized/")
+    print("  Cache cleared. Re-running A2-A6...")
+    from voynich.phases.p63_normalize import run_p63_normalize
+    from voynich.phases.p63_embed import run_p63_embed
+    from voynich.phases.p63_similarity import run_p63_similarity
+    from voynich.phases.p63_validate import run_p63_validate
+    from voynich.phases.p63_report import run_p63_report
+    from voynich.phases.p63_integrate import run_phase63_verdict
+    run_p63_normalize()
+    run_p63_embed()
+    run_p63_similarity()
+    run_p63_validate()
+    run_p63_report()
+    run_phase63_verdict()
+
+
+def cmd_ms_index():
+    """Phase 63B B1: Extract and index folio images."""
+    from voynich.phases.p63b_index import run_p63b_index
+    run_p63b_index()
+
+
+def cmd_ms_segment():
+    """Phase 63B B2-B4: Segment lines, words, characters."""
+    from voynich.phases.p63b_segment import run_p63b_segment
+    run_p63b_segment()
+
+
+def cmd_ms_exemplars():
+    """Phase 63B B5: Select character exemplars."""
+    from voynich.phases.p63b_exemplars import run_p63b_exemplars
+    run_p63b_exemplars()
+
+
+def cmd_ms_compare():
+    """Phase 63B B6: Embed exemplars and compare against Costamagna."""
+    from voynich.phases.p63b_compare import run_p63b_compare
+    run_p63b_compare()
+
+
+def cmd_phase63b_verdict():
+    """Phase 63B verdict: integrate manuscript comparison results."""
+    from voynich.phases.p63b_integrate import run_phase63b_verdict
+    run_phase63b_verdict()
+
+
+def cmd_phase63b():
+    """Run full Phase 63B pipeline."""
+    from voynich.phases.p63b_integrate import run_phase63b
+    run_phase63b()
+
+
+# Phase 64: Multi-Method Visual Sign Comparison
+
+def cmd_morph_describe():
+    """Phase 64 M1: LLM morphology descriptions."""
+    from voynich.phases.phase64_integrate import run_p64_morph_describe
+    run_p64_morph_describe()
+
+
+def cmd_stroke_extract():
+    """Phase 64 M2: Skeleton graph features."""
+    from voynich.phases.phase64_integrate import run_p64_stroke_extract
+    run_p64_stroke_extract()
+
+
+def cmd_shape_desc():
+    """Phase 64 M3: Shape descriptors (Hu + Fourier)."""
+    from voynich.phases.phase64_integrate import run_p64_shape_desc
+    run_p64_shape_desc()
+
+
+def cmd_topo_features():
+    """Phase 64 M4: Topological features."""
+    from voynich.phases.phase64_integrate import run_p64_topo_features
+    run_p64_topo_features()
+
+
+def cmd_hog_compare():
+    """Phase 64 M5: HOG features."""
+    from voynich.phases.phase64_integrate import run_p64_hog_compare
+    run_p64_hog_compare()
+
+
+def cmd_hybrid_features():
+    """Phase 64 M6: Hybrid combined features."""
+    from voynich.phases.phase64_integrate import run_p64_hybrid
+    run_p64_hybrid()
+
+
+def cmd_llm_pairwise():
+    """Phase 64 M7: LLM pairwise comparison."""
+    from voynich.phases.phase64_integrate import run_p64_llm_pairwise
+    run_p64_llm_pairwise()
+
+
+def cmd_visual_ensemble():
+    """Phase 64: Ensemble combination + validation."""
+    from voynich.phases.phase64_integrate import run_p64_ensemble
+    run_p64_ensemble()
+
+
+def cmd_phase64_verdict():
+    """Phase 64: Evaluate gates and produce verdict."""
+    from voynich.phases.phase64_integrate import run_phase64_verdict
+    run_phase64_verdict()
+
+
+def cmd_phase64():
+    """Run full Phase 64 pipeline."""
+    from voynich.phases.phase64_integrate import run_phase64
+    run_phase64()
+
+
+# ---------------------------------------------------------------------------
+# Phase 65: Word Boundary Discovery
+# ---------------------------------------------------------------------------
+
+def cmd_build_stream():
+    """Phase 65.1: Build decoded character streams."""
+    from voynich.phases.p65_decoded_stream import run_build_stream
+    run_build_stream()
+
+
+def cmd_harris_segment():
+    """Phase 65.2: Harris MI boundary detection."""
+    from voynich.phases.p65_harris import run_harris_segment
+    run_harris_segment()
+
+
+def cmd_bayesian_segment():
+    """Phase 65.3: Bayesian word segmentation."""
+    from voynich.phases.p65_bayesian import run_bayesian_segment
+    run_bayesian_segment()
+
+
+def cmd_lm_segment():
+    """Phase 65.4: Character LM perplexity minimization."""
+    from voynich.phases.p65_lm_segment import run_lm_segment
+    run_lm_segment()
+
+
+def cmd_recipe_segment():
+    """Phase 65.5: Recipe template-constrained segmentation."""
+    from voynich.phases.p65_recipe_segment import run_recipe_segment
+    run_recipe_segment()
+
+
+def cmd_phase65_verdict():
+    """Phase 65.6: Integration and verdict."""
+    from voynich.phases.p65_integrate import run_phase65_verdict
+    run_phase65_verdict()
+
+
+def cmd_phase65():
+    """Run full Phase 65 pipeline."""
+    from voynich.phases.p65_integrate import run_phase65
+    run_phase65()
+
+
+# ---------------------------------------------------------------------------
+# Phase 66: Multi-Vector Attack with Hallucination Controls
+# ---------------------------------------------------------------------------
+
+def cmd_llm_reading():
+    """Phase 66.1: LLM pharmaceutical reading with controls."""
+    from voynich.phases.p66_llm_reading import run_llm_reading
+    run_llm_reading()
+
+
+def cmd_reverse_sim():
+    """Phase 66.2: Reverse simulation (Viterbi)."""
+    from voynich.phases.p66_reverse_sim import run_reverse_sim
+    run_reverse_sim()
+
+
+def cmd_f116v_crib():
+    """Phase 66.3: f116v crib test."""
+    from voynich.phases.p66_f116v_crib import run_f116v_crib
+    run_f116v_crib()
+
+
+def cmd_illus_align():
+    """Phase 66.4: Illustration-text alignment."""
+    from voynich.phases.p66_illus_align import run_illus_align
+    run_illus_align()
+
+
+def cmd_parallel_align():
+    """Phase 66.5: CI parallel corpus alignment."""
+    from voynich.phases.p66_parallel_align import run_parallel_align
+    run_parallel_align()
+
+
+def cmd_fontana_struct():
+    """Phase 66.6: Fontana structural comparison."""
+    from voynich.phases.p66_fontana import run_fontana_struct
+    run_fontana_struct()
+
+
+def cmd_lang_a_66():
+    """Phase 66.7: Language A focus."""
+    from voynich.phases.p66_lang_a import run_lang_a
+    run_lang_a()
+
+
+def cmd_hand4():
+    """Phase 66.8: Hand 4 focus."""
+    from voynich.phases.p66_hand4 import run_hand4
+    run_hand4()
+
+
+def cmd_collocations():
+    """Phase 66.9: Collocational analysis."""
+    from voynich.phases.p66_collocations import run_collocations
+    run_collocations()
+
+
+def cmd_ngram_freq():
+    """Phase 66.10: N-gram frequency ranking."""
+    from voynich.phases.p66_ngram_freq import run_ngram_freq
+    run_ngram_freq()
+
+
+def cmd_metrical():
+    """Phase 66.11: Metrical analysis."""
+    from voynich.phases.p66_metrical import run_metrical
+    run_metrical()
+
+
+def cmd_astro_deep():
+    """Phase 66.12: Astronomical deep dive."""
+    from voynich.phases.p66_astro_deep import run_astro_deep
+    run_astro_deep()
+
+
+def cmd_phase66_verdict():
+    """Phase 66: Integration verdict."""
+    from voynich.phases.p66_integrate import run_phase66_verdict
+    run_phase66_verdict()
+
+
+def cmd_phase66():
+    """Run full Phase 66 pipeline."""
+    from voynich.phases.p66_integrate import run_phase66
+    run_phase66()
+
+
+# Phase 67: Multi-Angle Triple Resolution
+def cmd_wildcard_match():
+    """Phase 67.1: Wildcard pattern matching."""
+    from voynich.phases.p67_wildcard import run_wildcard_match
+    run_wildcard_match()
+
+
+def cmd_freq_match():
+    """Phase 67.2: Frequency rank matching."""
+    from voynich.phases.p67_frequency import run_freq_match
+    run_freq_match()
+
+
+def cmd_feat_predict():
+    """Phase 67.3: Feature-based prediction."""
+    from voynich.phases.p67_features import run_feat_predict
+    run_feat_predict()
+
+
+def cmd_evo_optimize():
+    """Phase 67.4: Evolutionary optimization."""
+    from voynich.phases.p67_evolutionary import run_evo_optimize
+    run_evo_optimize()
+
+
+def cmd_distrib_map():
+    """Phase 67.5: Distributional mapping."""
+    from voynich.phases.p67_distributional import run_distrib_map
+    run_distrib_map()
+
+
+def cmd_phase67_verdict():
+    """Phase 67: Integration verdict."""
+    from voynich.phases.p67_integrate import run_phase67_verdict
+    run_phase67_verdict()
+
+
+def cmd_phase67():
+    """Run full Phase 67 pipeline."""
+    from voynich.phases.p67_integrate import run_phase67
+    run_phase67()
+
+
+# Phase 68: Rare Syllable Recovery
+
+def cmd_full_tokens():
+    """Phase 68.1: Fully-decoded token exploitation."""
+    from voynich.phases.p68_full_tokens import run_full_tokens
+    run_full_tokens()
+
+
+def cmd_within_token():
+    """Phase 68.2: Within-token co-occurrence."""
+    from voynich.phases.p68_within_token import run_within_token
+    run_within_token()
+
+
+def cmd_paradigmatic():
+    """Phase 68.3: Minimal pair analysis."""
+    from voynich.phases.p68_paradigmatic import run_paradigmatic
+    run_paradigmatic()
+
+
+def cmd_expanded_t1():
+    """Phase 68.4: CVC-enhanced T1 pipeline."""
+    from voynich.phases.p68_expanded_t1 import run_expanded_t1
+    run_expanded_t1()
+
+
+def cmd_formula_decode():
+    """Phase 68.5: Formulaic pattern decode."""
+    from voynich.phases.p68_formulaic import run_formula_decode
+    run_formula_decode()
+
+
+def cmd_distrib_constrain():
+    """Phase 68.6: Distributional constraint propagation."""
+    from voynich.phases.p68_distributional import run_distrib_constrain
+    run_distrib_constrain()
+
+
+def cmd_ed_lattice():
+    """Phase 68.7: Edit-distance lattice."""
+    from voynich.phases.p68_ed_lattice import run_ed_lattice
+    run_ed_lattice()
+
+
+def cmd_phase68_verdict():
+    """Phase 68: Integration verdict."""
+    from voynich.phases.p68_integrate import run_phase68_verdict
+    run_phase68_verdict()
+
+
+def cmd_phase68():
+    """Run full Phase 68 pipeline."""
+    from voynich.phases.p68_integrate import run_phase68
+    run_phase68()
+
+
+# Phase 69: The Clean Core
+
+def cmd_build_clean():
+    """Phase 69.0: Build clean corpus partition."""
+    from voynich.phases.p69_clean_corpus import run_build_clean
+    run_build_clean()
+
+def cmd_validate_clean():
+    """Phase 69.1: Validate clean subset (3 permutation tests)."""
+    from voynich.phases.p69_clean_validation import run_validate_clean
+    run_validate_clean()
+
+def cmd_clean_segment():
+    """Phase 69.2: Harris MI + LM segmentation on clean runs."""
+    from voynich.phases.p69_clean_segmentation import run_clean_segment
+    run_clean_segment()
+
+def cmd_clean_llm_read():
+    """Phase 69.3: LLM reading of clean passages."""
+    from voynich.phases.p69_clean_llm import run_clean_llm_read
+    run_clean_llm_read()
+
+def cmd_clean_distrib():
+    """Phase 69.4: Enhanced Procrustes with 200+ anchors."""
+    from voynich.phases.p69_clean_distrib import run_clean_distrib
+    run_clean_distrib()
+
+def cmd_t1_network():
+    """Phase 69.5: T1 vocabulary network analysis."""
+    from voynich.phases.p69_t1_network import run_t1_network
+    run_t1_network()
+
+def cmd_t1_read():
+    """Phase 69.6: T1-anchored passage reading."""
+    from voynich.phases.p69_t1_reading import run_t1_read
+    run_t1_read()
+
+def cmd_t1_ci_crossref():
+    """Phase 69.7: T1 x CI cross-reference."""
+    from voynich.phases.p69_t1_ci import run_t1_ci_crossref
+    run_t1_ci_crossref()
+
+def cmd_phase69_verdict():
+    """Phase 69: Integration verdict."""
+    from voynich.phases.p69_integrate import run_phase69_verdict
+    run_phase69_verdict()
+
+def cmd_phase69():
+    """Run full Phase 69 pipeline."""
+    from voynich.phases.p69_integrate import run_phase69
+    run_phase69()
+
+# ── Phase 70: Token-as-Word Exploitation ──────────────────────────────────
+
+def cmd_pharma_dict():
+    """Phase 70.1: Pharmaceutical dictionary expansion."""
+    from voynich.phases.p70_pharma_dict import run_pharma_dict
+    run_pharma_dict()
+
+def cmd_paradigm_map():
+    """Phase 70.2: Morphological paradigm mapping."""
+    from voynich.phases.p70_paradigm_map import run_paradigm_map
+    run_paradigm_map()
+
+def cmd_phrase_assemble():
+    """Phase 70.3: Phrase fragment assembly."""
+    from voynich.phases.p70_phrase_assembly import run_phrase_assemble
+    run_phrase_assemble()
+
+def cmd_annotate_read():
+    """Phase 70.4: Annotated pharmaceutical readings."""
+    from voynich.phases.p70_annotated_read import run_annotate_read
+    run_annotate_read()
+
+def cmd_phase70_verdict():
+    """Phase 70: Integration verdict."""
+    from voynich.phases.p70_integrate import run_phase70_verdict
+    run_phase70_verdict()
+
+def cmd_phase70():
+    """Run full Phase 70 pipeline."""
+    from voynich.phases.p70_integrate import run_phase70
+    run_phase70()
+
+# ── Phase 71: Inflectional Reverse Engineering ───────────────────────────
+
+def cmd_inflect_catalog():
+    """Phase 71.1: Inflectional catalog."""
+    from voynich.phases.inflectional_catalog import run_inflect_catalog
+    run_inflect_catalog()
+
+def cmd_root_id():
+    """Phase 71.2: Root-level paradigm identification."""
+    from voynich.phases.root_identification import run_root_id
+    run_root_id()
+
+def cmd_gram_read():
+    """Phase 71.3: Grammatically-annotated passage reading."""
+    from voynich.phases.grammatical_reading import run_gram_read
+    run_gram_read()
+
+def cmd_phase71_verdict():
+    """Phase 71: Integration verdict."""
+    from voynich.phases.phase71_integrate import run_phase71_verdict
+    run_phase71_verdict()
+
+def cmd_phase71():
+    """Run full Phase 71 pipeline."""
+    from voynich.phases.phase71_integrate import run_phase71
+    run_phase71()
+
+
+# ── Phase 72: Decode Model Diagnosis and Revision ─────────────────────────
+
+def cmd_connector_test():
+    """Phase 72.1: Connector value investigation."""
+    from voynich.phases.p72_connector import run_connector_test
+    run_connector_test()
+
+def cmd_xval_diagnosis():
+    """Phase 72.2: Cross-validation failure diagnosis."""
+    from voynich.phases.p72_xval import run_xval_diagnosis
+    run_xval_diagnosis()
+
+def cmd_combo_models():
+    """Phase 72.3: Alternative CVC combination models."""
+    from voynich.phases.p72_combination import run_combination_models
+    run_combination_models()
+
+def cmd_t1_expand72():
+    """Phase 72.4: Tiered T1 vocabulary expansion."""
+    from voynich.phases.p72_t1_expand import run_t1_expand
+    run_t1_expand()
+
+def cmd_var_length():
+    """Phase 72.5: Variable-length encoding hypothesis."""
+    from voynich.phases.p72_variable_length import run_variable_length
+    run_variable_length()
+
+def cmd_phase72_verdict():
+    """Phase 72: Integration verdict."""
+    from voynich.phases.p72_integrate import run_phase72_verdict
+    run_phase72_verdict()
+
+def cmd_phase72():
+    """Run full Phase 72 pipeline."""
+    from voynich.phases.p72_integrate import run_phase72
+    run_phase72()
+
+
+# ── Phase 73: Corrected Model Pipeline (Connector→Null) ──────────────────
+
+def cmd_redecode():
+    """Phase 73.0: Re-decode corpus with connector→null."""
+    from voynich.phases.p73_redecode import run_redecode
+    run_redecode()
+
+def cmd_revalidate_clean():
+    """Phase 73.1: Re-validate clean subset with corrected decode."""
+    from voynich.phases.p73_revalidate import run_revalidate
+    run_revalidate()
+
+def cmd_corrected_grammar():
+    """Phase 73.2: Corrected inflectional catalog (3 genuine codas)."""
+    from voynich.phases.p73_grammar import run_corrected_grammar
+    run_corrected_grammar()
+
+def cmd_corrected_t1():
+    """Phase 73.3: T1 re-identification + stability check."""
+    from voynich.phases.p73_t1 import run_corrected_t1
+    run_corrected_t1()
+
+def cmd_corrected_paradigms():
+    """Phase 73.4: Paradigm mapping with corrected decode."""
+    from voynich.phases.p73_paradigms import run_corrected_paradigms
+    run_corrected_paradigms()
+
+def cmd_corrected_read():
+    """Phase 73.5: Annotated readings with corrected data."""
+    from voynich.phases.p73_readings import run_corrected_readings
+    run_corrected_readings()
+
+def cmd_phase73_verdict():
+    """Phase 73: Integration verdict."""
+    from voynich.phases.p73_integrate import run_phase73_verdict
+    run_phase73_verdict()
+
+def cmd_phase73():
+    """Run full Phase 73 pipeline."""
+    from voynich.phases.p73_integrate import run_phase73
+    run_phase73()
+
+# Phase 74: Descender Investigation + T1 Vocabulary Push
+
+def cmd_descender_test():
+    """Phase 74.A1: Exhaustive descender value testing."""
+    from voynich.phases.p74_descender import run_descender_test
+    run_descender_test()
+
+def cmd_descender_context():
+    """Phase 74.A2: Context-dependent descender analysis."""
+    from voynich.phases.p74_descender_context import run_descender_context
+    run_descender_context()
+
+def cmd_eva_patterns():
+    """Phase 74.B1: EVA-level distributional + positional expansion."""
+    from voynich.phases.p74_eva_patterns import run_eva_patterns
+    run_eva_patterns()
+
+def cmd_llm_gap_fill():
+    """Phase 74.B2: LLM gap-filling with hallucination controls."""
+    from voynich.phases.p74_llm_gapfill import run_llm_gap_fill
+    run_llm_gap_fill()
+
+def cmd_complete_read():
+    """Phase 74.B3: Assemble complete readings."""
+    from voynich.phases.p74_complete_read import run_complete_read
+    run_complete_read()
+
+def cmd_phase74_verdict():
+    """Phase 74: Integration verdict."""
+    from voynich.phases.p74_integrate import run_phase74_verdict
+    run_phase74_verdict()
+
+def cmd_phase74():
+    """Run full Phase 74 pipeline."""
+    from voynich.phases.p74_integrate import run_phase74
+    run_phase74()
+
+# Phase 75: 3-Coda Model Pipeline (Connector→Null + Descender→Null)
+
+def cmd_redecode_3coda():
+    """Phase 75.0: Re-decode corpus with 3-coda model."""
+    from voynich.phases.p75_redecode import run_redecode_3coda
+    run_redecode_3coda()
+
+def cmd_revalidate_3coda():
+    """Phase 75.1: Re-validate clean subset under 3-coda model."""
+    from voynich.phases.p75_revalidate import run_revalidate_3coda
+    run_revalidate_3coda()
+
+def cmd_grammar_3coda():
+    """Phase 75.2: Corrected grammatical analysis (3-coda model)."""
+    from voynich.phases.p75_grammar import run_grammar_3coda
+    run_grammar_3coda()
+
+def cmd_t1_3coda():
+    """Phase 75.3: Corrected T1 identification (3-coda model)."""
+    from voynich.phases.p75_t1 import run_t1_3coda
+    run_t1_3coda()
+
+def cmd_paradigms_3coda():
+    """Phase 75.4: Corrected paradigm mapping (3-coda model)."""
+    from voynich.phases.p75_paradigms import run_paradigms_3coda
+    run_paradigms_3coda()
+
+def cmd_read_3coda():
+    """Phase 75.5: Corrected readings with distributional integration."""
+    from voynich.phases.p75_readings import run_readings_3coda
+    run_readings_3coda()
+
+def cmd_phase75_verdict():
+    """Phase 75: Integration verdict."""
+    from voynich.phases.p75_integrate import run_phase75_verdict
+    run_phase75_verdict()
+
+def cmd_phase75():
+    """Run full Phase 75 pipeline."""
+    from voynich.phases.p75_integrate import run_phase75
+    run_phase75()
+
+# Phase 76: Triple Resolution from Vocabulary Convergence
+
+def cmd_wildcard_prop():
+    """Phase 76.1: T1 wildcard constraint extraction + LOO validation."""
+    from voynich.phases.p76_wildcard_prop import run_wildcard_prop
+    run_wildcard_prop()
+
+def cmd_skeleton_parse():
+    """Phase 76.2: Grammatical skeleton parsing + parallel passages."""
+    from voynich.phases.p76_skeleton import run_skeleton_parse
+    run_skeleton_parse()
+
+def cmd_freq_gap():
+    """Phase 76.3: Frequency-identification gap analysis."""
+    from voynich.phases.p76_freq_gap import run_freq_gap
+    run_freq_gap()
+
+def cmd_cond_gapfill():
+    """Phase 76.4: Conditional LLM gap-fill re-run."""
+    from voynich.phases.p76_cond_gapfill import run_cond_gapfill
+    run_cond_gapfill()
+
+def cmd_phase76_verdict():
+    """Phase 76: Integration verdict."""
+    from voynich.phases.p76_integrate import run_phase76_verdict
+    run_phase76_verdict()
+
+def cmd_phase76():
+    """Run full Phase 76 pipeline."""
+    from voynich.phases.p76_integrate import run_phase76
+    run_phase76()
+
+# Phase 77: Timm-Schinner Self-Citation Discriminator Test
+
+def cmd_ts_test():
+    """Phase 77: Timm-Schinner self-citation entropy shift + MI test."""
+    from voynich.phases.p77_timm_schinner import run_ts_test
+    run_ts_test()
+
+def cmd_phase77():
+    """Run Phase 77 (alias for ts-test)."""
+    from voynich.phases.p77_timm_schinner import run_ts_test
+    run_ts_test()
+
+
+# Phase 78: CVC T1 Permutation Validation
+
+def cmd_cvc_t1_perm():
+    """Phase 78: CVC T1 permutation validation (1,000 random tables)."""
+    from voynich.phases.cvc_t1_permutation import run_cvc_t1_perm
+    run_cvc_t1_perm()
+
+def cmd_phase78():
+    """Run Phase 78 (alias for cvc-t1-perm)."""
+    from voynich.phases.cvc_t1_permutation import run_cvc_t1_perm
+    run_cvc_t1_perm()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -6312,6 +7172,167 @@ def main():
         'recipe-annotate': cmd_recipe_annotate,
         'phase60-verdict': cmd_phase60_verdict,
         'phase60': cmd_phase60,
+        # Phase 61
+        'deep-recipes': cmd_deep_recipes,
+        'cvc-full-perm': cmd_cvc_full_perm,
+        'cost-sequences': cmd_cost_sequences,
+        'zodiac-cvc': cmd_zodiac_cvc,
+        'phase61-verdict': cmd_ph61_verdict,
+        'phase61': cmd_ph61,
+        # Phase 62
+        't1-reverse': cmd_t1_reverse,
+        'cross-token': cmd_cross_token,
+        'gallows-initial': cmd_gallows_initial,
+        'decoded-bigram': cmd_decoded_bigram,
+        'orphaned-coda': cmd_orphaned_coda,
+        'double-mod': cmd_double_modifier,
+        'token-length': cmd_token_length,
+        'syl-entropy': cmd_syl_entropy,
+        'lang-ab-cvc': cmd_lang_ab_cvc,
+        'hand-cvc': cmd_hand_cvc,
+        'multi-entropy': cmd_multi_entropy,
+        'phase62-verdict': cmd_phase62_verdict,
+        'phase62': cmd_phase62,
+        # Phase 63
+        'vis-render': cmd_vis_render,
+        'vis-normalize': cmd_vis_normalize,
+        'vis-embed': cmd_vis_embed,
+        'vis-similarity': cmd_vis_similarity,
+        'vis-validate': cmd_vis_validate,
+        'vis-report': cmd_vis_report,
+        'phase63-verdict': cmd_phase63_verdict,
+        'phase63': cmd_phase63,
+        'vis-rerun': cmd_vis_rerun,
+        # Phase 63B
+        'ms-index': cmd_ms_index,
+        'ms-segment': cmd_ms_segment,
+        'ms-exemplars': cmd_ms_exemplars,
+        'ms-compare': cmd_ms_compare,
+        'phase63b-verdict': cmd_phase63b_verdict,
+        'phase63b': cmd_phase63b,
+        # Phase 64
+        'morph-describe': cmd_morph_describe,
+        'stroke-extract': cmd_stroke_extract,
+        'shape-desc': cmd_shape_desc,
+        'topo-features': cmd_topo_features,
+        'hog-compare': cmd_hog_compare,
+        'hybrid-features': cmd_hybrid_features,
+        'llm-pairwise': cmd_llm_pairwise,
+        'visual-ensemble': cmd_visual_ensemble,
+        'phase64-verdict': cmd_phase64_verdict,
+        'phase64': cmd_phase64,
+        # Phase 65
+        'build-stream': cmd_build_stream,
+        'harris-segment': cmd_harris_segment,
+        'bayesian-segment': cmd_bayesian_segment,
+        'lm-segment': cmd_lm_segment,
+        'recipe-segment': cmd_recipe_segment,
+        'phase65-verdict': cmd_phase65_verdict,
+        'phase65': cmd_phase65,
+        # Phase 66
+        'llm-reading': cmd_llm_reading,
+        'reverse-sim': cmd_reverse_sim,
+        'f116v-crib': cmd_f116v_crib,
+        'illus-align': cmd_illus_align,
+        'parallel-align': cmd_parallel_align,
+        'fontana-struct': cmd_fontana_struct,
+        'lang-a-66': cmd_lang_a_66,
+        'hand4': cmd_hand4,
+        'collocations': cmd_collocations,
+        'ngram-freq': cmd_ngram_freq,
+        'metrical': cmd_metrical,
+        'astro-deep': cmd_astro_deep,
+        'phase66-verdict': cmd_phase66_verdict,
+        'phase66': cmd_phase66,
+        # Phase 67: Multi-Angle Triple Resolution
+        'wildcard-match': cmd_wildcard_match,
+        'freq-match': cmd_freq_match,
+        'feat-predict': cmd_feat_predict,
+        'evo-optimize': cmd_evo_optimize,
+        'distrib-map': cmd_distrib_map,
+        'phase67-verdict': cmd_phase67_verdict,
+        'phase67': cmd_phase67,
+        # Phase 68: Rare Syllable Recovery
+        'full-tokens': cmd_full_tokens,
+        'within-token': cmd_within_token,
+        'paradigmatic': cmd_paradigmatic,
+        'expanded-t1': cmd_expanded_t1,
+        'formula-decode': cmd_formula_decode,
+        'distrib-constrain': cmd_distrib_constrain,
+        'ed-lattice': cmd_ed_lattice,
+        'phase68-verdict': cmd_phase68_verdict,
+        'phase68': cmd_phase68,
+        # Phase 69: The Clean Core
+        'build-clean': cmd_build_clean,
+        'validate-clean': cmd_validate_clean,
+        'clean-segment': cmd_clean_segment,
+        'clean-llm-read': cmd_clean_llm_read,
+        'clean-distrib': cmd_clean_distrib,
+        't1-network': cmd_t1_network,
+        't1-read': cmd_t1_read,
+        't1-ci-crossref': cmd_t1_ci_crossref,
+        'phase69-verdict': cmd_phase69_verdict,
+        'phase69': cmd_phase69,
+        # Phase 70: Token-as-Word Exploitation
+        'pharma-dict': cmd_pharma_dict,
+        'paradigm-map': cmd_paradigm_map,
+        'phrase-assemble': cmd_phrase_assemble,
+        'annotate-read': cmd_annotate_read,
+        'phase70-verdict': cmd_phase70_verdict,
+        'phase70': cmd_phase70,
+        # Phase 71: Inflectional Reverse Engineering
+        'inflect-catalog': cmd_inflect_catalog,
+        'root-id': cmd_root_id,
+        'gram-read': cmd_gram_read,
+        'phase71-verdict': cmd_phase71_verdict,
+        'phase71': cmd_phase71,
+        # Phase 72: Decode Model Diagnosis and Revision
+        'connector-test': cmd_connector_test,
+        'xval-diagnosis': cmd_xval_diagnosis,
+        'combo-models': cmd_combo_models,
+        't1-expand72': cmd_t1_expand72,
+        'var-length': cmd_var_length,
+        'phase72-verdict': cmd_phase72_verdict,
+        'phase72': cmd_phase72,
+        # Phase 73: Corrected Model Pipeline (Connector→Null)
+        'redecode': cmd_redecode,
+        'revalidate-clean': cmd_revalidate_clean,
+        'corrected-grammar': cmd_corrected_grammar,
+        'corrected-t1': cmd_corrected_t1,
+        'corrected-paradigms': cmd_corrected_paradigms,
+        'corrected-read': cmd_corrected_read,
+        'phase73-verdict': cmd_phase73_verdict,
+        'phase73': cmd_phase73,
+        # Phase 74: Descender Investigation + T1 Vocabulary Push
+        'descender-test': cmd_descender_test,
+        'descender-context': cmd_descender_context,
+        'eva-patterns': cmd_eva_patterns,
+        'llm-gap-fill': cmd_llm_gap_fill,
+        'complete-read': cmd_complete_read,
+        'phase74-verdict': cmd_phase74_verdict,
+        'phase74': cmd_phase74,
+        # Phase 75: 3-Coda Model Pipeline
+        'redecode-3coda': cmd_redecode_3coda,
+        'revalidate-3coda': cmd_revalidate_3coda,
+        'grammar-3coda': cmd_grammar_3coda,
+        't1-3coda': cmd_t1_3coda,
+        'paradigms-3coda': cmd_paradigms_3coda,
+        'read-3coda': cmd_read_3coda,
+        'phase75-verdict': cmd_phase75_verdict,
+        'phase75': cmd_phase75,
+        # Phase 76: Triple Resolution from Vocabulary Convergence
+        'wildcard-prop': cmd_wildcard_prop,
+        'skeleton-parse': cmd_skeleton_parse,
+        'freq-gap': cmd_freq_gap,
+        'cond-gapfill': cmd_cond_gapfill,
+        'phase76-verdict': cmd_phase76_verdict,
+        'phase76': cmd_phase76,
+        # Phase 77: Timm-Schinner Self-Citation Discriminator Test
+        'ts-test': cmd_ts_test,
+        'phase77': cmd_phase77,
+        # Phase 78: CVC T1 Permutation Validation
+        'cvc-t1-perm': cmd_cvc_t1_perm,
+        'phase78': cmd_phase78,
     }
 
     if len(sys.argv) < 2:

@@ -34,7 +34,7 @@ Progress & resuming:
     If any chunks failed, the checkpoint is kept so you can --resume.
 
 Prompts directory:
-    /Users/mruckman1/Desktop/dev/voynich_2/archive/scripts/Prompts/
+    archive/scripts/Prompts/  (relative to project root)
 
 Recommended settings by source:
     Cappelli (dense dictionary):
@@ -67,8 +67,8 @@ except ImportError:
     sys.exit(1)
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-PROMPTS_DIR = Path("/Users/mruckman1/Desktop/dev/voynich_2/archive/scripts/Prompts")
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "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")
+PROMPTS_DIR = Path(__file__).resolve().parents[3] / "archive" / "scripts" / "Prompts"
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "API Key HERE")
 MODEL_ID = "google/gemini-3.1-pro-preview"
 
 _checkpoint_lock = threading.Lock()
