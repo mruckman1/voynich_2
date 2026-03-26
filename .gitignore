@@ -10,7 +10,8 @@ archive/
 data/reference/
 data/voynich_raw/
 data/eva_renders/
-data/GL.S.III.MISC.12/
+data/GL.S.III.MISC.12/*
+!data/GL.S.III.MISC.12/Costamagna_1953_Specimen.html
 data/Transcribe/scripts/Prompts/
 .env
 *.pdf
