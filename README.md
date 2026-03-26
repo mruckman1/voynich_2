@@ -1,12 +1,12 @@
-# We Know the Voice but Not the Song
+# The Voice but Not the Song
 
 **Voynich Manuscript computational analysis**: stroke-feature syllabary decoding, signal isolation, and Italian tachygraphic hypothesis testing.
 
-Companion code for: Ruckman (2026), *"We Know the Voice but Not the Song: Italian Tachygraphy and the Voynich Manuscript."*
+Companion code for: Ruckman (2026), [*"The Voice But Not the Song: A Shorthand Hypothesis and the Statistical Fingerprint of the Voynich Manuscript"*](The_Voice_But_Not_the_Song.pdf).
 
 ## Overview
 
-Two independent pipelines — one treating each Voynich character as a letter, the other as a syllable — produce consistent structural conclusions:
+Two independent pipelines — one treating each Voynich character as a letter ([Approach 1](https://github.com/mruckman1/voynich)), the other as a syllable (this repository) — produce consistent structural conclusions:
 
 - The source language is **Romance** (a mix of Latin and Italian)
 - The content is **medieval medical/herbal**
@@ -28,7 +28,7 @@ voynich corpus            # Load and summarize the EVA corpus
 voynich fingerprint       # Approach 2: information-theoretic fingerprinting (Paper Sec 2.2)
 voynich feature-csp       # Phase 14: stroke-feature CSP — the breakthrough (Paper Sec 2.2)
 voynich entropy-shift     # Phase 19: tachygraphic identification (Paper Sec 4.2)
-voynich naibbe            # Phase 27: Naibbe cipher rejection (Paper Sec 4.3)
+voynich naibbe-test       # Phase 27: Naibbe cipher rejection (Paper Sec 4.2)
 voynich signal-iso        # Phase 28: signal isolation methodology (Paper Sec 5)
 voynich signal-bigram     # Phase 29: SIGNAL bigram test, z=6.14 (Paper Sec 6.3)
 voynich reviewer-perm     # Permutation test: 1000 random tables (Paper Sec 6.2)
@@ -46,24 +46,26 @@ Alternatively, use `python -m voynich <command>` without installing.
 | Sec 2.1 | Consonant-skeleton matching | 1 | `voynich strokes` |
 | Sec 2.2 | Syllabary analysis + signal isolation | 1, 14 | `voynich fingerprint`, `voynich feature-csp` |
 | Sec 3.1 | Source language is Romance | 4, 9, 50D | `voynich lang-compare`, `voynich phase9` |
-| Sec 3.2 | Two distinct subsystems (A/B) | 4 | `voynich section-diagnosis` |
-| Sec 3.3 | Medieval medical content | 15, 47 | `voynich text-analysis`, `voynich read-recipes` |
-| Sec 3.4 | Genuine morphological structure | 5 | `voynich paradigms` |
-| Sec 4.1 | Three-way ambiguity | 18 | `voynich hypothesis-disc` |
-| Sec 4.2 | Entropy shift discriminator (9→13 mechanisms) | 19, 55 | `voynich entropy-shift`, `voynich entropy-extended` |
-| Sec 4.3 | Tachygraphy vs Naibbe | 27 | `voynich naibbe` |
-| Sec 4.4 | Sign family structure | 19 | `voynich tachy-stroke`, `voynich reviewer-family` |
+| Sec 3.2 | Medieval medical/herbal content | 4, 15, 47 | `voynich section-diagnosis`, `voynich text-analysis`, `voynich read-recipes` |
+| Sec 3.3 | Genuine morphological structure | 5 | `voynich paradigms` |
+| Sec 4.1 | Three-way ambiguity | 18 | `voynich hypothesis` |
+| Sec 4.2 | Entropy shift discriminator (13 mechanisms) | 19, 55, 77 | `voynich entropy-shift`, `voynich entropy-extended`, `voynich naibbe-test`, `voynich ts-test` |
+| Sec 4.3 | Sign family structure | 19 | `voynich tachy-stroke`, `voynich reviewer-family` |
+| Sec 4.4 | Costamagna structural compatibility | 56 | `voynich costamagna-compare` |
 | Sec 5 | Signal isolation methodology | 17, 28 | `voynich null-corpus`, `voynich signal-iso` |
-| Sec 6.1 | Signal words | 36-38 | `voynich phase29` |
+| Sec 6.1 | Signal words | 36–38 | `voynich phase36` |
 | Sec 6.2 | Permutation test | Reviewer | `voynich reviewer-perm`, `voynich reviewer-coherence` |
 | Sec 6.3 | Word-level identifications | 52 | See [phase docs](docs/phases/phase-49-53.md) |
 | Sec 6.4 | EVA words as syllables | 29, 55 | `voynich signal-bigram`, `voynich currier-voynich` |
-| Sec 7 | Encoding structure | 14-16, 31 | `voynich feature-csp`, `voynich determ-test` |
-| Sec 8 | Limitations & failures | 17, 20-23, 33 | `voynich step0`, `voynich phase33` |
-| Sec 9 | Additional properties | 24 | `voynich direction`, `voynich section-xfer` |
-| App A | Phase narratives | 1-53 | [docs/phases/](docs/phases/) |
-| App B | Complete signal vocabulary | 36-38 | [docs/signal-vocabulary.md](docs/signal-vocabulary.md) |
+| Sec 7 | CVC coda system | 57–60, 72–75, 78 | `voynich cvc-coda-signal`, `voynich phase75`, `voynich cvc-t1-perm` |
+| Sec 8 | Encoding structure | 14–16, 31 | `voynich feature-csp`, `voynich determ-test` |
+| Sec 9 | Limitations & failures | 17, 20–23, 33 | `voynich step0`, `voynich phase33` |
+| Sec 10 | Additional properties | 24 | `voynich direction`, `voynich section-xfer` |
+| App A | Phase narratives | 1–77 | [docs/phases/](docs/phases/) |
+| App B | Complete signal vocabulary | 36–38 | [docs/signal-vocabulary.md](docs/signal-vocabulary.md) |
 | App C | Z-score methodology audit | 47 | `voynich track-a-47` |
+| App H | CVC signal vocabulary | 57–60, 73 | [docs/signal-vocabulary.md](docs/signal-vocabulary.md) |
+| App I | Example decoded passages | 70, 75 | [docs/phases/phase-75.md](docs/phases/phase-75.md) |
 
 ## Key Results
 
@@ -134,7 +136,7 @@ voynich_2/
 │   ├── core/                 # corpus.py, stats.py, reference.py, ciphers.py, _paths.py
 │   ├── analysis/             # Approaches 1-2 (strokes.py, fingerprint.py)
 │   ├── visual/               # Image rendering, embedding, similarity, segmentation (63), multi-method comparison (64)
-│   └── phases/               # Phase modules (2-70 + reviewer analyses)
+│   └── phases/               # Phase modules (2-78 + reviewer analyses)
 ├── data/
 │   ├── corpus/               # EVA transcription files (IVTFF format)
 │   ├── 2Translate/           # Historical source transcriptions
@@ -208,14 +210,15 @@ Reference corpora (Latin, Italian, German, Occitan medical texts) should be plac
 | 75 | 37.6% (3-coda) | THREE_CODA_NEUTRAL (12/23) | 71.34 | 3-coda pipeline: dict +7.4pp, signal −14, bigram z −19.2; verbal 57.3%→25.2%; bootstrap p=0.0000 (first significant); xval 26.2%→54.7%; T1 243→316; 3 passages at 100% (first); distributional 25.2% coverage |
 | 76 | 37.8% (w/ LIKELY) | NO_PROGRESS (7/16) | — | Triple resolution: 5/13 constrained (3 LIKELY), LOO inapplicable; 10,493 parallel pairs; top blocker: ascender,crossbar,gallows (52 types); 2 LLM gap-fills accepted ("deinde"+"rane") but KA 26.7% |
 | 77 | — | SELF_CITATION_ELIMINATED (4/4) | — | Timm-Schinner: entropy cosine −0.153 (anticorrelated); MI 1.036× (null level); both tests eliminate; 13 mechanisms tested, tachygraphy sole survivor |
+| 78 | — | CVC_T1_SIGNIFICANT (1/3) | — | CVC T1 permutation: 1,000 random tables; real 331 IDs vs null 210±32 (z=3.79, p=0.002); 5 unique words; closes T1 validation caveat |
 
 Full table: [docs/progression.md](docs/progression.md)
 
 ## Detailed Documentation
 
 - [Complete CLI Command Reference](docs/commands.md) — all commands grouped by phase
-- [Phase-by-Phase Documentation](docs/phases/) — detailed results for all 70 phases
-- [Signal Vocabulary Tables](docs/signal-vocabulary.md) — 70 signal words + 22 word-level identifications
+- [Phase-by-Phase Documentation](docs/phases/) — detailed results for all 78 phases
+- [Signal Vocabulary Tables](docs/signal-vocabulary.md) — 70 signal words + 316 T1 word-level identifications
 - [Progression Table](docs/progression.md) — metrics across all phases
 
 ## Citation
