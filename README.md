@@ -2,7 +2,7 @@
 
 **Voynich Manuscript computational analysis**: stroke-feature syllabary decoding, signal isolation, and Italian tachygraphic hypothesis testing.
 
-Companion code for: Ruckman (2026), [*"The Voice But Not the Song: A Shorthand Hypothesis and the Statistical Fingerprint of the Voynich Manuscript"*](The_Voice_But_Not_the_Song.pdf).
+Companion code for: Ruckman (2026), [*"The Voice But Not the Song: A Shorthand Hypothesis and the Statistical Fingerprint of the Voynich Manuscript"*](The_Voice_But_Not_the_Song.pdf) ([Supplementary Material](The_Voice_But_Not_the_Song_Supplementary.pdf)).
 
 ## Overview
 

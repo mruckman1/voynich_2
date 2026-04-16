@@ -6448,6 +6448,100 @@ def cmd_phase78():
     run_cvc_t1_perm()
 
 
+# Phase 79-82: Reviewer Response Experiments
+
+def cmd_decode_trace():
+    """Phase 82: Decoding pipeline trace (Reviewer 3.8)."""
+    from voynich.phases.p82_decode_trace import run_decode_trace
+    run_decode_trace()
+
+def cmd_phase82():
+    cmd_decode_trace()
+
+def cmd_wildcard_check():
+    """Phase 80: Wildcard consistency check (Reviewer 3.7)."""
+    from voynich.phases.p80_wildcard_consistency import run_wildcard_consistency
+    run_wildcard_consistency()
+
+def cmd_phase80():
+    cmd_wildcard_check()
+
+def cmd_exception_audit():
+    """Phase 81: Exception degrees of freedom audit (Reviewer 3.9)."""
+    from voynich.phases.p81_exception_audit import run_exception_audit
+    run_exception_audit()
+
+def cmd_phase81():
+    cmd_exception_audit()
+
+def cmd_known_props():
+    """Phase 79: Known properties stress test (Reviewer 3.3)."""
+    from voynich.phases.p79_known_properties import run_known_properties
+    run_known_properties()
+
+def cmd_phase79():
+    cmd_known_props()
+
+def cmd_lang_signal():
+    """Phase 83: Cross-language signal comparison (Reviewer 3.10)."""
+    from voynich.phases.p83_language_signal import run_language_signal
+    run_language_signal()
+
+def cmd_phase83():
+    cmd_lang_signal()
+
+def cmd_reviewer_response():
+    """Run all reviewer response phases (79-83)."""
+    cmd_decode_trace()
+    cmd_wildcard_check()
+    cmd_exception_audit()
+    cmd_known_props()
+    cmd_lang_signal()
+
+# ---------------------------------------------------------------------------
+# Phase 84-87: Reviewer feedback v2 responses
+# ---------------------------------------------------------------------------
+
+def cmd_syllabary_compare():
+    """Phase 84: Historical syllabary coverage comparison."""
+    from voynich.phases.p84_syllabary_comparison import run_syllabary_comparison
+    run_syllabary_comparison()
+
+def cmd_phase84():
+    cmd_syllabary_compare()
+
+def cmd_german_optimized():
+    """Phase 85: German-optimized table comparison."""
+    from voynich.phases.p85_german_optimized import run_german_optimized
+    run_german_optimized()
+
+def cmd_phase85():
+    cmd_german_optimized()
+
+def cmd_self_similar():
+    """Phase 86: Self-similar word quantitative analysis."""
+    from voynich.phases.p86_self_similar_decode import run_self_similar_decode
+    run_self_similar_decode()
+
+def cmd_phase86():
+    cmd_self_similar()
+
+def cmd_entropy_floor_sim():
+    """Phase 87: Entropy floor tachygraphic simulation."""
+    from voynich.phases.p87_entropy_floor_simulation import run_entropy_floor_sim
+    run_entropy_floor_sim()
+
+def cmd_phase87():
+    cmd_entropy_floor_sim()
+
+def cmd_reviewer_response_v2():
+    """Run all v2 reviewer response phases (84-87)."""
+    cmd_syllabary_compare()
+    cmd_german_optimized()
+    cmd_self_similar()
+    cmd_entropy_floor_sim()
+
+
 def main():
     commands = {
         'corpus': cmd_corpus,
@@ -7333,6 +7427,26 @@ def main():
         # Phase 78: CVC T1 Permutation Validation
         'cvc-t1-perm': cmd_cvc_t1_perm,
         'phase78': cmd_phase78,
+        'decode-trace': cmd_decode_trace,
+        'phase82': cmd_phase82,
+        'wildcard-check': cmd_wildcard_check,
+        'phase80': cmd_phase80,
+        'exception-audit': cmd_exception_audit,
+        'phase81': cmd_phase81,
+        'known-props': cmd_known_props,
+        'phase79': cmd_phase79,
+        'lang-signal': cmd_lang_signal,
+        'phase83': cmd_phase83,
+        'reviewer-response': cmd_reviewer_response,
+        'syllabary-compare': cmd_syllabary_compare,
+        'phase84': cmd_phase84,
+        'german-optimized': cmd_german_optimized,
+        'phase85': cmd_phase85,
+        'self-similar': cmd_self_similar,
+        'phase86': cmd_phase86,
+        'entropy-floor-sim': cmd_entropy_floor_sim,
+        'phase87': cmd_phase87,
+        'reviewer-response-v2': cmd_reviewer_response_v2,
     }
 
     if len(sys.argv) < 2:

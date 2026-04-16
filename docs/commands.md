@@ -907,3 +907,33 @@ voynich phase77            # Run Phase 77 (alias for ts-test)
 voynich cvc-t1-perm        # Phase 78: 1,000 random CV tables through T1 pipeline (p=0.002, z=3.79)
 voynich phase78            # Run Phase 78 (alias for cvc-t1-perm)
 ```
+
+## Phases 79-83: Reviewer Response (v1)
+
+```bash
+voynich known-props        # Phase 79: 7 known-property stress tests (QO, self-similar, entropy, inventory, etc.)
+voynich phase79            # Run Phase 79
+voynich wildcard-check     # Phase 80: Wildcard consistency check (301/316 fully decoded)
+voynich phase80            # Run Phase 80
+voynich exception-audit    # Phase 81: Exception DOF audit (29 DOF vs 328 constraints)
+voynich phase81            # Run Phase 81
+voynich decode-trace       # Phase 82: Complete decode pipeline traces (chedy→cora, daiin→din, qokeedy→berara)
+voynich phase82            # Run Phase 82 (alias for decode-trace)
+voynich lang-signal        # Phase 83: Cross-language signal comparison (Latin/German/Hebrew 10K dicts)
+voynich phase83            # Run Phase 83
+voynich reviewer-response  # Run all v1 reviewer response phases (79-83)
+```
+
+## Phases 84-87: Reviewer Response (v2)
+
+```bash
+voynich syllabary-compare  # Phase 84: Historical syllabary coverage comparison (Linear B, Cypriot, Hiragana, Costamagna)
+voynich phase84            # Run Phase 84
+voynich german-optimized   # Phase 85: German-optimized table comparison (equal-effort CSP, 2×2 signal matrix)
+voynich phase85            # Run Phase 85
+voynich self-similar       # Phase 86: Self-similar word quantitative analysis (decode + classify + reference rates)
+voynich phase86            # Run Phase 86
+voynich entropy-floor-sim  # Phase 87: Entropy floor tachygraphic simulation (H0-H6 absolute curves, 20 seeds)
+voynich phase87            # Run Phase 87
+voynich reviewer-response-v2  # Run all v2 reviewer response phases (84-87)
+```

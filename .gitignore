@@ -26,4 +26,5 @@ data/Transcribe/scripts/Prompts/
 .idea/
 .vscode/
 !The_Voice_But_Not_the_Song.pdf
+!The_Voice_But_Not_the_Song_Supplementary.pdf
 gibberish_transcriptions/

@@ -19,6 +19,7 @@ dependencies = [
     "google-genai>=1.0",
     "scikit-image>=0.22",
     "opencv-python-headless>=4.8",
+    "matplotlib>=3.10.8",
 ]
 
 [project.scripts]
