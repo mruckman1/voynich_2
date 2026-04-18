@@ -2,7 +2,7 @@
 
 **Voynich Manuscript computational analysis**: stroke-feature syllabary decoding, signal isolation, and Italian tachygraphic hypothesis testing.
 
-Companion code for: Ruckman (2026), [*"The Voice But Not the Song: A Shorthand Hypothesis and the Statistical Fingerprint of the Voynich Manuscript"*](The_Voice_But_Not_the_Song.pdf) ([Supplementary Material](The_Voice_But_Not_the_Song_Supplementary.pdf)).
+Companion code for: Ruckman (2026), [*"The Voice But Not the Song: A Shorthand Hypothesis and the Statistical Fingerprint of the Voynich Manuscript"*](https://mattruckman.com/papers/voice-but-not-the-song/).
 
 ## Overview
 
@@ -12,7 +12,7 @@ Two independent pipelines — one treating each Voynich character as a letter ([
 - The content is **medieval medical/herbal**
 - Two distinct subsystems coexist (Currier A/B)
 - The morphological structure is **genuine**
-- **Italian syllabic tachygraphy** is identified as the encoding mechanism, discriminated from 13 tested mechanisms; Schinner's stochastic model exposes a scope limitation of the discriminator (trained on Voynich data, see Phase 55); Rugg-Taylor's Cardan grille is clearly discriminated (cosine +0.49–+0.59 vs tachygraphy's +0.820); Timm & Schinner's self-citation algorithm is decisively eliminated (cosine −0.153, MI ratio 1.036× — anticorrelated and null-level, Phase 77)
+- **Italian syllabic tachygraphy** is identified as the encoding mechanism by a three-diagnostic simultaneous match (Paper Sec 4.2/4.4/5.1): entropy shift cosine +0.820, cross-boundary MI 1.285× (vs Voynich 1.450×), and frequency–connectivity ρ = +0.585 (vs Voynich +0.618). Greshko's generalized Naibbe cipher reproduces the entropy shift (+0.983) but fails both token-adjacency diagnostics (MI 1.002×, ρ +0.235) across a 200-run parameter grid — confirming the entropy shift is necessary but not sufficient. Timm & Schinner's self-citation (cosine −0.153, MI 1.036×) and Rugg-Taylor's Cardan grille (+0.49–+0.59) are decisively eliminated
 - **56 decoded words** are validated under permutation testing (p = 0.001 for count; p = 0.011 for linguistic coherence)
 - **22 word-level content identifications** are independently validated (p = 0.009)
 - Individual words and syllables have been decoded, but **no connected passage of readable text** has been produced
@@ -28,7 +28,8 @@ voynich corpus            # Load and summarize the EVA corpus
 voynich fingerprint       # Approach 2: information-theoretic fingerprinting (Paper Sec 2.2)
 voynich feature-csp       # Phase 14: stroke-feature CSP — the breakthrough (Paper Sec 2.2)
 voynich entropy-shift     # Phase 19: tachygraphic identification (Paper Sec 4.2)
-voynich naibbe-test       # Phase 27: Naibbe cipher rejection (Paper Sec 4.2)
+voynich naibbe-test       # Phase 27: simplified Naibbe test (cosine -0.843, superseded by Phase 88)
+voynich phase88           # Phase 88: generalized Naibbe + 3-diagnostic test (Paper Sec 4.2/4.4/5.1)
 voynich signal-iso        # Phase 28: signal isolation methodology (Paper Sec 5)
 voynich signal-bigram     # Phase 29: SIGNAL bigram test, z=6.14 (Paper Sec 6.3)
 voynich reviewer-perm     # Permutation test: 1000 random tables (Paper Sec 6.2)
@@ -70,11 +71,15 @@ Alternatively, use `python -m voynich <command>` without installing.
 ## Key Results
 
 ### Encoding: Italian Syllabic Tachygraphy
-- Entropy shift cosine similarity: **+0.820** (tachygraphy) vs **-0.843** (Naibbe cipher) — mirror-image signatures
-- **13-mechanism ranking** (Phase 55): Rugg-Taylor Cardan grille discriminated (+0.49–+0.59, 20 seeds); Schinner's trained-on-Voynich Markov model scores +0.95–+0.97, revealing that the entropy shift test cannot distinguish tachygraphy from any model that memorizes the Voynich's own character statistics (discriminator scope is encoding mechanisms applied to independent plaintext)
+- **Three-diagnostic simultaneous match** at the hypothesis-consistent syllable-as-token granularity — the only tested mechanism that reproduces all three:
+  - Entropy shift cosine **+0.820** (Voynich self = 1.0; simplified Naibbe −0.843; self-citation −0.153; Cardan grille +0.49–+0.59)
+  - Cross-boundary MI **1.285×** (vs Voynich 1.450×, within 11%)
+  - Frequency–connectivity Spearman **ρ = +0.585** (vs Voynich +0.618, gap 0.03)
+- **Entropy shift is necessary but not sufficient** (Phase 88): Greshko's generalized Naibbe cipher reproduces the entropy shift (+0.983) but fails both token-adjacency diagnostics (MI 1.002×, ρ +0.235) at its natural bigram-token granularity; 200-run grid search (10 configs × 20 seeds) finds no configuration reaching tachygraphy's thresholds on either diagnostic. At affix sub-token granularity (Phase 88d), Naibbe's MI stays at the 1.0 null (1.006) because per-bigram independent table selection produces no cross-boundary correlation by construction
+- **Granularity as discriminator**: tachygraphic MI/ρ drop from 1.285/+0.585 (syllable) to 1.061/+0.235 (word) — the same shape as Naibbe's null. The Voynich's observed correlations are compatible with tachygraphic predictions at the syllable granularity only; incompatible with Naibbe at any granularity
 - Resolves the three-way ambiguity: simultaneously a constructed system (H1), encoding natural language (H2), with systematic vocabulary (H3)
 - Tested against the author's parameterized model, not historical specimens (none survive in original script form)
-- **Currier cross-boundary self-correlation**: tachygraphic simulation (syllable-as-token) produces 1.284× predictability ratio vs Voynich's 1.450× (11% difference); word-as-token control gives only 1.061×, confirming the anomaly is driven by syllable-boundary structure; Schinner's model gives 1.044× (near null at 1.044×), showing the Markov model that outperforms tachygraphy on entropy shift cannot explain this independent anomaly
+- Schinner's trained-on-Voynich Markov model scores +0.95–+0.97 on entropy shift, revealing that the entropy shift cannot distinguish tachygraphy from models that memorize the Voynich's own character statistics — but fails cross-boundary MI (1.044×, null level) like Naibbe, so the three-diagnostic framing rules it out
 
 ### Language: Macaronic Latin-Italian
 - Italian selectivity **5.45×** vs Latin **1.30×** under signal isolation
@@ -129,14 +134,13 @@ See [docs/signal-vocabulary.md](docs/signal-vocabulary.md) for the full 70-word 
 
 ```
 voynich_2/
-├── We_Know_the_Voice_but_Not_the_Song_v18     # Companion paper (LaTeX)
 ├── pyproject.toml            # Dependencies, console_scripts (uv)
 ├── src/voynich/
 │   ├── cli.py                # CLI entry point (all commands)
 │   ├── core/                 # corpus.py, stats.py, reference.py, ciphers.py, _paths.py
 │   ├── analysis/             # Approaches 1-2 (strokes.py, fingerprint.py)
 │   ├── visual/               # Image rendering, embedding, similarity, segmentation (63), multi-method comparison (64)
-│   └── phases/               # Phase modules (2-78 + reviewer analyses)
+│   └── phases/               # Phase modules (2-88 + reviewer analyses)
 ├── data/
 │   ├── corpus/               # EVA transcription files (IVTFF format)
 │   ├── 2Translate/           # Historical source transcriptions
@@ -211,13 +215,19 @@ Reference corpora (Latin, Italian, German, Occitan medical texts) should be plac
 | 76 | 37.8% (w/ LIKELY) | NO_PROGRESS (7/16) | — | Triple resolution: 5/13 constrained (3 LIKELY), LOO inapplicable; 10,493 parallel pairs; top blocker: ascender,crossbar,gallows (52 types); 2 LLM gap-fills accepted ("deinde"+"rane") but KA 26.7% |
 | 77 | — | SELF_CITATION_ELIMINATED (4/4) | — | Timm-Schinner: entropy cosine −0.153 (anticorrelated); MI 1.036× (null level); both tests eliminate; 13 mechanisms tested, tachygraphy sole survivor |
 | 78 | — | CVC_T1_SIGNIFICANT (1/3) | — | CVC T1 permutation: 1,000 random tables; real 331 IDs vs null 210±32 (z=3.79, p=0.002); 5 unique words; closes T1 validation caveat |
+| 79–83 | — | Reviewer Response v1 | — | 7 sub-tests (EXPLAINED/PARTIAL/LIMITATION); wildcard consistency; 29-DOF vs 328-constraint audit; decode trace; cross-language signal (coherence discriminates, not count) |
+| 84–87 | — | Reviewer Response v2 | — | Linear B-contextualized inventory; German-optimized table refutes circularity; self-similar rate within natural range; basic CV encoder closes 39.4% of H₆ gap |
+| 88 | — | NAIBBE_1_OF_3 | — | Greshko generalized Naibbe (v3): entropy shift CONFIRMS Greshko (+0.983), but MI (1.002) and ρ (+0.235) fail; paper Sec 4.2 "no positive cosine" revised |
+| 88b | — | GRID_CONFIRMS_PHASE88 | — | Parameter grid (10 × 20 seeds): 0/200 runs reach MI ≥ 1.284 or ρ ≥ 0.5; best MI 1.103, best ρ +0.203; Phase 88 verdict robust to parameters |
+| 88c | — | TACHY_MATCHES_AT_SYLLABLE | — | Tachygraphic at syllable-as-token: MI=1.285 vs Voynich 1.448; ρ=+0.585 vs +0.615. Granularity dependence itself is diagnostic |
+| 88d | — | NAIBBE_FAILS_AT_EVERY_GRANULARITY | — | Naibbe at affix sub-token: MI=1.006 (1.0 null by construction); ρ=+0.220. Airtight four-cell comparison: Naibbe fails both diagnostics at token AND sub-token level |
 
 Full table: [docs/progression.md](docs/progression.md)
 
 ## Detailed Documentation
 
 - [Complete CLI Command Reference](docs/commands.md) — all commands grouped by phase
-- [Phase-by-Phase Documentation](docs/phases/) — detailed results for all 78 phases
+- [Phase-by-Phase Documentation](docs/phases/) — detailed results for all 88+ phases
 - [Signal Vocabulary Tables](docs/signal-vocabulary.md) — 70 signal words + 316 T1 word-level identifications
 - [Progression Table](docs/progression.md) — metrics across all phases
 
@@ -225,10 +235,12 @@ Full table: [docs/progression.md](docs/progression.md)
 
 ```bibtex
 @article{ruckman2026voynich,
-  title={We Know the Voice but Not the Song: Italian Tachygraphy and the Voynich Manuscript},
+  title={The Voice But Not the Song: A Shorthand Hypothesis and the Statistical Fingerprint of the Voynich Manuscript},
   author={Ruckman, Matthew},
   year={2026},
-  month={3}
+  month={4},
+  note={preprint; v1 2026-03-23, v2 2026-04-17},
+  url={https://mattruckman.com/papers/voice-but-not-the-song/}
 }
 ```
 

@@ -2252,6 +2252,32 @@ def cmd_phase27_verdict():
     print(f"\nStep 27.3 completed in {time.time() - t0:.1f}s")
 
 
+def cmd_naibbe_generalized():
+    """Run Phase 88: Greshko's generalized Naibbe cipher."""
+    from voynich.phases.p88_naibbe_generalized import run_naibbe_generalized
+    t0 = time.time()
+    run_naibbe_generalized()
+    print(f"\nPhase 88 (proxy run) completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase88_integrate():
+    """Run Phase 88 integration: three-diagnostic verdict."""
+    from voynich.phases.p88_integrate import run_integrate
+    t0 = time.time()
+    run_integrate()
+    print(f"\nPhase 88 integration completed in {time.time() - t0:.1f}s")
+
+
+def cmd_phase88():
+    """Run full Phase 88 pipeline: generalized Naibbe + integration."""
+    print("=" * 70)
+    print("PHASE 88: Greshko Generalized Naibbe (Reviewer Response v3)")
+    print("=" * 70)
+    cmd_naibbe_generalized()
+    print("\n" + "=" * 70 + "\n")
+    cmd_phase88_integrate()
+
+
 def cmd_phase27():
     """Run full Phase 27 pipeline: Peer Review Controls."""
     print("=" * 70)
@@ -7447,6 +7473,10 @@ def main():
         'entropy-floor-sim': cmd_entropy_floor_sim,
         'phase87': cmd_phase87,
         'reviewer-response-v2': cmd_reviewer_response_v2,
+        # Phase 88: Greshko Generalized Naibbe (Reviewer Response v3)
+        'naibbe-generalized': cmd_naibbe_generalized,
+        'phase88-integrate': cmd_phase88_integrate,
+        'phase88': cmd_phase88,
     }
 
     if len(sys.argv) < 2:
